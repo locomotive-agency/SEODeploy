@@ -1,4 +1,4 @@
-# SEO Testing Config
+# SEO Testing Template Config
 
 
 # Content King API
