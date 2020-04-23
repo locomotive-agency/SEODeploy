@@ -1,0 +1,54 @@
+pipeline {
+
+    agent {
+        docker {
+            image 'node:8-alpine'
+            args '-p 8080:8080'
+        }
+    }
+
+    environment {
+        CI = 'true'
+        FIREBASE_DEPLOY_TOKEN = credentials('firebase_deploy_token')
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh './jenkins/scripts/test.sh'
+            }
+            post {
+                failure {
+                    echo 'Sending test failure notification...'
+                    emailext body: "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} test failure.\n Check: ${env.BUILD_URL}",
+                        recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                        subject: "Jenkins test failure: Job ${env.JOB_NAME}"
+                }
+            }
+        }
+        stage('Staging') {
+            steps {
+                sh './jenkins/scripts/staging.sh'
+            }
+            post {
+                success {
+                    echo 'Sending success stating deploy notification...'
+                    emailext body: "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} are ready for production.\n Check: ${env.BUILD_URL}",
+                        recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                        subject: "Jenkins staging are ready for production: Job ${env.JOB_NAME}"
+                }
+            }
+        }
+        stage('Production') {
+            steps {
+                input message: 'Proceed to production deploy after finished using the Staging version of the Web App?'
+                sh './jenkins/scripts/deploy.sh'
+            }
+        }
+    }
+}
