@@ -1,9 +1,9 @@
 from setuptools import setup
 from codecs import open
 
-exec(open('gtts/version.py').read())
+exec(open('cktesting/version.py').read())
 
 setup(
-    version=__version__,   # type: ignore # noqa: F821
+    version=__version__,
     test_suite='cktesting.tests',
 )
