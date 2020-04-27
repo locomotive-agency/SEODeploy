@@ -1,0 +1,29 @@
+output-format: text
+
+strictness: high
+
+autodetect: false
+
+ignore-paths:
+  - build
+  - dist
+  - docs
+
+pylint:
+  options:
+    good-names:
+      - ip
+      - s3
+    max-line-length: 120
+
+pep8:
+  full: true
+  options:
+    max-line-length: 120
+
+pyroma:
+  run: true
+
+mccabe:
+  options:
+    max-complexity: 12
