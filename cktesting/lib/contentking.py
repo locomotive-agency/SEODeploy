@@ -4,7 +4,15 @@ import json
 import time
 from tqdm.auto import tqdm
 
-from lib.log_helper import get_logger
+import pytz
+from datetime import datetime
+import multiprocessing as mp
+import numpy as np
+import pandas as pd
+
+from .log_helper import get_logger
+from .exceptions import *
+from .helpers import *
 
 import config
 
@@ -86,10 +94,11 @@ def load_report(report, **data):
                 _LOG.error("{} ({})".format(str(e),api_message))
                 break
 
-            # Just want to catch any other errors to the log, so we can add in here.
+            # If it is an unknown error, let's break and raise exception.
             except Exception as e:
-                _LOG.error('Unspecified Error:' + str(e))
-                break
+                _LOG.error('Unspecified ContentKing Error:' + str(e))
+                raise ContentKingAPIError(str(e))
+
 
         if response and response.status_code == 200:
             return response.json()
@@ -176,10 +185,10 @@ def notify_change(url):
         return None
 
 
-def process_prod_paths(paths):
+def ping_prod_paths(paths):
 
     results = {}
-    for path in tqdm(paths, desc="Notifying ContentKing to recheck URLs"):
+    for path in paths:
         url = urljoin(config.PROD_HOST, path)
         result = notify_change(url)
         if result:
@@ -190,10 +199,10 @@ def process_prod_paths(paths):
     return results
 
 
-def process_stage_paths(paths):
+def ping_stage_paths(paths):
 
     results = {}
-    for path in tqdm(paths, desc="Notifying ContentKing to recheck URLs"):
+    for path in paths:
         url = urljoin(config.STAGE_HOST, path)
         result = notify_change(url)
         if result:
@@ -202,3 +211,255 @@ def process_stage_paths(paths):
             results[url] = "error"
 
     return results
+
+
+
+def run_path_pings(sample_paths):
+
+    """Pings ContentKing with Paths across both staging and production websites.
+
+    Parameters
+    ----------
+    sample_paths: list
+        List of paths to check.
+    """
+
+    # Ping Content King for Production and Staging URLs
+    batches = [b for b in group_batcher(sample_paths, list, config.BATCH_SIZE, fill=None)]
+    prod_ping_results = {}
+    stage_ping_results = {}
+
+    for batch in tqdm(batches, description="Pinging API Production and Staging URLs"):
+        prod_ping_results.update(ping_prod_paths(batch))
+        stage_ping_results.update(ping_stage_paths(batch))
+
+    #Check results were pinged correctly.
+    sent_total = len(sample_paths)
+    prod_sent_errors, stage_sent_errors = True, True
+
+    # Check results
+    if prod_ping_results:
+        sent_percent    = round( (len([l for l in list(prod_ping_results.keys()) if prod_ping_results[l] == 'ok'])/sent_total) * 100, 2)
+        _LOG.INFO('{}% of production URLs successfully sent.'.format(sent_percent))
+
+        if sent_percent < 100:
+            prod_sent_errors = [l for l in list(prod_ping_results.keys()) if prod_ping_results[l] != 'ok']
+            for e in sent_errors:
+                _LOG.ERROR('Production URL Ping Error: {}'.format(e))
+        else:
+            prod_sent_errors = False
+    else:
+        _LOG.ERROR('No results from Production pings.')
+
+
+    if stage_ping_results:
+        sent_percent    = round( (len([l for l in list(stage_ping_results.keys()) if stage_ping_results[l] == 'ok'])/sent_total) * 100, 2)
+        _LOG.INFO('{}% of production URLs successfully sent.'.format(sent_percent))
+
+        if sent_percent < 100:
+            stage_sent_errors = [l for l in list(stage_ping_results.keys()) if stage_ping_results[l] != 'ok']
+            for e in sent_errors:
+                _LOG.ERROR('Staging URL Ping Error: {}'.format(e))
+        else:
+            stage_sent_errors = False
+
+    else:
+        _LOG.ERROR('No results from Staging pings.')
+
+
+
+    if prod_sent_errors or stage_sent_errors:
+        raise ContentKingAPIError('There were issues sending the production and/or staging URLs to COntentKing.  Please check the error log.')
+
+    return True
+
+
+
+
+def _check_results(paths, data={}):
+
+    """Loads path data from ContentKing and returns cleaned data report.
+       Checks to see if the latest crawl timestamp is more recent than when this process started.
+
+    """
+
+    checked = []
+    unchecked = paths
+
+    results = []
+
+    tz = data['tz']
+
+    while unchecked:
+
+        # Grab the first
+        path = unchecked.pop(0)
+
+        url  = urljoin(data['host'], path)
+
+        try:
+
+            url_data = load_report('url', id=data['site_id'], url=url)
+
+            if url_data and data['time_col'] in url_data:
+                last_check = datetime.fromisoformat(url_data[data['time_col']]).astimezone(tz).isoformat(timespec='seconds'))
+                td = (start_time-last_check).total_seconds()
+                if td < 0:
+                    # Has been crawled prior to start of process.
+                    content = [ "{}--/--{}".format(i['type'],i['content']) for i in url_data['content'] ]
+                    issues = [ i['name']) for i in url_data['open_issues']]
+                    data.append({'url':url, 'path':path, 'issues':issues, 'content': content, 'error': None})
+                    checked.append(path)
+                else:
+                    # We have a good response, but the URL has not been crawled yet.
+                    # Add to the back of the line.
+                    unchecked.append(path)
+
+
+            else:
+                data.append({'url':url, 'path':path, 'issues':[], 'content': [], 'error': 'Invalid response from API URL report.'})
+                checked.append(path)
+
+        except Exception as e:
+            data.append({'url':url, 'path':path, 'issues':[], 'content': [], 'error': 'Unkown Error: ' + str(e)})
+            checked.append(path)
+
+
+    return results
+
+
+
+
+def _compare_diffs(prod, stage, typ):
+
+    """Compares diffs based on the given type (issue or content).
+
+    """
+
+    prod_issues, stage_issues = prod[typ], stage[typ]
+    diffs = [i for i in stage_issues if i not in prod_issues]
+
+    if typ=="content":
+        return [ d for d in diffs if not config.IGNORE_CONTENT[d.split('--/--')[0]] ]
+
+    else:
+        return [ d for d in diffs if not config.IGNORE_ISSUES[d] ]
+
+
+
+
+def _compare_results(sample_paths, prod, stage):
+
+    """Using the original paths, runs the main review to check for
+       differences across both prod and staging results.
+
+    """
+
+    passing = True
+    df = pd.DataFrame()
+
+    for path in sample_paths:
+
+        if path in prod_result and path in stage_result:
+
+            content_diffs = _compare_diffs(prod_result[path], stage_result[path], 'content')
+            issue_diffs = _compare_diffs(prod_result[path], stage_result[path], 'issues')
+
+            if content_diffs:
+                _LOG.WARNING('{} contains content differences.'.format(path))
+                df = df.append([{'path':path, 'url':stage_result['url'], 'diff':d} for d in content_diffs], ignore_index=True)
+                passing = False
+            if issue_diffs:
+                _LOG.WARNING('{} contains issue differences.'.format(path))
+                df = df.append([{'path':path, 'url':stage_result['url'], 'diff':d} for d in issue_diffs], ignore_index=True)
+                passing = False
+
+
+
+        else:
+            _LOG.ERROR('{} not found in both production and staging results.'.format(path))
+            passing = False
+
+
+
+    return passing, df
+
+
+
+def _process_results(data):
+
+    """Reviews the returned results for errors.  Logs errors and returns only results with
+       valid data.
+
+    """
+
+
+    result = {}
+
+    for d in data:
+        if d['error']:
+            _LOG.ERROR('URL: {} encountered and error: {}'.format(d['url'], d['error']))
+        else:
+            result[d.pop('path')]  = d
+
+    return result
+
+
+
+
+def run_check_results(sample_paths, start_time, tz):
+
+    """Monitors paths that were pinged for updated timestamp. Compares allowed differences.
+
+    Parameters
+    ----------
+    sample_paths: list
+        List of paths to check.
+    start_time: datetime
+        When the difftest was started.
+    tz: pytz.timezone
+        Default timezone to keep times the same.
+
+
+    """
+
+
+    batches = [b for b in group_batcher(sample_paths, list, config.BATCH_SIZE, fill=None)]
+
+
+    prod_data = {
+            "start_time" : start_time,
+            "tz"         : tz,
+            "site_id"    : config.PROD_SITE_ID,
+            "host"       : config.PROD_HOST,
+            "time_col"   : config.TIME_COL
+            }
+
+    stage_data = {
+            "start_time" : start_time,
+            "tz"         : tz,
+            "site_id"    : config.STAGE_SITE_ID,
+            "host"       : config.STAGE_HOST,
+            "time_col"   : config.TIME_COL
+            }
+
+
+    prod_result = []
+    stage_result = []
+
+    # Iterates batches to send to API for data update.
+    for batch in tqdm(batches, description="Checking crawl status of URLs"):
+
+        prod_result.extend(mp_list_map(batch, _check_results, data=prod_data))
+        stage_result.extend(mp_list_map(batch, _check_results, data=stage_data))
+
+        # TODO: Can adjust this as necessary, pull out to config, or remove.
+        time.sleep(config.BATCH_WAIT)
+
+
+    #Review for Errors and process into dictionary:
+    prod_result = _process_results(prod_result)
+    stage_result = _process_results(stage_result)
+
+
+    passing, df = _compare_results(sample_paths, prod_result, stage_result)

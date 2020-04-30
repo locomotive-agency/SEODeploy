@@ -1,10 +1,11 @@
 
+import os
 import math
 import random
 from urllib.parse import urlparse, urlsplit
 
-from lib.log_helper import get_logger
-import lib.contentking as ck
+from .lib.log_helper import get_logger
+import .lib.contentking as ck
 
 import config
 
@@ -49,40 +50,56 @@ def url_to_path(url):
 
 
 
-def get_sample_paths(site_id, limit=None, filename=None):
+def get_sample_paths(site_id=None, limit=None, filename=None):
 
     limit    = limit or config.URL_LIMIT
     filename = filename or config.SAMPLES_FILENAME
 
-    report = 'pages'
-    pages = ck.load_report(report, id=site_id, per_page=config.PER_PAGE)
+    if os.path.isfile(filename):
+        _LOG.INFO('Reloading Existing: ' + filename)
+        with open(filename) as f:
+            content = f.readlines()
 
-    all_urls = []
-    for page in pages:
+        sample_paths =  [x.strip() for x in content]
+        return sample_paths
 
-        if page:
-            urls = [url['url'] for url in page if url['is_indexable']]
-            all_urls.extend(urls)
-        else:
-            break
+    elif site_id:
 
-        if limit and len(all_urls) >= limit:
-            all_urls = all_urls[:limit]
-            break
+        report = 'pages'
+        pages = ck.load_report(report, id=site_id, per_page=config.PER_PAGE)
 
+        all_urls = []
+        for page in pages:
 
-    count_urls    = len(all_urls)
-    sample_size   = get_sample_size(count_urls, config.CONFIDENCE_LEVEL, config.CONFIDENCE_INTERVAL)
-    random_sample = [ i for i in random.sample( range(count_urls), sample_size ) ]
+            if page:
+                urls = [url['url'] for url in page if url['is_indexable']]
+                all_urls.extend(urls)
+            else:
+                break
 
-    sample_urls   = [v for i, v in enumerate(all_urls) if i in random_sample]
-
-    sample_paths = [url_to_path(u) for u in sample_urls]
-
-    _LOG.info('Total URLs: {} Samples: {}'.format(count_urls, len(sample_paths)))
-
-    with open(filename, 'w') as file:
-        file.writelines("{}\n".format(path) for path in sample_paths)
+            if limit and len(all_urls) >= limit:
+                all_urls = all_urls[:limit]
+                break
 
 
-    return sample_paths
+        count_urls    = len(all_urls)
+        sample_size   = get_sample_size(count_urls, config.CONFIDENCE_LEVEL, config.CONFIDENCE_INTERVAL)
+        random_sample = [ i for i in random.sample( range(count_urls), sample_size ) ]
+
+        sample_urls   = [v for i, v in enumerate(all_urls) if i in random_sample]
+
+        sample_paths = [url_to_path(u) for u in sample_urls]
+
+        _LOG.info('Total URLs: {} Samples: {}'.format(count_urls, len(sample_paths)))
+
+        with open(filename, 'w') as file:
+            file.writelines("{}\n".format(path) for path in sample_paths)
+
+
+        return sample_paths
+
+
+    else:
+
+        _LOG.info('No file found and site_id not specified. Returning an empty list.')
+        return []

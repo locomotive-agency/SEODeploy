@@ -47,9 +47,3 @@ setup(
         cktesting = cktesting.main:main
     """,
 )
-
-
-setup(
-    version=__version__,
-    test_suite='cktesting.tests',
-)
