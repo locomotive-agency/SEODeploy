@@ -139,7 +139,7 @@ def load_report(report, **data):
 
 
 
-def notify_change(url):
+def _notify_change(url):
 
     api_url = urljoin(config.ENDPOINT, 'check_url')
 
@@ -190,7 +190,7 @@ def ping_prod_paths(paths):
     results = {}
     for path in paths:
         url = urljoin(config.PROD_HOST, path)
-        result = notify_change(url)
+        result = _notify_change(url)
         if result:
             results[url] = "ok"
         else:
@@ -204,7 +204,7 @@ def ping_stage_paths(paths):
     results = {}
     for path in paths:
         url = urljoin(config.STAGE_HOST, path)
-        result = notify_change(url)
+        result = _notify_change(url)
         if result:
             results[url] = "ok"
         else:
@@ -463,3 +463,6 @@ def run_check_results(sample_paths, start_time, tz):
 
 
     passing, df = _compare_results(sample_paths, prod_result, stage_result)
+
+    if not passing:
+        _LOG.ERROR('Check completed with errors.  please review ')

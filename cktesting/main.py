@@ -78,6 +78,7 @@ def create_samples(site_id, site_name, limit=None, filename=None):
 
 
 
+
 # Main Test Function
 @click.command()
 @click.option('--filename', type=str,  default=None, help='Name of Content King Website.')
@@ -107,7 +108,7 @@ def run_difftest(filename=None):
     # By passing no site_id parameters, it will expect the file to exist
     sample_paths = sp.get_sample_paths(filename=filename)
 
-    start_time = datetime.now().astimezone(tz)
+    start_time = datetime.now().astimezone(tz).isoformat(timespec='seconds')
 
     # Runs pings across both staging and production
     path_pings   = ck.run_path_pings(sample_paths)
