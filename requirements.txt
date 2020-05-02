@@ -1,3 +1,7 @@
 click
 requests
+numpy
+pandas
 tqdm
+
+prospector[with_pyroma]
