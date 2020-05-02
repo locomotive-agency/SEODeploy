@@ -1,0 +1,81 @@
+Messages
+========
+
+seotesting\lib\sampling.py:
+    L31:8 None: pyflakes - F999
+    invalid syntax
+
+seo_testing.seotesting.main (seotesting\main.py):
+    L31:- None: pylint - import-error
+    Unable to import 'lib.contentking'
+
+seo_testing.seotesting.main (seotesting\main.py):
+    L32:- None: pylint - import-error
+    Unable to import 'lib.sampling'
+
+seo_testing.seotesting.main (seotesting\main.py):
+    L33:- None: pylint - import-error
+    Unable to import 'lib.exceptions'
+
+seo_testing.seotesting.main (seotesting\main.py):
+    L34:- None: pylint - import-error
+    Unable to import 'lib.log_helper'
+
+seo_testing.seotesting.main (seotesting\main.py):
+    L36:- None: pylint - import-error
+    Unable to import 'config'
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L35:- None: pylint - import-error
+    Unable to import 'contentking.log_helper'
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L36:- None: pylint - import-error
+    Unable to import 'contentking.exceptions'
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L37:- None: pylint - import-error
+    Unable to import 'contentking.helpers'
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L39:- None: pylint - import-error
+    Unable to import 'config'
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L39:- None: pylint - wrong-import-order
+    first party import "import config" should be placed before "from .log_helper import get_logger"
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L195:15 _notify_change: pylint - broad-except
+    Catching too general exception Exception
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L244:- run_path_pings: pylint - unnecessary-comprehension
+    Unnecessary use of a comprehension
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L331:15 _check_results: pylint - broad-except
+    Catching too general exception Exception
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L417:- run_check_results: pylint - unnecessary-comprehension
+    Unnecessary use of a comprehension
+
+contentking.functions (seotesting\modules\contentking\functions.py):
+    L451:13 run_check_results: pylint - unused-variable
+    Unused variable 'df'
+
+
+
+Check Information
+=================
+         Started: 2020-05-02 10:04:50.135930
+        Finished: 2020-05-02 10:05:05.450324
+      Time Taken: 15.31 seconds
+       Formatter: text
+        Profiles: .prospector.yaml, full_pep8, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
+      Strictness: from profile
+  Libraries Used: 
+       Tools Run: dodgy, mccabe, pep8, profile-validator, pyflakes, pylint, pyroma
+  Messages Found: 16
+

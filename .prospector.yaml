@@ -5,25 +5,27 @@ strictness: high
 autodetect: false
 
 ignore-paths:
-  - build
-  - dist
   - docs
+  - jenkins
+  - API
+  - config-template.py
 
 pylint:
   options:
     good-names:
-      - ip
-      - s3
-    max-line-length: 120
+      - e
+      - i
+      - df
+    max-line-length: 200
 
 pep8:
   full: true
   options:
-    max-line-length: 120
+    max-line-length: 200
 
 pyroma:
   run: true
 
 mccabe:
   options:
-    max-complexity: 12
+    max-complexity: 20

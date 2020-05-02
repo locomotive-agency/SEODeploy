@@ -1,4 +1,3 @@
-
 #! /usr/bin/env python
 # coding: utf-8
 #
@@ -23,6 +22,11 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import numpy as np
+import multiprocessing as mp
+
+import config
+
 
 # Interable grouping function
 def group_batcher(iterator, result, count, fill=0):
@@ -39,16 +43,13 @@ def group_batcher(iterator, result, count, fill=0):
         How many in each Group
     fill: str, int, float, or None
         Fill overflow with this value. If None, no fill is performed.
-
     """
 
     itr = iter(iterator)
-    grps = -(-len(iterator)//count)
+    grps = -(-len(iterator) // count)
     for i in range(grps):
-        num = len(iterator) % count if fill is None and grps-i == 1 else count
+        num = len(iterator) % count if fill is None and grps - i == 1 else count
         yield result([next(itr, fill) for i in range(num)])
-
-
 
 
 # Multiprocessing functions
@@ -62,8 +63,7 @@ def mp_list_map(lst, fn, **args):
     threads = config.THREADS
     pool = mp.Pool(processes=threads)
 
-    result = pool.map(_map, [(l, fn, args)
-            for l in np.array_split(lst, threads)])
+    result = pool.map(_map, [(l, fn, args) for l in np.array_split(lst, threads)])
 
     pool.close()
 
