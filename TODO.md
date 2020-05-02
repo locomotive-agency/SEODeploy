@@ -30,3 +30,6 @@ https://github.com/PyCQA/prospector
 
 Hydra:
 https://github.com/ShipChain/hydra
+
+https://packaging.python.org/
+https://github.com/anfema/integrate/blob/master/setup.py

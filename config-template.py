@@ -1,5 +1,5 @@
 # SEO Testing Config File
-
+NAME           = "SEOTesting"
 
 # Content King API
 CMS_API_KEY    = "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
