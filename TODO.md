@@ -33,3 +33,4 @@ https://github.com/ShipChain/hydra
 
 https://packaging.python.org/
 https://github.com/anfema/integrate/blob/master/setup.py
+https://github.com/anfema/integrate/blob/master/setup.py
