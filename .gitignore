@@ -142,6 +142,5 @@ media
 static
 
 # Seotesting Specific
-config.py
 seotesting.log
 url_samples.txt
