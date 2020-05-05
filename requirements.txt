@@ -3,5 +3,6 @@ requests
 numpy
 pandas
 tqdm
+parse_it
 
 prospector[with_pyroma]
