@@ -33,7 +33,9 @@ import lib.sampling as sp
 from lib.exceptions import ContentKingMissing, IncorrectParameters
 from lib.log_helper import get_logger
 
-import config
+import lib.config import Config
+
+config = Config()
 
 _LOG = get_logger(__name__)
 
