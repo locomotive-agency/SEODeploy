@@ -22,59 +22,50 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from datetime import datetime
-import pandas as pd
+import os
 
-import lib.contentking as ck
-import lib.sampling as sampling
-import lib.modules as modules
-import lib.exceptions as exceptions
-
-
-from lib.logging import get_logger
 from lib.config import Config
 
 _LOG = get_logger(__name__)
 
 
-class SEOTesting(object):
+class ModuleBase(object):
 
-    def __init__(self, config):
-
-        self.config = config or Config()
+    def __init__(self, config= None, samples=[]):
         self.messages = []
-        self.samples = None
-        self.modules = None
-        self.summary = None
+        self.samples = samples
+        self.config = config or Config()
 
 
-
-    def execute(self):
-
-        self.summary = {'started': datetime.now()}
-
-        # Get Sample Paths
-        self.samples = sampling.get_samples(self.config)
-        self.summary.update({'samples': len(self.samples)})
-
-        # get Modules
-        self.modules = modules.get_module_names(self.config)
-        self.summary.update({'modules': self.modules})
+    def run(self, samples):
+        raise NotImplementedError
 
 
+def _is_confugured(module)
+    config = Config()
+    if 'modules' in config:
+        return module in list(config['modules'].keys())
+    return False
 
 
+def get_module_data(config = None):
+
+    config = config or Config()
+
+    if 'module_directory' in config:
+        dir = config['module_directory']
+    else:
+        dir = 'modules'
+
+    if not os.path.isdir(dir):
+        dir = os.path.join(os.path.dirname(__file__), '..', dir)
+
+    return { f.name:{'name':f.name, 'path': f.path, 'is_config': _is_configured(f.name)} for f in os.scandir(dir) if f.is_dir()}
 
 
-    def create_message(self, data):
-        self.messages.append(data)
+def get_module_names(config=None):
+    return [k['name'] for k,v in get_module_data(config).items() if v['is_config'] ]
 
 
-    def get_messages(self):
-        return pd.DataFrame(self.messages)
-
-
-
-
-if __name__ == '__main__':
-    cli()
+def get_module_paths(dir='modules'):
+    return [v['path'] for k,v in get_module_data(config).items() if v['is_config'] ]

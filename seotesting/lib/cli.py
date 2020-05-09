@@ -48,8 +48,6 @@ def cli():
 
 # Create Samples CLI.
 @click.command()
-@click.option('--site_id', type=str, default=None, help='ID of Content King Website.')
-@click.option('--site_name', type=str, default=None, help='Name of Content King Website.')
 @click.option('--limit', type=int, default=None, help='Limits the output to this many total paths. Overrides limit set in config.py.')
 @click.option('--filename', type=str, default=None, help='Filename for the outputted txt file. Overrides filename set in config.py.')
 @click.argument('sample')
