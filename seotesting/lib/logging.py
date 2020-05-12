@@ -25,10 +25,16 @@
 import logging
 from logging import DEBUG, Formatter, INFO, getLogger
 
-import config
+from .config import Config
+
+config = Config()
+
+print('Log File Below:')
+print(config.LOG_FILE)
+
 
 # file output
-file_handler = logging.FileHandler(filename=config.LOG_FILE)
+file_handler = logging.FileHandler(filename=config.LOG_FILE or 'seotesting.error.log')
 
 file_handler.setFormatter(Formatter('%(asctime)s [%(levelname)s]'
                                     '  %(name)s,%(lineno)s  %(message)s'))
@@ -40,7 +46,7 @@ console_handler.setLevel(INFO)
 console_handler.setFormatter(Formatter('%(message)s'))
 
 
-sdct_logger = getLogger(config.NAME)
+sdct_logger = getLogger(config.SEOTESTING_NAME)
 
 # add handlers
 sdct_logger.addHandler(console_handler)

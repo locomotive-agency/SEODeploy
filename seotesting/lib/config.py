@@ -26,13 +26,17 @@ import os
 
 from parse_it import ParseIt
 
+
+
 class Config(object):
 
-    def __init__(self, dirs=['.modules', 'lib/modules','seotesting/lib/modules'], cfiles=['seotesting_config.yaml']):
-        self.dirs = dirs
-        self.cfiles = cfiles
+    def __init__(self, module=None, dirs=[], cfiles=[]):
+        self.dirs = ['.modules', 'lib/modules','seotesting/lib/modules'] + dirs
+        self.cfiles = ['seotesting_config.yaml'] + cfiles
         self.vars = {}
-        self.modules = ['seo_testing_main']
+        self.modules = []
+        self.module = module
+
         super(Config, self).__init__()
 
         self.build()
@@ -41,6 +45,7 @@ class Config(object):
         for dir in self.dirs:
             try:
                 self.modules.extend([module for module in os.listdir(dir) if os.path.isdir(os.path.join(dir, module))])
+                break
             except FileNotFoundError:
                 pass
 
@@ -48,22 +53,25 @@ class Config(object):
         for cfile in self.cfiles:
             try:
                 parser = ParseIt(config_location=cfile, config_type_priority=['cli_args', 'yaml'])
-                self.vars.update(parser.read_all_configuration_variables())
+                vars = parser.read_all_configuration_variables()
+
+                if self.module:
+                    vars = vars['modules'][self.module]
+
+                for name,value in vars.items():
+                    self.__setattr__(name, value)
+
             except FileNotFoundError:
                 pass
+
 
     def build(self):
         self._load_modules()
         self._load_configs()
 
-    def get(self, var, default=None, module=None):
 
-        vars = self.vars[module] if module else self.vars
+    def __setattr__(self, name, value):
+        super().__setattr__(name.lower(), value)
 
-        try:
-            return vars[var]
-        except:
-            return default
-
-    def set(self, var, value):
-        self.vars[var] = value
+    def __getattribute__(self, name):
+        return super().__getattribute__(name.lower())

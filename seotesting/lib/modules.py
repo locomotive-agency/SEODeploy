@@ -23,8 +23,11 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import os
+import importlib
 
-from lib.config import Config
+from .config import Config
+from .logging import get_logger
+
 
 _LOG = get_logger(__name__)
 
@@ -37,35 +40,78 @@ class ModuleBase(object):
         self.config = config or Config()
 
 
+    def prepare_messages(self, data):
+        """ Data should be in format of
+            [{'path': <str>, 'url': <str>, 'issue': <str>}, ...]
+
+            Output in format:
+            [{'module': <str>, 'path': <str>, 'url': <str>, 'issue': [list]}, ...]
+        """
+        path_data = {}
+        for i in data:
+
+            # Consolidate rows:
+            if i['path'] in path_data:
+                path_data[i['path']]['issues'].append(i['issue'])
+            else:
+                path_data[i['path']] = {'url':i.url, issues:[i['issue']]}
+
+        mesages = [{'module': self.modulename, 'path': k, 'url': v['url'], 'issues': v['issues']} for k,v in path_data.items()]
+
+        self.messages.extend(messages)
+
+        return mesages
+
+
     def run(self, samples):
         raise NotImplementedError
 
 
-def _is_confugured(module)
-    config = Config()
-    if 'modules' in config:
-        return module in list(config['modules'].keys())
-    return False
 
 
-def get_module_data(config = None):
+class Modules(object):
 
-    config = config or Config()
+    def __init__(self, config = None):
 
-    if 'module_directory' in config:
-        dir = config['module_directory']
-    else:
-        dir = 'modules'
+        self.module_names = None
+        self.config = config or Config()
+        self.data  = self._get_module_data(config)
 
-    if not os.path.isdir(dir):
-        dir = os.path.join(os.path.dirname(__file__), '..', dir)
-
-    return { f.name:{'name':f.name, 'path': f.path, 'is_config': _is_configured(f.name)} for f in os.scandir(dir) if f.is_dir()}
+        self.paths = self._get_module_paths(self.data)
+        self.names = self._get_module_names(self.data)
 
 
-def get_module_names(config=None):
-    return [k['name'] for k,v in get_module_data(config).items() if v['is_config'] ]
+    def build_modules():
+
+        for path in self.paths:
+            importlib.import_module(path)
 
 
-def get_module_paths(dir='modules'):
-    return [v['path'] for k,v in get_module_data(config).items() if v['is_config'] ]
+    def _is_confugured(module):
+
+        if 'modules' in self.config:
+            return module in list(config['modules'].keys())
+        return False
+
+
+    def _get_module_data(config):
+
+
+        if 'module_directory' in config:
+            dir = config['module_directory']
+        else:
+            dir = 'modules'
+
+        if not os.path.isdir(dir):
+            dir = os.path.join(os.path.dirname(__file__), '..', dir)
+
+
+        return { f.name:{'name':f.name, 'path': f.path, 'is_config': _is_configured(f.name)} for f in os.scandir(dir) if f.is_dir()}
+
+
+    def _get_module_names(data):
+        return [k['name'] for k,v in data.items() if v['is_config'] ]
+
+
+    def _get_module_paths(data):
+        return [v['path'] for k,v in data.items() if v['is_config'] ]

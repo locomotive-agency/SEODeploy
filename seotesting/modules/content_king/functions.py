@@ -32,16 +32,15 @@ from tqdm.auto import tqdm
 
 import pandas as pd
 
-from .log_helper import get_logger
-from .exceptions import ContentKingAPIError
-from .helpers import group_batcher, mp_list_map
+from ...lib.logging  import get_logger
+from .exceptions import ContentKingAPIError, ContentKingMissing
+from ...lib.helpers import group_batcher, mp_list_map
 
-import config
 
 _LOG = get_logger(__name__)
 
 
-def load_report(report, **data):
+def load_report(report, config, **data):
     '''
         Description: Receives a report type and names parameters passed to function.
         Requests from ContentKing Reporting API.
@@ -103,22 +102,22 @@ def load_report(report, **data):
                 break
 
             except requests.exceptions.Timeout as e:
-                _LOG.ERROR(str(e))
+                _LOG.error(str(e))
                 time.sleep((i + 1) * 10)
 
             # Not sure why Requests throws this instead of `Timeout` for timeouts.
             except requests.exceptions.ConnectionError as e:
-                _LOG.ERROR(str(e))
+                _LOG.error(str(e))
                 time.sleep((i + 1) * 10)
 
             except requests.exceptions.HTTPError as e:
                 api_message = response.json()['message']
-                _LOG.ERROR("{} ({})".format(str(e), api_message))
+                _LOG.error("{} ({})".format(str(e), api_message))
                 break
 
             # If it is an unknown error, let's break and raise exception.
             except Exception as e:
-                _LOG.ERROR('Unspecified ContentKing Error:' + str(e))
+                _LOG.error('Unspecified ContentKing Error:' + str(e))
                 raise ContentKingAPIError(str(e))
 
         if response and response.status_code == 200:
@@ -151,12 +150,12 @@ def load_report(report, **data):
     paged_reports = ['pages']
 
     if report in paged_reports:
-        return get_paged_report(report, data)
+        return get_paged_report(report, config, data)
 
-    return get_report(report, data)
+    return get_report(report, config, data)
 
 
-def _notify_change(url):
+def _notify_change(url, config):
 
     api_url = urljoin(config.ENDPOINT, 'check_url')
 
@@ -183,17 +182,17 @@ def _notify_change(url):
 
         # Not sure why Requests throws this instead of `Timeout` for timeouts.
         except requests.exceptions.ConnectionError as e:
-            _LOG.ERROR(str(e))
+            _LOG.error(str(e))
             time.sleep((i + 1) * 10)
 
         except requests.exceptions.HTTPError as e:
             api_message = response.json()['message']
-            _LOG.ERROR("{} ({})".format(str(e), api_message))
+            _LOG.error("{} ({})".format(str(e), api_message))
             break
 
         # Just want to catch any other errors to the log, so we can add in here.
         except Exception as e:
-            _LOG.ERROR('Unspecified Error:' + str(e))
+            _LOG.error('Unspecified Error:' + str(e))
             break
 
     if response and response.status_code == 200:
@@ -202,12 +201,12 @@ def _notify_change(url):
     return None
 
 
-def ping_prod_paths(paths):
+def ping_prod_paths(paths, config):
 
     results = {}
     for path in paths:
         url = urljoin(config.PROD_HOST, path)
-        result = _notify_change(url)
+        result = _notify_change(url, config)
         if result:
             results[url] = "ok"
         else:
@@ -216,12 +215,12 @@ def ping_prod_paths(paths):
     return results
 
 
-def ping_stage_paths(paths):
+def ping_stage_paths(paths, config):
 
     results = {}
     for path in paths:
         url = urljoin(config.STAGE_HOST, path)
-        result = _notify_change(url)
+        result = _notify_change(url, config)
         if result:
             results[url] = "ok"
         else:
@@ -230,7 +229,7 @@ def ping_stage_paths(paths):
     return results
 
 
-def run_path_pings(sample_paths):
+def run_path_pings(sample_paths, config):
 
     """Pings ContentKing with Paths across both staging and production websites.
 
@@ -245,9 +244,9 @@ def run_path_pings(sample_paths):
     prod_ping_results = {}
     stage_ping_results = {}
 
-    for batch in tqdm(batches, description="Pinging API Production and Staging URLs"):
-        prod_ping_results.update(ping_prod_paths(batch))
-        stage_ping_results.update(ping_stage_paths(batch))
+    for batch in tqdm(batches, desc="Pinging API Production and Staging URLs"):
+        prod_ping_results.update(ping_prod_paths(batch, config))
+        stage_ping_results.update(ping_stage_paths(batch, config))
 
     # Check results were pinged correctly.
     sent_total = len(sample_paths)
@@ -256,30 +255,30 @@ def run_path_pings(sample_paths):
     # Check results
     if prod_ping_results:
         sent_percent = round((len([l for l in list(prod_ping_results.keys()) if prod_ping_results[l] == 'ok']) / sent_total) * 100, 2)
-        _LOG.INFO("{}% of production URLs successfully sent.".format(sent_percent))
+        _LOG.info("{}% of production URLs successfully sent.".format(sent_percent))
 
         if sent_percent < 100:
             prod_sent_errors = [l for l in list(prod_ping_results.keys()) if prod_ping_results[l] != 'ok']
             for e in prod_sent_errors:
-                _LOG.ERROR("Production URL Ping Error: {}".format(e))
+                _LOG.error("Production URL Ping Error: {}".format(e))
         else:
             prod_sent_errors = False
     else:
-        _LOG.ERROR("No results from Production pings.")
+        _LOG.error("No results from Production pings.")
 
     if stage_ping_results:
         sent_percent = round((len([l for l in list(stage_ping_results.keys()) if stage_ping_results[l] == 'ok']) / sent_total) * 100, 2)
-        _LOG.INFO("{}% of production URLs successfully sent.".format(sent_percent))
+        _LOG.info("{}% of production URLs successfully sent.".format(sent_percent))
 
         if sent_percent < 100:
             stage_sent_errors = [l for l in list(stage_ping_results.keys()) if stage_ping_results[l] != 'ok']
             for e in stage_sent_errors:
-                _LOG.ERROR("Staging URL Ping Error: {}".format(e))
+                _LOG.error("Staging URL Ping Error: {}".format(e))
         else:
             stage_sent_errors = False
 
     else:
-        _LOG.ERROR("No results from Staging pings.")
+        _LOG.error("No results from Staging pings.")
 
     if prod_sent_errors or stage_sent_errors:
         raise ContentKingAPIError("There were issues sending the production and/or staging URLs to COntentKing.  Please check the error log.")
@@ -287,7 +286,7 @@ def run_path_pings(sample_paths):
     return True
 
 
-def _check_results(paths, data=None):
+def _check_results(paths, config=None, data=None):
 
     """Loads path data from ContentKing and returns cleaned data report.
        Checks to see if the latest crawl timestamp is more recent than when this process started.
@@ -310,7 +309,7 @@ def _check_results(paths, data=None):
 
         try:
 
-            url_data = load_report('url', id=data['site_id'], url=url)
+            url_data = load_report('url', config, id=data['site_id'], url=url)
 
             if url_data and time_col in url_data:
                 last_check = datetime.fromisoformat(url_data[time_col]).astimezone(time_zone).isoformat(timespec="seconds")
@@ -334,7 +333,7 @@ def _check_results(paths, data=None):
     return results
 
 
-def _compare_diffs(prod, stage, typ):
+def _compare_diffs(prod, stage, typ, config):
 
     """Compares diffs based on the given type (issue or content).
 
@@ -349,7 +348,7 @@ def _compare_diffs(prod, stage, typ):
     return [d for d in diffs if not config.IGNORE_ISSUES[d]]
 
 
-def _compare_results(sample_paths, prod, stage):
+def _compare_results(sample_paths, prod, stage, config):
 
     """Using the original paths, runs the main review to check for
        differences across both prod and staging results.
@@ -357,29 +356,30 @@ def _compare_results(sample_paths, prod, stage):
     """
 
     passing = True
-    df = pd.DataFrame()
+    results = []
 
     for path in sample_paths:
 
         if path in prod and path in stage:
 
-            content_diffs = _compare_diffs(prod[path], stage[path], "content")
-            issue_diffs = _compare_diffs(prod[path], stage[path], "issues")
+            content_diffs = _compare_diffs(prod[path], stage[path], "content", config)
+            issue_diffs = _compare_diffs(prod[path], stage[path], "issues", config)
 
             if content_diffs:
                 _LOG.WARNING("{} contains content differences.".format(path))
-                df = df.append([{'path': path, 'url': stage[path]['url'], 'diff': d} for d in content_diffs], ignore_index=True)
+                results.extend([{'path': path, 'url': stage[path]['url'], 'issue': "Difference: " + d} for d in content_diffs])
                 passing = False
             if issue_diffs:
                 _LOG.WARNING("{} contains issue differences.".format(path))
-                df = df.append([{'path': path, 'url': stage[path]['url'], 'diff': d} for d in issue_diffs], ignore_index=True)
+                results.extend([{'path': path, 'url': stage[path]['url'], 'issue': "Difference: " + d} for d in issue_diffs])
                 passing = False
 
         else:
-            _LOG.ERROR("{} not found in both production and staging results.".format(path))
+            _LOG.error("{} not found in both production and staging results.".format(path))
             passing = False
 
-    return passing, df
+
+    return passing, results
 
 
 def _process_results(data):
@@ -393,14 +393,14 @@ def _process_results(data):
 
     for i in data:
         if i['error']:
-            _LOG.ERROR("URL: {} encountered and error: {}".format(i['url'], i['error']))
+            _LOG.error("URL: {} encountered and error: {}".format(i['url'], i['error']))
         else:
             result[i.pop('path')] = i
 
     return result
 
 
-def run_check_results(sample_paths, start_time, time_zone):
+def run_check_results(sample_paths, start_time, time_zone, config):
 
     """Monitors paths that were pinged for updated timestamp. Compares allowed differences.
 
@@ -436,10 +436,10 @@ def run_check_results(sample_paths, start_time, time_zone):
     stage_result = []
 
     # Iterates batches to send to API for data update.
-    for batch in tqdm(batches, description="Checking crawl status of URLs"):
+    for batch in tqdm(batches, desc="Checking crawl status of URLs"):
 
-        prod_result.extend(mp_list_map(batch, _check_results, data=prod_data))
-        stage_result.extend(mp_list_map(batch, _check_results, data=stage_data))
+        prod_result.extend(mp_list_map(batch, _check_results, config=config, data=prod_data))
+        stage_result.extend(mp_list_map(batch, _check_results, config=config, data=stage_data))
 
         # TODO: Can adjust this as necessary, pull out to config, or remove.
         time.sleep(config.BATCH_WAIT)
@@ -448,7 +448,9 @@ def run_check_results(sample_paths, start_time, time_zone):
     prod_result = _process_results(prod_result)
     stage_result = _process_results(stage_result)
 
-    passing, df = _compare_results(sample_paths, prod_result, stage_result)
+    passing, results = _compare_results(sample_paths, prod_result, stage_result, config)
 
     if not passing:
         _LOG.ERROR("Check completed with errors.  Please review")
+
+    return passing, results

@@ -22,10 +22,34 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from lib.cli import BaseCLI
+from datetime import datetime
 
-class CLI(BaseCLI):
+import pytz
 
-    def __init__(self):
-        cli = None
-        super(CLI, self).__init__()
+from ...lib.modules import ModuleBase
+from ...lib.config import Config
+from .functions import run_path_pings, run_check_results
+
+
+class ContentKingModule(ModuleBase):
+
+    def __init__(self, config=None, samples=[]):
+
+        super(ContentKingModule, self).__init__(config, samples)
+        self.config = config or Config(module='contentking')
+        self.time_zone = pytz.timezone(self.config.TIMEZONE)
+
+
+    def run(self, samples):
+
+        start_time = datetime.now().astimezone(self.time_zone).isoformat(timespec='seconds')
+
+        # Runs the sample paths against COntentKing API to ask for recrawling.
+        path_pings = run_path_pings(samples, self.config)
+
+        # Checks results via multi-threading
+        passing, results = run_check_results(sample_paths, start_time, time_zone, config)
+
+        messages = self.prepare_messages(data)
+
+        return passing, messages
