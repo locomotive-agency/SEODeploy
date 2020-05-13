@@ -29,8 +29,7 @@ from .config import Config
 
 config = Config()
 
-print('Log File Below:')
-print(config.LOG_FILE)
+
 
 
 # file output

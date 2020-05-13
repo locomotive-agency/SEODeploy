@@ -1,32 +1,23 @@
-* jenkins integration
+# Todo
 
 
-* Monitor staging and production in CK.
-* Same auditing settings in both.
-* Same auditing settings in both.
-
-CMS API: Ask for page to be checked.
-Pull and ask for page health.
-
-Look at delta on changes:
-Look at delta
-
-Percentage of pages that it changed on:
-
-Integration of page sampling.
-Pull a list of all URLs in CK
-
-Asking
+1. Give example Jenkins Integration.
+2. Decide whether to pull prod and staging out of module config.
+3. Finalize README
+4. Finalize CLI
+5. Finalize Sampling.  Sitemap and ContentKing.
 
 
+
+
+
+## Ideas taken from:
 https://github.com/AlejandroGonzalR/jenkins-vue/tree/master/jenkins/scripts
 https://github.com/mattfair/SeleniumFactory-for-Python/blob/master/sauce_ondemand_test.py
 https://github.com/jenkins-docs/simple-python-pyinstaller-app/tree/master/jenkins
 
-
 Prospector:
 https://github.com/PyCQA/prospector
-
 
 Hydra:
 https://github.com/ShipChain/hydra
