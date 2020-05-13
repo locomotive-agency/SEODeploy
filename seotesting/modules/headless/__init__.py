@@ -28,15 +28,16 @@ import pytz
 
 from seotesting.lib.modules import ModuleBase
 from seotesting.lib.config import Config
-from .functions import run_path_pings, run_check_results
+from .functions import sample_function
 
 
-class ContentKingModule(ModuleBase):
+class HeadlessModule(ModuleBase):
 
     def __init__(self, config=None, samples=[]):
 
         super(ContentKingModule, self).__init__(config, samples)
-        self.config = config or Config(module='contentking')
+
+        self.config = config or Config(module='headless')
         self.time_zone = pytz.timezone(self.config.TIMEZONE)
 
 

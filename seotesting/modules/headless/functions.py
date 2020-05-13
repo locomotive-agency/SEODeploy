@@ -22,34 +22,15 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from datetime import datetime
-
-import pytz
-
-from seotesting.lib.modules import ModuleBase
-from seotesting.lib.config import Config
-from .functions import run_path_pings, run_check_results
 
 
-class ContentKingModule(ModuleBase):
-
-    def __init__(self, config=None, samples=[]):
-
-        super(ContentKingModule, self).__init__(config, samples)
-        self.config = config or Config(module='contentking')
-        self.time_zone = pytz.timezone(self.config.TIMEZONE)
+from ...lib.logging  import get_logger
+from .exceptions import ExampleExceptions
+from ...lib.helpers import group_batcher, mp_list_map
 
 
-    def run(self, samples):
+_LOG = get_logger(__name__)
 
-        start_time = datetime.now().astimezone(self.time_zone).isoformat(timespec='seconds')
 
-        # Runs the sample paths against COntentKing API to ask for recrawling.
-        path_pings = run_path_pings(samples, self.config)
-
-        # Checks results via multi-threading
-        passing, results = run_check_results(sample_paths, start_time, time_zone, config)
-
-        messages = self.prepare_messages(data)
-
-        return passing, messages
+def sample_function():
+    pass
