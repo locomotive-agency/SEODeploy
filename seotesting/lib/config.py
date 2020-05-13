@@ -25,7 +25,7 @@
 import os
 
 from parse_it import ParseIt
-
+from .exceptions import ModuleNotImplemented
 
 
 class Config(object):
@@ -34,13 +34,13 @@ class Config(object):
 
     Class Parameters:
         module: <str> Name of module to add config data as attribute.
-        dirs: <list> Override directory to look for modules in.
+        mdirs: <list> Override directory to look for modules in.
         cfiles: <list> Override name of config file.
 
     """
 
-    def __init__(self, module=None, dirs=[], cfiles=[]):
-        self.dirs = dirs + ['seotesting/lib/modules']
+    def __init__(self, module=None, mdirs=[], cfiles=[]):
+        self.mdirs = mdirs + ['seotesting/modules', '.modules']
         self.cfiles = cfiles + ['seotesting_config.yaml']
         self.vars = {}
         self.modules = []
@@ -51,7 +51,7 @@ class Config(object):
         self.build()
 
     def _load_modules(self):
-        for dir in self.dirs:
+        for dir in self.mdirs:
             try:
                 self.modules.extend([module for module in os.listdir(dir) if os.path.isdir(os.path.join(dir, module))])
                 break
@@ -67,11 +67,13 @@ class Config(object):
                 # TODO: Need to namespace config settings at some point as this currently
                 # can lead to collisions
                 if self.module:
-                    print(vars)
-                    modules = vars.pop('modules_activated')
-                    self.__setattr__(self.module, Config())
-                    for name, value in modules[self.module].items():
-                        self.__getattribute__(self.module).__setattr__(name, value)
+                    if self.module in self.modules:
+                        modules = vars.pop('modules_activated')
+                        self.__setattr__(self.module, Config())
+                        for name, value in modules[self.module].items():
+                            self.__getattribute__(self.module).__setattr__(name, value)
+                    else:
+                        raise ModuleNotImplemented("The module `{}` was not found in the modules directory.".format(self.module))
 
                 for name,value in vars.items():
                     self.__setattr__(name, value)
@@ -83,8 +85,8 @@ class Config(object):
 
 
     def build(self):
-        self._load_configs()
         self._load_modules()
+        self._load_configs()
 
 
     def __setattr__(self, name, value):

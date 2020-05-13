@@ -24,9 +24,9 @@
 
 
 
-from ...lib.logging  import get_logger
-from .exceptions import ExampleExceptions
-from ...lib.helpers import group_batcher, mp_list_map
+from seotesting.lib.logging  import get_logger
+from .exceptions import HeadlessException
+from seotesting.lib.helpers import group_batcher, mp_list_map
 
 
 _LOG = get_logger(__name__)

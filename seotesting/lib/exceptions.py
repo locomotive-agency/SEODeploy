@@ -26,3 +26,8 @@
 class IncorrectParameters(Exception):
     """Base class for exceptions in this module."""
     pass
+
+
+class ModuleNotImplemented(Exception):
+    """Base class for exceptions in this module."""
+    pass

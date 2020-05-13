@@ -23,10 +23,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import os
+import sys
 import importlib
 
 from .config import Config
 from .logging import get_logger
+from .exceptions import ModuleNotImplemented
 
 
 _LOG = get_logger(__name__)
@@ -69,49 +71,65 @@ class ModuleBase(object):
 
 
 
-class Modules(object):
+class ModuleConfig(object):
 
-    def __init__(self, config=None):
+    def __init__(self, config=None, mdirs=[]):
 
         self.module_names = None
+        self.module_path = None
         self.config = config or Config()
-        self.data  = self._get_module_data(config)
+        self.mdirs = mdirs + ['modules']
+        self.data  = self._get_module_data()
 
         self.paths = self._get_module_paths(self.data)
         self.names = self._get_module_names(self.data)
 
+        self.modules = self.ModuleObjects()
 
-    def build_modules():
-
-        for path in self.paths:
-            importlib.import_module(path)
+        self.build_modules()
 
 
-    def _is_confugured(module):
+    class ModuleObjects(object): pass
 
-        if 'modules_activated' in self.config:
-            return module in list(config['modules_activated'].keys())
+
+    def build_modules(self):
+
+        sys.path.append(self.module_path)
+
+        for k,v in self.data.items():
+            if v['is_config']:
+                setattr(self.modules, k, importlib.import_module(k))
+
+
+    def _is_confugured(self, module):
+
+        if hasattr(self.config, 'modules_activated'):
+            return module in list(self.config.modules_activated.keys())
         return False
 
 
-    def _get_module_data(config):
+    def _get_module_data(self):
 
+        for dir in self.mdirs:
 
-        if 'module_directory' in config:
-            dir = config['module_directory']
-        else:
-            dir = 'modules'
-
-        if not os.path.isdir(dir):
             dir = os.path.join(os.path.dirname(__file__), '..', dir)
 
+            if not os.path.isdir(dir):
+                continue
+            else:
+                break
 
-        return { f.name:{'name':f.name, 'path': f.path, 'is_config': _is_configured(f.name)} for f in os.scandir(dir) if f.is_dir()}
+        else:
+            raise ModuleNotImplemented('Modules directory not found in: {}'.format(','.join(self.mdirs)))
+
+        self.module_path = dir
+
+        return { f.name:{'name':f.name, 'path': f.path, 'mdir': dir, 'is_config': self._is_confugured(f.name)} for f in os.scandir(dir) if f.is_dir()}
 
 
-    def _get_module_names(data):
-        return [k['name'] for k,v in data.items() if v['is_config'] ]
+    def _get_module_names(self, data):
+        return [k for k,v in data.items() if v['is_config'] ]
 
 
-    def _get_module_paths(data):
+    def _get_module_paths(self, data):
         return [v['path'] for k,v in data.items() if v['is_config'] ]

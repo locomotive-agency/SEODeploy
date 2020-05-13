@@ -1,8 +1,3 @@
-class ContentKingMissing(Exception):
-    """Base class for exceptions in this module."""
-    pass
-
-
-class ContentKingAPIError(Exception):
+class HeadlessException(Exception):
     """Base class for exceptions in this module."""
     pass

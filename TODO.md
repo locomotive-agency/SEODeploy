@@ -2,11 +2,12 @@
 
 
 1. [ ] Give example Jenkins Integration.
-2. [ ] Decide whether to pull prod and staging out of module config.
+2. [x] Decide whether to pull prod and staging out of module config. # Not now.
 3. [ ] Finalize README
 4. [ ] Finalize CLI
 5. [ ] Finalize Sampling.  Sitemap and ContentKing.
 6. [x] Namespace Config module data
+7. [ ] Testing
 
 
 
