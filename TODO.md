@@ -1,11 +1,12 @@
 # Todo
 
 
-1. Give example Jenkins Integration.
-2. Decide whether to pull prod and staging out of module config.
-3. Finalize README
-4. Finalize CLI
-5. Finalize Sampling.  Sitemap and ContentKing.
+1. [ ] Give example Jenkins Integration.
+2. [ ] Decide whether to pull prod and staging out of module config.
+3. [ ] Finalize README
+4. [ ] Finalize CLI
+5. [ ] Finalize Sampling.  Sitemap and ContentKing.
+6. [x] Namespace Config module data
 
 
 

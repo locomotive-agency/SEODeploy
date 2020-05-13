@@ -48,7 +48,7 @@ class ContentKingModule(ModuleBase):
         path_pings = run_path_pings(samples, self.config)
 
         # Checks results via multi-threading
-        passing, results = run_check_results(sample_paths, start_time, time_zone, config)
+        passing, results = run_check_results(samples, start_time, self.time_zone, self.config)
 
         messages = self.prepare_messages(data)
 

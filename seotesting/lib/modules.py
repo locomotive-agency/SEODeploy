@@ -89,8 +89,8 @@ class Modules(object):
 
     def _is_confugured(module):
 
-        if 'modules' in self.config:
-            return module in list(config['modules'].keys())
+        if 'modules_activated' in self.config:
+            return module in list(config['modules_activated'].keys())
         return False
 
 

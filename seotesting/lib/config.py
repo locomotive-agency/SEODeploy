@@ -30,9 +30,18 @@ from parse_it import ParseIt
 
 class Config(object):
 
+    """ Class for loading configuration data from Yaml settings file and module information.
+
+    Class Parameters:
+        module: <str> Name of module to add config data as attribute.
+        dirs: <list> Override directory to look for modules in.
+        cfiles: <list> Override name of config file.
+
+    """
+
     def __init__(self, module=None, dirs=[], cfiles=[]):
-        self.dirs = ['seotesting/lib/modules'] + dirs
-        self.cfiles = ['seotesting_config.yaml'] + cfiles
+        self.dirs = dirs + ['seotesting/lib/modules']
+        self.cfiles = cfiles + ['seotesting_config.yaml']
         self.vars = {}
         self.modules = []
         self.module = module
@@ -55,12 +64,19 @@ class Config(object):
                 parser = ParseIt(config_location=cfile, config_type_priority=['cli_args', 'yaml'])
                 vars = parser.read_all_configuration_variables()
 
+                # TODO: Need to namespace config settings at some point as this currently
+                # can lead to collisions
                 if self.module:
-                    modules = vars.pop('modules')
-                    vars.update(modules[self.module])
+                    print(vars)
+                    modules = vars.pop('modules_activated')
+                    self.__setattr__(self.module, Config())
+                    for name, value in modules[self.module].items():
+                        self.__getattribute__(self.module).__setattr__(name, value)
 
                 for name,value in vars.items():
                     self.__setattr__(name, value)
+
+                break
 
             except FileNotFoundError:
                 pass

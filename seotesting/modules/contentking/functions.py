@@ -84,11 +84,11 @@ def load_report(report, config, **data):
 
     def get_report(report, data, query_string=None):
 
-        api_url = urljoin(config.ENDPOINT, api_reports(report, data))
+        api_url = urljoin(config.contentking.ENDPOINT, api_reports(report, data))
 
         headers = {
             'User-Agent': 'Python CI/CD Testing',
-            'Authorization': 'token {}'.format(config.REPORT_API_KEY),
+            'Authorization': 'token {}'.format(config.contentking.REPORT_API_KEY),
             'Content-Type': 'application/json'
         }
 
@@ -96,7 +96,7 @@ def load_report(report, config, **data):
         for i in range(tries):
 
             try:
-                response = requests.get(api_url, params=query_string, headers=headers, timeout=config.API_TIMEOUT, verify=False)
+                response = requests.get(api_url, params=query_string, headers=headers, timeout=config.contentking.API_TIMEOUT, verify=False)
                 # Raise HTTPError if not 20X
                 response.raise_for_status()
                 break
@@ -157,11 +157,11 @@ def load_report(report, config, **data):
 
 def _notify_change(url, config):
 
-    api_url = urljoin(config.ENDPOINT, 'check_url')
+    api_url = urljoin(config.contentking.ENDPOINT, 'check_url')
 
     headers = {
         'User-Agent': 'Python CI/CD Testing',
-        'Authorization': 'token {}'.format(config.CMS_API_KEY),
+        'Authorization': 'token {}'.format(config.contentking.CMS_API_KEY),
         'Content-Type': 'application/json',
     }
 
@@ -171,7 +171,7 @@ def _notify_change(url, config):
     for i in range(tries):
 
         try:
-            response = requests.post(api_url, data=data, headers=headers, timeout=config.API_TIMEOUT, verify=False)
+            response = requests.post(api_url, data=data, headers=headers, timeout=config.contentking.API_TIMEOUT, verify=False)
             # Raise HTTPError if not 20X
             response.raise_for_status()
             break
@@ -205,7 +205,7 @@ def ping_prod_paths(paths, config):
 
     results = {}
     for path in paths:
-        url = urljoin(config.PROD_HOST, path)
+        url = urljoin(config.contentking.PROD_HOST, path)
         result = _notify_change(url, config)
         if result:
             results[url] = "ok"
@@ -219,7 +219,7 @@ def ping_stage_paths(paths, config):
 
     results = {}
     for path in paths:
-        url = urljoin(config.STAGE_HOST, path)
+        url = urljoin(config.contentking.STAGE_HOST, path)
         result = _notify_change(url, config)
         if result:
             results[url] = "ok"
@@ -240,7 +240,7 @@ def run_path_pings(sample_paths, config):
     """
 
     # Ping Content King for Production and Staging URLs
-    batches = [b for b in group_batcher(sample_paths, list, config.BATCH_SIZE, fill=None)]
+    batches = [b for b in group_batcher(sample_paths, list, config.contentking.BATCH_SIZE, fill=None)]
     prod_ping_results = {}
     stage_ping_results = {}
 
@@ -343,9 +343,9 @@ def _compare_diffs(prod, stage, typ, config):
     diffs = [i for i in stage_issues if i not in prod_issues]
 
     if typ == "content":
-        return [d for d in diffs if not config.IGNORE_CONTENT[d.split('--/--')[0]]]
+        return [d for d in diffs if not config.contentking.IGNORE_CONTENT[d.split('--/--')[0]]]
 
-    return [d for d in diffs if not config.IGNORE_ISSUES[d]]
+    return [d for d in diffs if not config.contentking.IGNORE_ISSUES[d]]
 
 
 def _compare_results(sample_paths, prod, stage, config):
@@ -414,22 +414,22 @@ def run_check_results(sample_paths, start_time, time_zone, config):
         Default timezone to keep times the same.
     """
 
-    batches = [b for b in group_batcher(sample_paths, list, config.BATCH_SIZE, fill=None)]
+    batches = [b for b in group_batcher(sample_paths, list, config.contentking.BATCH_SIZE, fill=None)]
 
     prod_data = {
         'start_time': start_time,
         'time_zone': time_zone,
-        'site_id': config.PROD_SITE_ID,
-        'host': config.PROD_HOST,
-        'time_col': config.TIME_COL
+        'site_id': config.contentking.PROD_SITE_ID,
+        'host': config.contentking.PROD_HOST,
+        'time_col': config.contentking.TIME_COL
     }
 
     stage_data = {
         'start_time': start_time,
         'time_zone': time_zone,
-        'site_id': config.STAGE_SITE_ID,
-        'host': config.STAGE_HOST,
-        'time_col': config.TIME_COL
+        'site_id': config.contentking.STAGE_SITE_ID,
+        'host': config.contentking.STAGE_HOST,
+        'time_col': config.contentking.TIME_COL
     }
 
     prod_result = []
@@ -442,7 +442,7 @@ def run_check_results(sample_paths, start_time, time_zone, config):
         stage_result.extend(mp_list_map(batch, _check_results, config=config, data=stage_data))
 
         # TODO: Can adjust this as necessary, pull out to config, or remove.
-        time.sleep(config.BATCH_WAIT)
+        time.sleep(config.contentking.BATCH_WAIT)
 
     # Review for Errors and process into dictionary:
     prod_result = _process_results(prod_result)
