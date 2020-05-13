@@ -34,7 +34,7 @@ _LOG = get_logger(__name__)
 
 class ModuleBase(object):
 
-    def __init__(self, config= None, samples=[]):
+    def __init__(self, config=None, samples=[]):
         self.messages = []
         self.samples = samples
         self.config = config or Config()
@@ -71,7 +71,7 @@ class ModuleBase(object):
 
 class Modules(object):
 
-    def __init__(self, config = None):
+    def __init__(self, config=None):
 
         self.module_names = None
         self.config = config or Config()

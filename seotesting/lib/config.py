@@ -31,7 +31,7 @@ from parse_it import ParseIt
 class Config(object):
 
     def __init__(self, module=None, dirs=[], cfiles=[]):
-        self.dirs = ['.modules', 'lib/modules','seotesting/lib/modules'] + dirs
+        self.dirs = ['seotesting/lib/modules'] + dirs
         self.cfiles = ['seotesting_config.yaml'] + cfiles
         self.vars = {}
         self.modules = []
@@ -56,7 +56,8 @@ class Config(object):
                 vars = parser.read_all_configuration_variables()
 
                 if self.module:
-                    vars = vars['modules'][self.module]
+                    modules = vars.pop('modules')
+                    vars.update(modules[self.module])
 
                 for name,value in vars.items():
                     self.__setattr__(name, value)
@@ -66,8 +67,8 @@ class Config(object):
 
 
     def build(self):
-        self._load_modules()
         self._load_configs()
+        self._load_modules()
 
 
     def __setattr__(self, name, value):
