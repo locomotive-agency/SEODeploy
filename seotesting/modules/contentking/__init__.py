@@ -28,7 +28,8 @@ import pytz
 
 from seotesting.lib.modules import ModuleBase
 from seotesting.lib.config import Config
-from .functions import run_path_pings, run_check_results
+from seotesting.lib.sampling import Config
+from .functions import run_path_pings, run_check_results, load_report
 
 
 class ContentKingModule(ModuleBase):
@@ -37,7 +38,7 @@ class ContentKingModule(ModuleBase):
 
         super(ContentKingModule, self).__init__(config, samples)
         self.config = config or Config(module='contentking')
-        self.time_zone = pytz.timezone(self.config.TIMEZONE)
+        self.time_zone = pytz.timezone(self.config.contentking.TIMEZONE)
 
 
     def run(self, samples):
@@ -53,3 +54,25 @@ class ContentKingModule(ModuleBase):
         messages = self.prepare_messages(data)
 
         return passing, messages
+
+
+    def get_samples(self, site_id, limit):
+
+        report = 'pages'
+        pages = load_report(report, self.config, id=site_id, per_page=self.config.contentking.PER_PAGE)
+
+        all_urls = []
+        for page in pages:
+
+            if page:
+                urls = [url['url'] for url in page if url['is_indexable']]
+                all_urls.extend(urls)
+            else:
+                break
+
+            if limit and len(all_urls) >= limit:
+                all_urls = all_urls[:limit]
+                break
+
+
+        return all_urls

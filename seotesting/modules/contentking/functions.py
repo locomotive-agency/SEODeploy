@@ -82,7 +82,7 @@ def load_report(report, config, **data):
         }
         return reports.get(report, "404").format(**data)
 
-    def get_report(report, data, query_string=None):
+    def get_report(report, config, data, query_string=None):
 
         api_url = urljoin(config.contentking.ENDPOINT, api_reports(report, data))
 
@@ -125,19 +125,20 @@ def load_report(report, config, **data):
 
         return None
 
-    def get_paged_report(report, data):
+    def get_paged_report(report, config, data):
         page = 1
         per_page = data.get('per_page', 100)
         while True:
             query_string = {'page': page, 'per_page': per_page}
 
-            result = get_report(report, data, query_string=query_string)
+            result = get_report(report, config, data, query_string=query_string)
 
             if result:
                 urls = result['urls']
                 yield urls
 
                 time.sleep(2)  # Arbitrarily selected wait.
+                
                 if len(urls) < per_page:
                     break
 

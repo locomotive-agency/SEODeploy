@@ -24,8 +24,11 @@
 
 import numpy as np
 import multiprocessing as mp
+from urllib.parse import urlparse, urlsplit
 
-import config
+from .config import Config
+
+config = Config()
 
 
 # Interable grouping function
@@ -60,7 +63,7 @@ def _map(a):
 
 def mp_list_map(lst, fn, **args):
 
-    threads = config.THREADS
+    threads = config.MAX_THREADS
     pool = mp.Pool(processes=threads)
 
     result = pool.map(_map, [(l, fn, args) for l in np.array_split(lst, threads)])
@@ -68,3 +71,8 @@ def mp_list_map(lst, fn, **args):
     pool.close()
 
     return list(np.concatenate(result))
+
+
+def url_to_path(url):
+    p = urlsplit(url)
+    return p.path if not p.query else p.path + "?" + p.query

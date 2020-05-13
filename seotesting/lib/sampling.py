@@ -25,13 +25,18 @@
 import os
 import math
 import random
-from urllib.parse import urlparse, urlsplit
 
-from .lib.log_helper import get_logger
-import .lib.contentking as ck
+import requests
+import gzip
+from bs4 import BeautifulSoup
 
-import config
+from .config import Config
+from .logging import get_logger
+from .helpers import url_to_path
+from seotesting.modules.contentking import ContentKingModule
+from .exceptions import ModuleNotImplemented
 
+config = Config()
 _LOG = get_logger(__name__)
 
 
@@ -65,18 +70,51 @@ def get_sample_size(population_size, confidence_level, confidence_interval):
     return int(math.ceil(n))  # THE SAMPLE SIZE
 
 
-def url_to_path(url):
-    p = urlsplit(url)
-    return p.path if not p.query else p.path + "?" + p.query
+
+def read_sitemap_urls(sitemap_url, limit=None):
+
+    all_urls = []
+    count = 0
+
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',"Accept-Encoding": "gzip"}
+
+    try:
+        response = requests.get(sitemap_url, headers=headers)
+        if response.headers['Content-Type'].lower() == 'application/x-gzip':
+            xml = gzip.decompress(response.content)
+        else:
+            xml = response.content
+        soup = BeautifulSoup(xml, "lxml")
+        urls = [url.get_text().lower() for url in soup.find_all("loc")]
+
+        while urls:
+
+            url = urls.pop(0)
+
+            if '.xml' in url[-8:]:
+                urls.extend(read_sitemap_urls(url))
+                continue
+            else:
+                all_urls.append(url)
+
+            if limit and len(all_urls) >= limit:
+                break
 
 
-def get_sample_paths(site_id=None, limit=None, filename=None):
+    except Exception as e:
+        _LOG.error('Read Sitemap Error: ',str(e))
+
+    return all_urls
+
+
+
+def get_sample_paths(site_id=None, sitemap_url=None, limit=None, filename=None):
 
     limit = limit or config.URL_LIMIT
     filename = filename or config.SAMPLES_FILENAME
 
     if os.path.isfile(filename):
-        _LOG.INFO('Reloading Existing: ' + filename)
+        _LOG.info('Reloading Existing Sample File: ' + filename)
         with open(filename) as f:
             content = f.readlines()
 
@@ -84,38 +122,27 @@ def get_sample_paths(site_id=None, limit=None, filename=None):
         return sample_paths
 
     elif site_id:
+        ck = ContentKingModule()
+        all_urls = ck.get_samples(site_id, limit)
 
-        report = 'pages'
-        pages = ck.load_report(report, id=site_id, per_page=config.PER_PAGE)
-
-        all_urls = []
-        for page in pages:
-
-            if page:
-                urls = [url['url'] for url in page if url['is_indexable']]
-                all_urls.extend(urls)
-            else:
-                break
-
-            if limit and len(all_urls) >= limit:
-                all_urls = all_urls[:limit]
-                break
-
-        count_urls = len(all_urls)
-        sample_size = get_sample_size(count_urls, config.CONFIDENCE_LEVEL, config.CONFIDENCE_INTERVAL)
-        random_sample = [i for i in random.sample(range(count_urls), sample_size)]
-
-        sample_urls = [v for i, v in enumerate(all_urls) if i in random_sample]
-        sample_paths = [url_to_path(u) for u in sample_urls]
-
-        _LOG.INFO('Total URLs: {} Samples: {}'.format(count_urls, len(sample_paths)))
-
-        with open(filename, 'w') as file:
-            file.writelines("{}\n".format(path) for path in sample_paths)
-
-        return sample_paths
+    elif sitemap_url:
+        all_urls = read_sitemap_urls(sitemap_url, limit)
 
     else:
-
-        _LOG.INFO('No file found and site_id not specified. Returning an empty list.')
+        _LOG.warning('No file found and site_id not specified. Returning an empty list.')
         return []
+
+    count_urls = len(all_urls)
+    sample_size = get_sample_size(count_urls, config.CONFIDENCE_LEVEL, config.CONFIDENCE_INTERVAL)
+    random_sample = [i for i in random.sample(range(count_urls), sample_size)]
+
+    sample_urls = [v for i, v in enumerate(all_urls) if i in random_sample]
+    sample_paths = [url_to_path(u) for u in sample_urls]
+
+    _LOG.info('Total URLs: {} Samples: {}'.format(count_urls, len(sample_paths)))
+
+    with open(filename, 'w') as file:
+        file.writelines("{}\n".format(path) for path in sample_paths)
+        _LOG.info('Saved Sample File: ' + filename)
+
+    return sample_paths
