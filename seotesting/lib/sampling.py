@@ -34,9 +34,10 @@ from .config import Config
 from .logging import get_logger
 from .helpers import url_to_path
 from seotesting.modules.contentking import ContentKingModule
-from .exceptions import ModuleNotImplemented
+from .exceptions import IncorrectParameters
 
-config = Config()
+
+
 _LOG = get_logger(__name__)
 
 
@@ -120,6 +121,9 @@ def get_sample_paths(site_id=None, sitemap_url=None, limit=None, filename=None):
 
         sample_paths = [x.strip() for x in content]
         return sample_paths
+
+    if not site_id and not sitemap_url:
+        raise IncorrectParameters('`site_id` or `sitemap_url` must be specified if sitemap text file does not exist.')
 
     elif site_id:
         ck = ContentKingModule()
