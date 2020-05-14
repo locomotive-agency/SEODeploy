@@ -30,10 +30,9 @@ import requests
 import gzip
 from bs4 import BeautifulSoup
 
-from .config import Config
 from .logging import get_logger
 from .helpers import url_to_path
-from seotesting.modules.contentking import ContentKingModule
+from seotesting.modules.contentking import SEOTestingModule
 from .exceptions import IncorrectParameters
 
 
@@ -109,7 +108,7 @@ def read_sitemap_urls(sitemap_url, limit=None):
 
 
 
-def get_sample_paths(site_id=None, sitemap_url=None, limit=None, filename=None):
+def get_sample_paths(config, site_id=None, sitemap_url=None, limit=None, filename=None):
 
     limit = limit or config.URL_LIMIT
     filename = filename or config.SAMPLES_FILENAME
@@ -126,7 +125,7 @@ def get_sample_paths(site_id=None, sitemap_url=None, limit=None, filename=None):
         raise IncorrectParameters('`site_id` or `sitemap_url` must be specified if sitemap text file does not exist.')
 
     elif site_id:
-        ck = ContentKingModule()
+        ck = SEOTestingModule()
         all_urls = ck.get_samples(site_id, limit)
 
     elif sitemap_url:

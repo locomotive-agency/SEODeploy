@@ -24,24 +24,24 @@
 
 from datetime import datetime
 import pandas as pd
+import json
 
-import lib.contentking as ck
-import lib.sampling as sampling
-import lib.modules as modules
-import lib.exceptions as exceptions
-
-from lib.logging import get_logger
-from lib.config import Config
+from .lib.modules import ModuleConfig
+from .lib.sampling import get_sample_paths
+from .lib.logging import get_logger
+from .lib.config import Config
 
 _LOG = get_logger(__name__)
 
 
 class SEOTesting(object):
 
-    def __init__(self, config):
+    def __init__(self, config=None):
 
         self.config = config or Config()
         self.messages = []
+        self.module_config = ModuleConfig(self.config)
+
         self.samples = None
         self.modules = None
         self.summary = None
@@ -53,20 +53,40 @@ class SEOTesting(object):
         self.summary = {'started': datetime.now()}
 
         # Get Sample Paths
-        self.samples = sampling.get_samples(self.config)
+        self.samples = get_sample_paths(self.config)
         self.summary.update({'samples': len(self.samples)})
 
         # get Modules
-        self.modules = modules.get_module_names(self.config)
-        self.summary.update({'modules': self.modules})
+        self.modules = self.module_config.module_names
+        self.summary.update({'modules': ','.join(self.modules)})
+
+        for module in self.module_config.active_modules:
+
+            module = self.module_config.active_modules[module].SEOTestingModule()
+
+            passing, messages = module.run(self.samples)
+
+            self.update_messages(messages)
+
+            self.summary.update({'{} passing: '.format(module.modulename): passing})
+
+
+
+        df = self.get_messages().to_csv('output.csv', index=False)
+
+        print('Run CSV saved to:', 'output.csv')
+        print()
+        print('Run Summary')
+        print(json.dumps(self.summary, indent=2))
 
 
 
 
 
 
-    def create_message(self, data):
-        self.messages.append(data)
+
+    def update_messages(self, messages):
+        self.messages.extend(data)
 
 
     def get_messages(self):

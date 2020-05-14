@@ -75,30 +75,28 @@ class ModuleConfig(object):
 
     def __init__(self, config=None, mdirs=[]):
 
-        self.module_names = None
-        self.module_path = None
         self.config = config or Config()
         self.mdirs = mdirs + ['modules']
         self.data  = self._get_module_data()
 
-        self.paths = self._get_module_paths(self.data)
-        self.names = self._get_module_names(self.data)
+        self.module_paths = self._get_module_paths(self.data)
+        self.module_names = self._get_module_names(self.data)
 
-        self.modules = self.ModuleObjects()
+        self.active_modules = {}
 
-        self.build_modules()
-
-
-    class ModuleObjects(object): pass
+        self._build_modules()
 
 
-    def build_modules(self):
+    #class ModuleObjects(object): pass
+
+
+    def _build_modules(self):
 
         sys.path.append(self.module_path)
 
         for k,v in self.data.items():
             if v['is_config']:
-                setattr(self.modules, k, importlib.import_module(k))
+                self.active_modules[k] = importlib.import_module(k)
 
 
     def _is_confugured(self, module):

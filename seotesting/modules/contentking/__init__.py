@@ -28,16 +28,17 @@ import pytz
 
 from seotesting.lib.modules import ModuleBase
 from seotesting.lib.config import Config
-from seotesting.lib.sampling import Config
 from .functions import run_path_pings, run_check_results, load_report
 
 
-class ContentKingModule(ModuleBase):
+class SEOTestingModule(ModuleBase):
 
     def __init__(self, config=None, samples=[]):
 
-        super(ContentKingModule, self).__init__(config, samples)
-        self.config = config or Config(module='contentking')
+        super(SEOTestingModule, self).__init__(config, samples)
+        self.modulename = "contentking"
+        self.config = config or Config(module=self.modulename)
+
         self.time_zone = pytz.timezone(self.config.contentking.TIMEZONE)
 
 
@@ -49,9 +50,9 @@ class ContentKingModule(ModuleBase):
         path_pings = run_path_pings(samples, self.config)
 
         # Checks results via multi-threading
-        passing, results = run_check_results(samples, start_time, self.time_zone, self.config)
+        passing, messages = run_check_results(samples, start_time, self.time_zone, self.config)
 
-        messages = self.prepare_messages(data)
+        messages = self.prepare_messages(messages)
 
         return passing, messages
 

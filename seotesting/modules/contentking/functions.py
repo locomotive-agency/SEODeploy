@@ -138,7 +138,7 @@ def load_report(report, config, **data):
                 yield urls
 
                 time.sleep(2)  # Arbitrarily selected wait.
-                
+
                 if len(urls) < per_page:
                     break
 
@@ -208,6 +208,7 @@ def ping_prod_paths(paths, config):
     for path in paths:
         url = urljoin(config.contentking.PROD_HOST, path)
         result = _notify_change(url, config)
+
         if result:
             results[url] = "ok"
         else:
@@ -222,6 +223,7 @@ def ping_stage_paths(paths, config):
     for path in paths:
         url = urljoin(config.contentking.STAGE_HOST, path)
         result = _notify_change(url, config)
+
         if result:
             results[url] = "ok"
         else:
@@ -301,6 +303,7 @@ def _check_results(paths, config=None, data=None):
     start_time = data['start_time']
     time_col = data['time_col']
 
+
     while unchecked:
 
         # Grab the first
@@ -319,17 +322,17 @@ def _check_results(paths, config=None, data=None):
                     # Has been crawled prior to start of process.
                     content = ["{}--/--{}".format(i['type'], i['content']) for i in url_data['content']]
                     issues = [i['name'] for i in url_data['open_issues']]
-                    data.append({'url': url, 'path': path, 'issues': issues, 'content': content, 'error': None})
+                    results.append({'url': url, 'path': path, 'issues': issues, 'content': content, 'error': None})
                 else:
                     # We have a good response, but the URL has not been crawled yet.
                     # Add to the back of the line.
                     unchecked.append(path)
 
             else:
-                data.append({'url': url, 'path': path, 'issues': [], 'content': [], 'error': "Invalid response from API URL report."})
+                results.append({'url': url, 'path': path, 'issues': [], 'content': [], 'error': "Invalid response from API URL report."})
 
         except Exception as e:
-            data.append({'url': url, 'path': path, 'issues': [], 'content': [], 'error': "Unkown Error: " + str(e)})
+            results.append({'url': url, 'path': path, 'issues': [], 'content': [], 'error': "Unkown Error: " + str(e)})
 
     return results
 
@@ -367,11 +370,11 @@ def _compare_results(sample_paths, prod, stage, config):
             issue_diffs = _compare_diffs(prod[path], stage[path], "issues", config)
 
             if content_diffs:
-                _LOG.WARNING("{} contains content differences.".format(path))
+                _LOG.warning("{} contains content differences.".format(path))
                 results.extend([{'path': path, 'url': stage[path]['url'], 'issue': "Difference: " + d} for d in content_diffs])
                 passing = False
             if issue_diffs:
-                _LOG.WARNING("{} contains issue differences.".format(path))
+                _LOG.warning("{} contains issue differences.".format(path))
                 results.extend([{'path': path, 'url': stage[path]['url'], 'issue': "Difference: " + d} for d in issue_diffs])
                 passing = False
 
@@ -445,6 +448,9 @@ def run_check_results(sample_paths, start_time, time_zone, config):
         # TODO: Can adjust this as necessary, pull out to config, or remove.
         time.sleep(config.contentking.BATCH_WAIT)
 
+    print(prod_result)
+    print(stage_result)
+
     # Review for Errors and process into dictionary:
     prod_result = _process_results(prod_result)
     stage_result = _process_results(stage_result)
@@ -452,6 +458,6 @@ def run_check_results(sample_paths, start_time, time_zone, config):
     passing, results = _compare_results(sample_paths, prod_result, stage_result, config)
 
     if not passing:
-        _LOG.ERROR("Check completed with errors.  Please review")
+        _LOG.error("Check completed with errors.  Please review")
 
     return passing, results

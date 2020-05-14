@@ -31,26 +31,26 @@ from seotesting.lib.config import Config
 from .functions import sample_function
 
 
-class HeadlessModule(ModuleBase):
+class SEOTestingModule(ModuleBase):
 
     def __init__(self, config=None, samples=[]):
 
-        super(ContentKingModule, self).__init__(config, samples)
+        super(SEOTestingModule, self).__init__(config, samples)
 
-        self.config = config or Config(module='headless')
-        self.time_zone = pytz.timezone(self.config.TIMEZONE)
+        self.modulename = "headless"
+        self.config = config or Config(module=self.modulename)
+
 
 
     def run(self, samples):
 
         start_time = datetime.now().astimezone(self.time_zone).isoformat(timespec='seconds')
 
-        # Runs the sample paths against COntentKing API to ask for recrawling.
-        path_pings = run_path_pings(samples, self.config)
+        print(len(samples))
 
-        # Checks results via multi-threading
-        passing, results = run_check_results(sample_paths, start_time, time_zone, config)
+        messages = [{'path': '/', 'url': 'https://stage.domain.com/', 'issue': 'Single headless test result'}]
+        messages = self.prepare_messages(messages)
 
-        messages = self.prepare_messages(data)
+        passing = True
 
         return passing, messages

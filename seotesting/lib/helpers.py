@@ -50,8 +50,10 @@ def group_batcher(iterator, result, count, fill=0):
 
     itr = iter(iterator)
     grps = -(-len(iterator) // count)
+    rem = len(iterator) % count
+
     for i in range(grps):
-        num = len(iterator) % count if fill is None and grps - i == 1 else count
+        num = rem if not fill and rem and i+1 == grps else count
         yield result([next(itr, fill) for i in range(num)])
 
 
@@ -64,13 +66,12 @@ def _map(a):
 def mp_list_map(lst, fn, **args):
 
     threads = config.MAX_THREADS
-    pool = mp.Pool(processes=threads)
+    #pool = mp.Pool(processes=threads)
+    #result = pool.map(_map, [(l, fn, args) for l in np.array_split(lst, threads)])
+    #pool.close()
 
-    result = pool.map(_map, [(l, fn, args) for l in np.array_split(lst, threads)])
-
-    pool.close()
-
-    return list(np.concatenate(result))
+    #return list(np.concatenate(result))
+    return fn(lst, **args)
 
 
 def url_to_path(url):
