@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
-npm run build
-firebase deploy -P production --token "$FIREBASE_DEPLOY_TOKEN"
+python seotesting sample --sitemap_url https://locomotive.agency/sitemap_index.xml
+python seotesting execute

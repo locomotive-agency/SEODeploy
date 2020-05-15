@@ -31,7 +31,7 @@ import gzip
 import requests
 from bs4 import BeautifulSoup
 
-from seotesting.modules.contentking import SEOTestingModule
+from modules.contentking import SEOTestingModule
 from .logging import get_logger
 from .helpers import url_to_path
 
@@ -76,7 +76,8 @@ def read_sitemap_urls(sitemap_url, limit=None):
 
     all_urls = []
 
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)', "Accept-Encoding": "gzip"}
+    headers = {'User-Agent': "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+               'Accept-Encoding': "gzip"}
 
     try:
         response = requests.get(sitemap_url, headers=headers)

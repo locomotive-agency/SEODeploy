@@ -58,7 +58,8 @@ class ModuleBase():
             else:
                 path_data[i['path']] = {'url': i['url'], 'issues': [i['issue']]}
 
-        messages = [{'module': self.modulename, 'path': k, 'url': v['url'], 'issues': v['issues']} for k, v in path_data.items()]
+        messages = [{'module': self.modulename, 'path': k, 'url': v['url'],
+                     'issues': v['issues']} for k, v in path_data.items()]
 
         self.messages = messages
 
@@ -120,9 +121,10 @@ class ModuleConfig():
         else:
             raise ModuleNotImplemented('Modules directory not found in: {}'.format(','.join(self.mdirs)))
 
-        self.module_path = dir
+        self.module_path = mdir
 
-        return {f.name: {'name': f.name, 'path': f.path, 'mdir': dir, 'is_config': self._is_confugured(f.name)} for f in os.scandir(dir) if f.is_dir()}
+        return {f.name: {'name': f.name, 'path': f.path, 'mdir': mdir,
+                         'is_config': self._is_confugured(f.name)} for f in os.scandir(mdir) if f.is_dir()}
 
     @staticmethod
     def _get_module_names(data):

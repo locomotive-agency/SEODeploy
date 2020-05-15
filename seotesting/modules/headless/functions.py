@@ -23,9 +23,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-
-from seotesting.lib.logging import get_logger
-from seotesting.lib.helpers import group_batcher, mp_list_map # noqa
+from lib.logging import get_logger
+from lib.helpers import group_batcher, mp_list_map # noqa
 from .exceptions import HeadlessException # noqa
 
 _LOG = get_logger(__name__)

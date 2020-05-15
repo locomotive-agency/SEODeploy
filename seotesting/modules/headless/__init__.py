@@ -23,8 +23,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from seotesting.lib.modules import ModuleBase
-from seotesting.lib.config import Config
+from lib.modules import ModuleBase
+from lib.config import Config
 from .functions import sample_function  # noqa
 
 

@@ -12,7 +12,7 @@ with open('requirements.txt') as f:
 setup(
     name="seo_testing",
     version="0.1",
-    description="CKTesting: Use Content King to automate CI/CD testing",
+    description="SEOTesting: Use Content King and other modules to automate CI/CD testing",
     long_description=__long_description__,
     long_description_content_type="text/markdown",
     author="JR Oakes",
@@ -42,6 +42,6 @@ setup(
     install_requires=install_requires,
     entry_points="""
         [console_scripts]
-        cktesting = seotesting.main:cli
+        seotesting = seotesting.main:run
     """,
 )

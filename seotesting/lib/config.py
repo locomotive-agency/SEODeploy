@@ -53,7 +53,8 @@ class Config():
         self.modules = []
         for mdir in self.mdirs:
             try:
-                self.modules.extend([module for module in os.listdir(mdir) if os.path.isdir(os.path.join(mdir, module))])
+                self.modules.extend([module for module in os.listdir(mdir)
+                                     if os.path.isdir(os.path.join(mdir, module))])
                 break
             except FileNotFoundError:
                 pass
@@ -62,7 +63,7 @@ class Config():
     def _load_configs(self):
         for cfile in self.cfiles:
             try:
-                parser = ParseIt(config_location=cfile, config_type_priority=['cli_args', 'yaml'])
+                parser = ParseIt(config_location=cfile, config_type_priority=['yaml'])
                 config = parser.read_all_configuration_variables()
 
                 # TODO: Need to namespace config settings at some point as this currently
@@ -74,7 +75,8 @@ class Config():
                         for name, value in modules[self.module].items():
                             self.__getattribute__(self.module).__setattr__(name, value)
                     else:
-                        raise ModuleNotImplemented("The module `{}` was not found in the modules directory.".format(self.module))
+                        raise ModuleNotImplemented("The module `{}` was not found in the modules directory."
+                                                   .format(self.module))
 
                 for name, value in config.items():
                     self.__setattr__(name, value)

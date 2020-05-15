@@ -22,20 +22,16 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from datetime import datetime
 
 import json
 import click
-import pytz
+from lib import SEOTesting
+from .logging import get_logger
+from .exceptions import IncorrectParameters
+from .sampling import get_sample_paths
+from .config import Config
 
-import lib.contentking as ck
-import lib.sampling as sp
-from lib.exceptions import ContentKingMissing, IncorrectParameters
-from lib.log_helper import get_logger
-
-import lib.config import Config
-
-config = Config()
+CONFIG = Config()
 
 _LOG = get_logger(__name__)
 
@@ -48,10 +44,15 @@ def cli():
 
 # Create Samples CLI.
 @click.command()
-@click.option('--limit', type=int, default=None, help='Limits the output to this many total paths. Overrides limit set in config.py.')
-@click.option('--filename', type=str, default=None, help='Filename for the outputted txt file. Overrides filename set in config.py.')
-@click.argument('sample')
-def create_samples(site_id, site_name, limit=None, filename=None):
+@click.option('--site_id', type=str, default=None,
+              help='If given, the this will sample URLs from your ContentKing site, up to the limit set.')
+@click.option('--sitemap_url', type=str, default=None,
+              help='If given, the this will sample URLs from the specified sitemap or sitemap index.')
+@click.option('--limit', type=int, default=None,
+              help='Limits the output to this many total paths. Overrides limit set in seotesting_config.yaml.')
+@click.option('--samples_filename', type=str, default=None,
+              help='Filename for the outputted txt file. Overrides filename set in seotesting_config.yaml.')
+def sample(site_id, sitemap_url, limit=None, samples_filename=None):
 
     """Creates a file of sample paths to use in testing.
 
@@ -59,79 +60,64 @@ def create_samples(site_id, site_name, limit=None, filename=None):
     ----------
     site_id : str
         The ID of the project in Content King (Eg. 4-17147226)
-    site_name : str
-        The name of the project in Content King.
+    sitemap_url : str
+        The url of an XML sitemap or sitemap index file.
     limit: int
-        Limits the output to this many total paths. Overrides limit set in config.py.
-    filename: str
-        Filename for the outputted txt file. Overrides filename set in config.py.
+        Limits the output to this many total paths. Overrides limit set in seotesting_config.yaml.
+    samples_filename: str
+        Filename for the outputted txt file. Overrides filename set in seotesting_config.yaml
     """
 
     # Error Cheching
-    if not site_id and not site_name:
-        if config.PROD_SITE_ID:
-            _LOG.WARNING('Using `PROD_SITE_ID` from config.py file.')
-            site_id = config.PROD_SITE_ID
-        else:
-            raise IncorrectParameters('You must provide either `site_id` or `site_name` options for sample argument. Or PROD_SITE_ID must be specified in config.py')
-
-    if site_id and site_name:
-        _LOG.WARNING('Using `site_id`.  Both `site_id` and `site_name` were given.')
+    if not site_id and not sitemap_url:
+        err = "Either `site_id` or `sitemap_url`are required to run sampling."
+        _LOG.error(err)
+        raise IncorrectParameters(err)
 
     # Main function
     if site_id:
-        samples = sp.get_sample_paths(site_id=site_id, limit=limit, filename=filename)
-        _LOG.INFO('Top 5 sampled Paths for {}'.format(site_id))
-        _LOG.INFO(json.dumps(samples[:5], indent=4))
-    elif site_name:
-        sites = [s for s in ck.load_report('websites') if site_name in s['name']]
-        if sites:
-            site_id = sites['id']
-            samples = sp.get_sample_paths(site_id=site_id, limit=limit, filename=filename)
-            _LOG.INFO('Top 5 sampled Paths for {}'.format(site_name))
-            _LOG.INFO(json.dumps(samples[:5], indent=4))
-        else:
-            raise ContentKingMissing('No site with matching name: {}'.format(site_name))
-
+        samples = get_sample_paths(CONFIG, site_id=site_id, limit=limit, filename=samples_filename)
+        _LOG.info('Top 5 out of {} sampled Paths for {}'.format(len(samples), site_id))
+        _LOG.info(json.dumps(samples[:5], indent=4))
     else:
-        raise Exception('Could not create samples due to an unknown error.')
+        samples = get_sample_paths(CONFIG, sitemap_url=sitemap_url, limit=limit, filename=samples_filename)
+        _LOG.info('Top 5 out of {} sampled Paths for {}'.format(len(samples), sitemap_url))
+        _LOG.info(json.dumps(samples[:5], indent=4))
 
-    return True
+
+
+    return 0
 
 
 # Main Test Function
 @click.command()
-@click.option('--filename', type=str, default=None, help="Name of Content King Website.")
-@click.argument('difftest')
-def run_difftest(filename=None):
+@click.option('--samples_filename', type=str, default=None,
+              help="Filename for the samples file. Overrides filename set in seotesting_config.yaml.")
+def execute(samples_filename=None):
 
-    """Runs a difftest of staging vs production based on `config.py` settings and sample URLs.
+    """Runs a difftest of staging vs production based on `seotesting_config.yaml` settings and sample URLs.
 
     Parameters
     ----------
-    filename: str
+    samples_filename: str
         Filename for the outputted txt file. Overrides filename set in config.py.
     """
 
-    # Configure Timezone
-    time_zone = pytz.timezone(config.TIMEZONE)
-
-    # Set filename.
-    filename = filename or config.SAMPLES_FILENAME
+    # Set samples_filename.
+    samples_filename = samples_filename or CONFIG.SAMPLES_FILENAME
 
     # Error Cheching
-    if not filename:
-        raise IncorrectParameters('You must provide either `filename` or set `SAMPLES_FILENAME` in `config.py`.')
+    if not samples_filename:
+        raise IncorrectParameters("You must provide either `samples_filename` " +
+                                  "or set `samples_filename` in `seotesting_config.yaml`.")
 
     # Main function
+    seotesting = SEOTesting(CONFIG)
 
-    # By passing no site_id parameters, it will expect the file to exist
-    sample_paths = sp.get_sample_paths(filename=filename)
+    passing = seotesting.execute(samples_filename=samples_filename)
 
-    start_time = datetime.now().astimezone(time_zone).isoformat(timespec='seconds')
+    return 1 if passing else 0
 
-    # Runs pings across both staging and production
-    ck.run_path_pings(sample_paths)  # TODO: Do something with result.
 
-    # Monitor results.
-    ck.run_check_results(sample_paths, start_time, time_zone)   # TODO: Do something with result.
+cli.add_command(sample)
+cli.add_command(execute)

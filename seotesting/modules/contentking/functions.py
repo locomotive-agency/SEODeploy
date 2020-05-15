@@ -22,6 +22,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 from urllib.parse import urljoin
 from datetime import datetime
 
@@ -30,8 +31,8 @@ import time
 import requests
 from tqdm.auto import tqdm
 
-from seotesting.lib.logging import get_logger
-from seotesting.lib.helpers import group_batcher, mp_list_map
+from lib.logging import get_logger
+from lib.helpers import group_batcher, mp_list_map
 from .exceptions import ContentKingAPIError
 
 _LOG = get_logger(__name__)
@@ -93,34 +94,37 @@ def load_report(report, config, **data):
         for i in range(tries):
 
             try:
-                response = requests.get(api_url, params=query_string, headers=headers, timeout=config.contentking.API_TIMEOUT, verify=False)
+                response = requests.get(api_url, params=query_string, headers=headers,
+                                        timeout=config.contentking.API_TIMEOUT, verify=False)
+
                 # Raise HTTPError if not 20X
                 response.raise_for_status()
                 break
 
-            except requests.exceptions.Timeout as e:
-                _LOG.error(str(e))
+            except requests.exceptions.Timeout as err:
+                _LOG.error(str(err))
                 time.sleep((i + 1) * 10)
 
             # Not sure why Requests throws this instead of `Timeout` for timeouts.
-            except requests.exceptions.ConnectionError as e:
-                _LOG.error(str(e))
+            except requests.exceptions.ConnectionError as err:
+                _LOG.error(str(err))
                 time.sleep((i + 1) * 10)
 
-            except requests.exceptions.HTTPError as e:
+            except requests.exceptions.HTTPError as err:
                 api_message = response.json()['message']
-                _LOG.error("{} ({})".format(str(e), api_message))
+                _LOG.error("{} ({})".format(str(err), api_message))
                 break
 
             # If it is an unknown error, let's break and raise exception.
-            except Exception as e:  # noqa
-                _LOG.error('Unspecified ContentKing Error:' + str(e))
-                raise ContentKingAPIError(str(e))
+            except Exception as err:  # noqa
+                _LOG.error('Unspecified ContentKing Error:' + str(err))
+                raise ContentKingAPIError(str(err))
 
         if response and response.status_code == 200:
             return response.json()
 
         return None
+
 
     def get_paged_report(report, config, data):
         page = 1
@@ -169,28 +173,29 @@ def _notify_change(url, config):
     for i in range(tries):
 
         try:
-            response = requests.post(api_url, data=data, headers=headers, timeout=config.contentking.API_TIMEOUT, verify=False)
+            response = requests.post(api_url, data=data, headers=headers,
+                                     timeout=config.contentking.API_TIMEOUT, verify=False)
             # Raise HTTPError if not 20X
             response.raise_for_status()
             break
 
-        except requests.exceptions.Timeout as e:
-            _LOG.error(str(e))
+        except requests.exceptions.Timeout as err:
+            _LOG.error(str(err))
             time.sleep((i + 1) * 10)
 
         # Not sure why Requests throws this instead of `Timeout` for timeouts.
-        except requests.exceptions.ConnectionError as e:
-            _LOG.error(str(e))
+        except requests.exceptions.ConnectionError as err:
+            _LOG.error(str(err))
             time.sleep((i + 1) * 10)
 
-        except requests.exceptions.HTTPError as e:
+        except requests.exceptions.HTTPError as err:
             api_message = response.json()['message']
-            _LOG.error("{} ({})".format(str(e), api_message))
+            _LOG.error("{} ({})".format(str(err), api_message))
             break
 
         # Just want to catch any other errors to the log, so we can add in here.
-        except Exception as e:  # noqa
-            _LOG.error('Unspecified Error:' + str(e))
+        except Exception as err:  # noqa
+            _LOG.error('Unspecified Error:' + str(err))
             break
 
     if response and response.status_code == 200:
@@ -259,8 +264,8 @@ def run_path_pings(sample_paths, config):
 
         if sent_percent < 100:
             prod_sent_errors = [k for k, v in prod_ping_results.items() if v == 'error']
-            for e in prod_sent_errors:
-                _LOG.error("Production URL Ping Error: {}".format(e))
+            for i in prod_sent_errors:
+                _LOG.error("Production URL Ping Error: {}".format(i))
         else:
             prod_sent_errors = False
     else:
@@ -272,8 +277,8 @@ def run_path_pings(sample_paths, config):
 
         if sent_percent < 100:
             stage_sent_errors = [k for k, v in stage_ping_results.items() if v == 'error']
-            for e in stage_sent_errors:
-                _LOG.error("Staging URL Ping Error: {}".format(e))
+            for i in stage_sent_errors:
+                _LOG.error("Staging URL Ping Error: {}".format(i))
         else:
             stage_sent_errors = False
 
@@ -281,7 +286,8 @@ def run_path_pings(sample_paths, config):
         _LOG.error("No results from Staging pings.")
 
     if prod_sent_errors or stage_sent_errors:
-        raise ContentKingAPIError("There were issues sending the production and/or staging URLs to COntentKing.  Please check the error log.")
+        raise ContentKingAPIError("There were issues sending the production and/or staging URLs to COntentKing. "
+                                  "Please check the error log.")
 
     return True
 
@@ -295,9 +301,6 @@ def _check_results(paths, config=None, data=None):
 
     unchecked = paths.copy()
     results = []
-
-
-
 
     while unchecked:
 
@@ -325,7 +328,8 @@ def _check_results(paths, config=None, data=None):
                     unchecked.append(path)
 
             else:
-                results.append({'url': url, 'path': path, 'issues': [], 'content': [], 'error': "Invalid response from API URL report."})
+                results.append({'url': url, 'path': path, 'issues': [], 'content': [],
+                                'error': "Invalid response from API URL report."})
 
         except Exception as e:  # noqa
             results.append({'url': url, 'path': path, 'issues': [], 'content': [], 'error': "Unkown Error: " + str(e)})
@@ -367,11 +371,13 @@ def _compare_results(sample_paths, prod, stage, config):
 
             if content_diffs:
                 _LOG.info("{} contains content differences.".format(path))
-                results.extend([{'path': path, 'url': stage[path]['url'], 'issue': "Difference: " + d} for d in content_diffs])
+                results.extend([{'path': path, 'url': stage[path]['url'],
+                                 'issue': "Difference: " + d} for d in content_diffs])
                 passing = False
             if issue_diffs:
                 _LOG.info("{} contains issue differences.".format(path))
-                results.extend([{'path': path, 'url': stage[path]['url'], 'issue': "Difference: " + d} for d in issue_diffs])
+                results.extend([{'path': path, 'url': stage[path]['url'],
+                                 'issue': "Difference: " + d} for d in issue_diffs])
                 passing = False
 
         else:

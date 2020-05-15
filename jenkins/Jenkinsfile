@@ -44,6 +44,19 @@ pipeline {
                 }
             }
         }
+        stage('Staging SEO Test') {
+            steps {
+                sh './jenkins/scripts/seo_test.sh'
+            }
+            post {
+                success {
+                    echo 'Sending success seo testing notification...'
+                    emailext body: "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} seo testing is complete.\n Check: ${env.BUILD_URL}",
+                        recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                        subject: "Jenkins staging SEO test complete: Job ${env.JOB_NAME}"
+                }
+            }
+        }
         stage('Production') {
             steps {
                 input message: 'Proceed to production deploy after finished using the Staging version of the Web App?'

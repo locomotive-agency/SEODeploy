@@ -21,12 +21,3 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-from lib import SEOTesting
-from lib.cli import cli
-
-def run():
-    cli()
-
-if __name__ == '__main__':
-    run()

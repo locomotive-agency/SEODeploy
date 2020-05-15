@@ -26,8 +26,8 @@ from datetime import datetime
 
 import pytz
 
-from seotesting.lib.modules import ModuleBase
-from seotesting.lib.config import Config
+from lib.modules import ModuleBase
+from lib.config import Config
 from .functions import run_path_pings, run_check_results, load_report
 
 
