@@ -36,7 +36,7 @@ This libray should be considered Alpha software and not used as a dependable sol
 ### Install
 ```
 Current:
-pip install https://github.com/jroakes/Seo-Testing.git
+pip install https://github.com/jroakes/SEOTesting.git
 
 Future:
 pip install seotesting
@@ -48,11 +48,11 @@ pip install seotesting
 
 1. Create samples paths file
 
-  Using a ContentKing website:
-`seotesting sample -siteid 12346`
+      Using a ContentKing website:
+    `seotesting sample -siteid 12346`
 
-  Using a XML sitemap or sitemap index file:
-`seotesting sample --sitemap_url https://locomotive.agency/sitemap_index.xml`
+      Using a XML sitemap or sitemap index file:
+    `seotesting sample --sitemap_url https://locomotive.agency/sitemap_index.xml`
 
 2. Compare Staging and Production based on `seotesting_config.yaml` configuration and `sample_paths.txt`.
 `seotesting execute`
@@ -66,13 +66,13 @@ pip install seotesting
 ```
 $ conda create --name seotesting
 
-$ pip install https://github.com/jroakes/Seo-Testing.git
+$ pip install https://github.com/jroakes/SEOTesting.git
 
 OR:
 
-$ git clone https://github.com/jroakes/Seo-Testing.git
+$ git clone https://github.com/jroakes/SEOTesting.git
 
-$ cd Seo-Testing
+$ cd SEOTesting
 
 $ pip install -r requirements.txt
 
