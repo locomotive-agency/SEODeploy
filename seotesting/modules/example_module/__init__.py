@@ -41,6 +41,8 @@ class SEOTestingModule(ModuleBase):
 
         # do stuff
         print(self.config)
+        print(samples)
+
         passing = True
         messages = []
 

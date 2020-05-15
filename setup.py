@@ -10,7 +10,7 @@ with open('requirements.txt') as f:
         install_requires.append(line)
 
 setup(
-    name="seo_testing",
+    name="seotesting",
     version="0.1",
     description="SEOTesting: Use Content King and other modules to automate CI/CD testing",
     long_description=__long_description__,
@@ -36,7 +36,7 @@ setup(
         'travisci',
         'content king',
     ],
-    packages=find_packages(exclude=['ez_setup', 'seotesting*']), # TODO: Fix this
+    packages=find_packages(exclude=['ez_setup']), # TODO: Fix this
     package_data={'seotesting': ['seotesting/*']}, # TODO: Fix this
     include_package_data=True,
     install_requires=install_requires,

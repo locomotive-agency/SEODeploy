@@ -4,7 +4,7 @@
 
 # SEOTesting: Use Content King or BYOM to automate CI/CD testing.
 
-![SEOTesting](https://raw.githubusercontent.com/jroakes/Seo-Testing/master/docs/overview.png "SEO Testing Overview")
+![SEOTesting](https://raw.githubusercontent.com/jroakes/SEOTesting/master/docs/overview.png "SEO Testing Overview")
 
 
 Works with:
@@ -57,7 +57,8 @@ pip install seotesting
     `seotesting sample --sitemap_url https://locomotive.agency/sitemap_index.xml`
 
 2. Compare Staging and Production based on `seotesting_config.yaml` configuration and `sample_paths.txt`.
-`seotesting execute`
+
+    `seotesting execute`
 
 
 
@@ -69,9 +70,11 @@ pip install seotesting
 $ conda create --name seotesting
 
 $ pip install https://github.com/jroakes/SEOTesting.git
+```
 
 OR:
 
+```
 $ git clone https://github.com/jroakes/SEOTesting.git
 
 $ cd SEOTesting

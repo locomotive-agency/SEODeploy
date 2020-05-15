@@ -11,6 +11,10 @@ ignore-paths:
   - config-template.py
 
 pylint:
+  disable:
+    - import-error
+    - too-many-branches
+
   options:
     good-names:
       - i
@@ -22,6 +26,7 @@ pylint:
 pep8:
   disable:
     - E303
+    - L237
   full: true
   options:
     max-line-length: 120
