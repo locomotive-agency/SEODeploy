@@ -49,9 +49,11 @@ pip install seotesting
 1. Create samples paths file
 
       Using a ContentKing website:
+
     `seotesting sample -siteid 12346`
 
       Using a XML sitemap or sitemap index file:
+
     `seotesting sample --sitemap_url https://locomotive.agency/sitemap_index.xml`
 
 2. Compare Staging and Production based on `seotesting_config.yaml` configuration and `sample_paths.txt`.
