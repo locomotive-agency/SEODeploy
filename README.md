@@ -25,7 +25,7 @@ This library attemtps to provide a flexible format for allowing developers to in
 
 See the docs folder for more information. [Coming Soon]
 
-See [TODO]{TODO.md} for what is currently in process.
+See [TODO](TODO.md) for what is currently in process.
 
 This libray should be considered Alpha software and not used as a dependable solution.  Expect bugs.
 
