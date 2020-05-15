@@ -50,7 +50,7 @@ class SEOTesting(object):
 
     def execute(self):
 
-        self.summary = {'started': datetime.now()}
+        self.summary = {'started': str(datetime.now())}
 
         # Get Sample Paths
         self.samples = get_sample_paths(self.config)
@@ -86,7 +86,7 @@ class SEOTesting(object):
 
 
     def update_messages(self, messages):
-        self.messages.extend(data)
+        self.messages.extend(messages)
 
 
     def get_messages(self):

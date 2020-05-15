@@ -4,7 +4,6 @@ numpy
 pandas
 tqdm
 parse_it
-gzip
 bs4
 lxml
 

@@ -257,11 +257,11 @@ def run_path_pings(sample_paths, config):
 
     # Check results
     if prod_ping_results:
-        sent_percent = round((len([l for l in list(prod_ping_results.keys()) if prod_ping_results[l] == 'ok']) / sent_total) * 100, 2)
+        sent_percent = round((len([k for k,v in prod_ping_results.items() if v == 'ok']) / sent_total) * 100, 2)
         _LOG.info("{}% of production URLs successfully sent.".format(sent_percent))
 
         if sent_percent < 100:
-            prod_sent_errors = [l for l in list(prod_ping_results.keys()) if prod_ping_results[l] != 'ok']
+            prod_sent_errors = [k for k,v in prod_ping_results.items() if v == 'error']
             for e in prod_sent_errors:
                 _LOG.error("Production URL Ping Error: {}".format(e))
         else:
@@ -270,11 +270,11 @@ def run_path_pings(sample_paths, config):
         _LOG.error("No results from Production pings.")
 
     if stage_ping_results:
-        sent_percent = round((len([l for l in list(stage_ping_results.keys()) if stage_ping_results[l] == 'ok']) / sent_total) * 100, 2)
-        _LOG.info("{}% of production URLs successfully sent.".format(sent_percent))
+        sent_percent = round((len([k for k,v in stage_ping_results.items() if v == 'ok']) / sent_total) * 100, 2)
+        _LOG.info("{}% of staging URLs successfully sent.".format(sent_percent))
 
         if sent_percent < 100:
-            stage_sent_errors = [l for l in list(stage_ping_results.keys()) if stage_ping_results[l] != 'ok']
+            stage_sent_errors = [k for k,v in stage_ping_results.items() if v == 'error']
             for e in stage_sent_errors:
                 _LOG.error("Staging URL Ping Error: {}".format(e))
         else:
@@ -296,7 +296,7 @@ def _check_results(paths, config=None, data=None):
 
     """
 
-    unchecked = paths
+    unchecked = paths.copy()
     results = []
 
     time_zone = data['time_zone']
@@ -316,8 +316,9 @@ def _check_results(paths, config=None, data=None):
             url_data = load_report('url', config, id=data['site_id'], url=url)
 
             if url_data and time_col in url_data:
-                last_check = datetime.fromisoformat(url_data[time_col]).astimezone(time_zone).isoformat(timespec="seconds")
+                last_check = datetime.fromisoformat(url_data[time_col]).astimezone(time_zone)
                 time_delta = (start_time - last_check).total_seconds()
+
                 if time_delta < 0:
                     # Has been crawled prior to start of process.
                     content = ["{}--/--{}".format(i['type'], i['content']) for i in url_data['content']]
@@ -370,11 +371,11 @@ def _compare_results(sample_paths, prod, stage, config):
             issue_diffs = _compare_diffs(prod[path], stage[path], "issues", config)
 
             if content_diffs:
-                _LOG.warning("{} contains content differences.".format(path))
+                _LOG.info("{} contains content differences.".format(path))
                 results.extend([{'path': path, 'url': stage[path]['url'], 'issue': "Difference: " + d} for d in content_diffs])
                 passing = False
             if issue_diffs:
-                _LOG.warning("{} contains issue differences.".format(path))
+                _LOG.info("{} contains issue differences.".format(path))
                 results.extend([{'path': path, 'url': stage[path]['url'], 'issue': "Difference: " + d} for d in issue_diffs])
                 passing = False
 
@@ -397,7 +398,7 @@ def _process_results(data):
 
     for i in data:
         if i['error']:
-            _LOG.error("URL: {} encountered and error: {}".format(i['url'], i['error']))
+            _LOG.error("URL: {} encountered an error: {}".format(i['url'], i['error']))
         else:
             result[i.pop('path')] = i
 
@@ -448,8 +449,6 @@ def run_check_results(sample_paths, start_time, time_zone, config):
         # TODO: Can adjust this as necessary, pull out to config, or remove.
         time.sleep(config.contentking.BATCH_WAIT)
 
-    print(prod_result)
-    print(stage_result)
 
     # Review for Errors and process into dictionary:
     prod_result = _process_results(prod_result)

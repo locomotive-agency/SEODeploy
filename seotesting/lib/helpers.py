@@ -60,18 +60,21 @@ def group_batcher(iterator, result, count, fill=0):
 # Multiprocessing functions
 def _map(a):
     lst, fn, args = a
-    return fn(lst, **args)
+    return fn(list(lst), **args)
 
 
 def mp_list_map(lst, fn, **args):
 
     threads = config.MAX_THREADS
-    #pool = mp.Pool(processes=threads)
-    #result = pool.map(_map, [(l, fn, args) for l in np.array_split(lst, threads)])
-    #pool.close()
 
-    #return list(np.concatenate(result))
-    return fn(lst, **args)
+    if threads > 1:
+        pool = mp.Pool(processes=threads)
+        result = pool.map(_map, [(l, fn, args) for l in np.array_split(lst, threads)])
+        pool.close()
+
+        return list(np.concatenate(result))
+    else:
+        return fn(lst, **args)
 
 
 def url_to_path(url):

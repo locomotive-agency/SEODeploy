@@ -44,7 +44,7 @@ class SEOTestingModule(ModuleBase):
 
     def run(self, samples):
 
-        start_time = datetime.now().astimezone(self.time_zone).isoformat(timespec='seconds')
+        start_time = datetime.now().astimezone(self.time_zone)
 
         # Runs the sample paths against COntentKing API to ask for recrawling.
         path_pings = run_path_pings(samples, self.config)

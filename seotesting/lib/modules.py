@@ -56,13 +56,13 @@ class ModuleBase(object):
             if i['path'] in path_data:
                 path_data[i['path']]['issues'].append(i['issue'])
             else:
-                path_data[i['path']] = {'url':i.url, issues:[i['issue']]}
+                path_data[i['path']] = {'url':i['url'], 'issues':[i['issue']]}
 
-        mesages = [{'module': self.modulename, 'path': k, 'url': v['url'], 'issues': v['issues']} for k,v in path_data.items()]
+        messages = [{'module': self.modulename, 'path': k, 'url': v['url'], 'issues': v['issues']} for k,v in path_data.items()]
 
         self.messages.extend(messages)
 
-        return mesages
+        return messages
 
 
     def run(self, samples):

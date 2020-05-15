@@ -44,7 +44,7 @@ class SEOTestingModule(ModuleBase):
 
     def run(self, samples):
 
-        start_time = datetime.now().astimezone(self.time_zone).isoformat(timespec='seconds')
+        start_time = datetime.now()
 
         print(len(samples))
 
