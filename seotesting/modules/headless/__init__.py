@@ -22,18 +22,15 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from datetime import datetime
-
-import pytz
 
 from seotesting.lib.modules import ModuleBase
 from seotesting.lib.config import Config
-from .functions import sample_function
+from .functions import sample_function  # noqa
 
 
 class SEOTestingModule(ModuleBase):
 
-    def __init__(self, config=None, samples=[]):
+    def __init__(self, config=None, samples=None):
 
         super(SEOTestingModule, self).__init__(config, samples)
 
@@ -44,7 +41,7 @@ class SEOTestingModule(ModuleBase):
 
     def run(self, samples):
 
-        start_time = datetime.now()
+        # start_time = datetime.now()
 
         print(len(samples))
 

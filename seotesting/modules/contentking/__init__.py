@@ -33,7 +33,7 @@ from .functions import run_path_pings, run_check_results, load_report
 
 class SEOTestingModule(ModuleBase):
 
-    def __init__(self, config=None, samples=[]):
+    def __init__(self, config=None, samples=None):
 
         super(SEOTestingModule, self).__init__(config, samples)
         self.modulename = "contentking"
@@ -47,7 +47,7 @@ class SEOTestingModule(ModuleBase):
         start_time = datetime.now().astimezone(self.time_zone)
 
         # Runs the sample paths against COntentKing API to ask for recrawling.
-        path_pings = run_path_pings(samples, self.config)
+        run_path_pings(samples, self.config)
 
         # Checks results via multi-threading
         passing, messages = run_check_results(samples, start_time, self.time_zone, self.config)

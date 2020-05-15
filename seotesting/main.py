@@ -22,9 +22,9 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import json
 from datetime import datetime
 import pandas as pd
-import json
 
 from .lib.modules import ModuleConfig
 from .lib.sampling import get_sample_paths
@@ -34,7 +34,7 @@ from .lib.config import Config
 _LOG = get_logger(__name__)
 
 
-class SEOTesting(object):
+class SEOTesting():
 
     def __init__(self, config=None):
 
@@ -45,7 +45,6 @@ class SEOTesting(object):
         self.samples = None
         self.modules = None
         self.summary = None
-
 
 
     def execute(self):
@@ -70,19 +69,12 @@ class SEOTesting(object):
 
             self.summary.update({'{} passing: '.format(module.modulename): passing})
 
-
-
-        df = self.get_messages().to_csv('output.csv', index=False)
+        self.get_messages().to_csv('output.csv', index=False)
 
         print('Run CSV saved to:', 'output.csv')
         print()
         print('Run Summary')
         print(json.dumps(self.summary, indent=2))
-
-
-
-
-
 
 
     def update_messages(self, messages):
@@ -93,7 +85,5 @@ class SEOTesting(object):
         return pd.DataFrame(self.messages)
 
 
-
-
-if __name__ == '__main__':
-    cli()
+# if __name__ == '__main__':
+    # cli()

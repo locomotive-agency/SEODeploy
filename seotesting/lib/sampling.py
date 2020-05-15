@@ -26,14 +26,15 @@ import os
 import math
 import random
 
-import requests
+
 import gzip
+import requests
 from bs4 import BeautifulSoup
 
+from seotesting.modules.contentking import SEOTestingModule
 from .logging import get_logger
 from .helpers import url_to_path
-from seotesting.modules.contentking import SEOTestingModule
-from .exceptions import IncorrectParameters
+
 
 
 
@@ -43,12 +44,12 @@ _LOG = get_logger(__name__)
 # CALCULATE THE SAMPLE SIZE
 def get_sample_size(population_size, confidence_level, confidence_interval):
 
-    Z = 0.0
-    p = 0.5
-    e = confidence_interval / 100.0
-    N = population_size
-    n_0 = 0.0
-    n = 0.0
+    Z = 0.0  # noqa
+    p = 0.5  # noqa
+    e = confidence_interval / 100.0  # noqa
+    N = population_size  # noqa
+    n_0 = 0.0  # noqa
+    n = 0.0  # noqa
 
     confidence_level_constant = [50, .67], [68, .99], [90, 1.64], [95, 1.96], [99, 2.57]
 
@@ -56,27 +57,26 @@ def get_sample_size(population_size, confidence_level, confidence_interval):
     # DEVIATIONS FOR THAT CONFIDENCE LEVEL
     for i in confidence_level_constant:
         if i[0] == confidence_level:
-            Z = i[1]
+            Z = i[1]  # noqa
 
-    if Z == 0.0:
+    if Z == 0.0:  # noqa
         return -1
 
     # CALC SAMPLE SIZE
-    n_0 = ((Z ** 2) * p * (1 - p)) / (e ** 2)
+    n_0 = ((Z ** 2) * p * (1 - p)) / (e ** 2)  # noqa
 
     # ADJUST SAMPLE SIZE FOR FINITE POPULATION
-    n = n_0 / (1 + ((n_0 - 1) / float(N)))
+    n = n_0 / (1 + ((n_0 - 1) / float(N)))  # noqa
 
-    return int(math.ceil(n))  # THE SAMPLE SIZE
+    return int(math.ceil(n))  # noqa
 
 
 
 def read_sitemap_urls(sitemap_url, limit=None):
 
     all_urls = []
-    count = 0
 
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',"Accept-Encoding": "gzip"}
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)', "Accept-Encoding": "gzip"}
 
     try:
         response = requests.get(sitemap_url, headers=headers)
@@ -94,15 +94,15 @@ def read_sitemap_urls(sitemap_url, limit=None):
             if '.xml' in url[-8:]:
                 urls.extend(read_sitemap_urls(url))
                 continue
-            else:
-                all_urls.append(url)
+
+            all_urls.append(url)
 
             if limit and len(all_urls) >= limit:
                 break
 
 
-    except Exception as e:
-        _LOG.error('Read Sitemap Error: ',str(e))
+    except Exception as e:  # noqa
+        _LOG.error('Read Sitemap Error: ', str(e))
 
     return all_urls
 
@@ -115,31 +115,28 @@ def get_sample_paths(config, site_id=None, sitemap_url=None, limit=None, filenam
 
     if os.path.isfile(filename):
         _LOG.info('Reloading Existing Sample File: ' + filename)
-        with open(filename) as f:
-            content = f.readlines()
+        with open(filename) as file:
+            content = file.readlines()
 
         sample_paths = [x.strip() for x in content]
         return sample_paths
 
-    if not site_id and not sitemap_url:
-        raise IncorrectParameters('`site_id` or `sitemap_url` must be specified if sitemap text file does not exist.')
-
-    elif site_id:
-        ck = SEOTestingModule()
-        all_urls = ck.get_samples(site_id, limit)
+    if site_id:
+        content_king = SEOTestingModule()
+        all_urls = content_king.get_samples(site_id, limit)
 
     elif sitemap_url:
         all_urls = read_sitemap_urls(sitemap_url, limit)
 
     else:
-        _LOG.warning('No file found and site_id not specified. Returning an empty list.')
+        _LOG.error('No file found and site_id not specified. Returning an empty list.')
         return []
 
     count_urls = len(all_urls)
     sample_size = get_sample_size(count_urls, config.CONFIDENCE_LEVEL, config.CONFIDENCE_INTERVAL)
-    random_sample = [i for i in random.sample(range(count_urls), sample_size)]
+    random_sample = random.sample(range(count_urls), sample_size)
 
-    sample_urls = [v for i, v in enumerate(all_urls) if i in random_sample]
+    sample_urls = [v for i, v in enumerate(all_urls) if i in random_sample]  # noqa
     sample_paths = [url_to_path(u) for u in sample_urls]
 
     _LOG.info('Total URLs: {} Samples: {}'.format(count_urls, len(sample_paths)))

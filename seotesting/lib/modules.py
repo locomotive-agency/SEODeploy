@@ -34,10 +34,10 @@ from .exceptions import ModuleNotImplemented
 _LOG = get_logger(__name__)
 
 
-class ModuleBase(object):
+class ModuleBase():
 
-    def __init__(self, config=None, samples=[]):
-        self.messages = []
+    def __init__(self, config=None, samples=None):
+        self.messages = None
         self.samples = samples
         self.config = config or Config()
 
@@ -56,11 +56,11 @@ class ModuleBase(object):
             if i['path'] in path_data:
                 path_data[i['path']]['issues'].append(i['issue'])
             else:
-                path_data[i['path']] = {'url':i['url'], 'issues':[i['issue']]}
+                path_data[i['path']] = {'url': i['url'], 'issues': [i['issue']]}
 
-        messages = [{'module': self.modulename, 'path': k, 'url': v['url'], 'issues': v['issues']} for k,v in path_data.items()]
+        messages = [{'module': self.modulename, 'path': k, 'url': v['url'], 'issues': v['issues']} for k, v in path_data.items()]
 
-        self.messages.extend(messages)
+        self.messages = messages
 
         return messages
 
@@ -71,13 +71,13 @@ class ModuleBase(object):
 
 
 
-class ModuleConfig(object):
+class ModuleConfig():
 
-    def __init__(self, config=None, mdirs=[]):
+    def __init__(self, config=None, mdirs=None):
 
         self.config = config or Config()
-        self.mdirs = mdirs + ['modules']
-        self.data  = self._get_module_data()
+        self.mdirs = mdirs + ['modules'] if mdirs else ['modules']
+        self.data = self._get_module_data()
 
         self.module_paths = self._get_module_paths(self.data)
         self.module_names = self._get_module_names(self.data)
@@ -87,14 +87,14 @@ class ModuleConfig(object):
         self._build_modules()
 
 
-    #class ModuleObjects(object): pass
+
 
 
     def _build_modules(self):
 
         sys.path.append(self.module_path)
 
-        for k,v in self.data.items():
+        for k, v in self.data.items():
             if v['is_config']:
                 self.active_modules[k] = importlib.import_module(k)
 
@@ -108,26 +108,26 @@ class ModuleConfig(object):
 
     def _get_module_data(self):
 
-        for dir in self.mdirs:
+        for mdir in self.mdirs:
 
-            dir = os.path.join(os.path.dirname(__file__), '..', dir)
+            mdir = os.path.join(os.path.dirname(__file__), '..', mdir)
 
-            if not os.path.isdir(dir):
+            if not os.path.isdir(mdir):
                 continue
-            else:
-                break
+
+            break
 
         else:
             raise ModuleNotImplemented('Modules directory not found in: {}'.format(','.join(self.mdirs)))
 
         self.module_path = dir
 
-        return { f.name:{'name':f.name, 'path': f.path, 'mdir': dir, 'is_config': self._is_confugured(f.name)} for f in os.scandir(dir) if f.is_dir()}
+        return {f.name: {'name': f.name, 'path': f.path, 'mdir': dir, 'is_config': self._is_confugured(f.name)} for f in os.scandir(dir) if f.is_dir()}
 
+    @staticmethod
+    def _get_module_names(data):
+        return [k for k, v in data.items() if v['is_config']]
 
-    def _get_module_names(self, data):
-        return [k for k,v in data.items() if v['is_config'] ]
-
-
-    def _get_module_paths(self, data):
-        return [v['path'] for k,v in data.items() if v['is_config'] ]
+    @staticmethod
+    def _get_module_paths(data):
+        return [v['path'] for k, v in data.items() if v['is_config']]

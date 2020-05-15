@@ -22,13 +22,12 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import numpy as np
+from urllib.parse import urlsplit
 import multiprocessing as mp
-from urllib.parse import urlparse, urlsplit
-
+import numpy as np
 from .config import Config
 
-config = Config()
+CONFIG = Config()
 
 
 # Interable grouping function
@@ -53,30 +52,30 @@ def group_batcher(iterator, result, count, fill=0):
     rem = len(iterator) % count
 
     for i in range(grps):
-        num = rem if not fill and rem and i+1 == grps else count
+        num = rem if not fill and rem and i + 1 == grps else count
         yield result([next(itr, fill) for i in range(num)])
 
 
 # Multiprocessing functions
-def _map(a):
-    lst, fn, args = a
-    return fn(list(lst), **args)
+def _map(args):
+    lst, fnc, args = args
+    return fnc(list(lst), **args)
 
 
-def mp_list_map(lst, fn, **args):
+def mp_list_map(lst, fnc, **args):
 
-    threads = config.MAX_THREADS
+    threads = CONFIG.MAX_THREADS
 
     if threads > 1:
         pool = mp.Pool(processes=threads)
-        result = pool.map(_map, [(l, fn, args) for l in np.array_split(lst, threads)])
+        result = pool.map(_map, [(l, fnc, args) for l in np.array_split(lst, threads)])
         pool.close()
 
         return list(np.concatenate(result))
-    else:
-        return fn(lst, **args)
+
+    return fnc(lst, **args)
 
 
 def url_to_path(url):
-    p = urlsplit(url)
-    return p.path if not p.query else p.path + "?" + p.query
+    parts = urlsplit(url)
+    return parts.path if not parts.query else parts.path + "?" + parts.query

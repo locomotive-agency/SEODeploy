@@ -27,30 +27,30 @@ from logging import DEBUG, Formatter, INFO, getLogger
 
 from .config import Config
 
-config = Config()
+CONFIG = Config()
 
 
 
 
 # file output
-file_handler = logging.FileHandler(filename=config.LOG_FILE or 'seotesting.error.log')
+FILE_HANDLER = logging.FileHandler(filename=CONFIG.LOG_FILE or 'seotesting.error.log')
 
-file_handler.setFormatter(Formatter('%(asctime)s [%(levelname)s]'
+FILE_HANDLER.setFormatter(Formatter('%(asctime)s [%(levelname)s]'
                                     '  %(name)s,%(lineno)s  %(message)s'))
-file_handler.setLevel(DEBUG)
+FILE_HANDLER.setLevel(DEBUG)
 
 # console output
-console_handler = logging.StreamHandler()
-console_handler.setLevel(INFO)
-console_handler.setFormatter(Formatter('%(message)s'))
+CONSOLE_HANDLER = logging.StreamHandler()
+CONSOLE_HANDLER.setLevel(INFO)
+CONSOLE_HANDLER.setFormatter(Formatter('%(message)s'))
 
 
-sdct_logger = getLogger(config.SEOTESTING_NAME)
+SDCT_LOGGER = getLogger(CONFIG.SEOTESTING_NAME)
 
 # add handlers
-sdct_logger.addHandler(console_handler)
-sdct_logger.addHandler(file_handler)
-sdct_logger.setLevel(DEBUG)
+SDCT_LOGGER.addHandler(CONSOLE_HANDLER)
+SDCT_LOGGER.addHandler(FILE_HANDLER)
+SDCT_LOGGER.setLevel(DEBUG)
 
 logging.captureWarnings(True)
 
@@ -66,7 +66,7 @@ def get_logger(log_name, level=DEBUG):
     :type log_name: str
     :type level: int
     """
-    module_logger = sdct_logger.getChild(log_name)
+    module_logger = SDCT_LOGGER.getChild(log_name)
     if level:
         module_logger.setLevel(level)
     return module_logger

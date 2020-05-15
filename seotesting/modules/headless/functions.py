@@ -24,10 +24,9 @@
 
 
 
-from seotesting.lib.logging  import get_logger
-from .exceptions import HeadlessException
-from seotesting.lib.helpers import group_batcher, mp_list_map
-
+from seotesting.lib.logging import get_logger
+from seotesting.lib.helpers import group_batcher, mp_list_map # noqa
+from .exceptions import HeadlessException # noqa
 
 _LOG = get_logger(__name__)
 

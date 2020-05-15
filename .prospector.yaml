@@ -15,10 +15,14 @@ pylint:
     good-names:
       - e
       - i
+      - k
       - df
+      - v
     max-line-length: 200
 
 pep8:
+  disable:
+    - E303
   full: true
   options:
     max-line-length: 200

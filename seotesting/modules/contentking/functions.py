@@ -30,12 +30,9 @@ import time
 import requests
 from tqdm.auto import tqdm
 
-import pandas as pd
-
-from seotesting.lib.logging  import get_logger
-from .exceptions import ContentKingAPIError, ContentKingMissing
+from seotesting.lib.logging import get_logger
 from seotesting.lib.helpers import group_batcher, mp_list_map
-
+from .exceptions import ContentKingAPIError
 
 _LOG = get_logger(__name__)
 
@@ -116,7 +113,7 @@ def load_report(report, config, **data):
                 break
 
             # If it is an unknown error, let's break and raise exception.
-            except Exception as e:
+            except Exception as e:  # noqa
                 _LOG.error('Unspecified ContentKing Error:' + str(e))
                 raise ContentKingAPIError(str(e))
 
@@ -192,7 +189,7 @@ def _notify_change(url, config):
             break
 
         # Just want to catch any other errors to the log, so we can add in here.
-        except Exception as e:
+        except Exception as e:  # noqa
             _LOG.error('Unspecified Error:' + str(e))
             break
 
@@ -243,7 +240,7 @@ def run_path_pings(sample_paths, config):
     """
 
     # Ping Content King for Production and Staging URLs
-    batches = [b for b in group_batcher(sample_paths, list, config.contentking.BATCH_SIZE, fill=None)]
+    batches = group_batcher(sample_paths, list, config.contentking.BATCH_SIZE, fill=None)
     prod_ping_results = {}
     stage_ping_results = {}
 
@@ -257,11 +254,11 @@ def run_path_pings(sample_paths, config):
 
     # Check results
     if prod_ping_results:
-        sent_percent = round((len([k for k,v in prod_ping_results.items() if v == 'ok']) / sent_total) * 100, 2)
+        sent_percent = round((len([k for k, v in prod_ping_results.items() if v == 'ok']) / sent_total) * 100, 2)
         _LOG.info("{}% of production URLs successfully sent.".format(sent_percent))
 
         if sent_percent < 100:
-            prod_sent_errors = [k for k,v in prod_ping_results.items() if v == 'error']
+            prod_sent_errors = [k for k, v in prod_ping_results.items() if v == 'error']
             for e in prod_sent_errors:
                 _LOG.error("Production URL Ping Error: {}".format(e))
         else:
@@ -270,11 +267,11 @@ def run_path_pings(sample_paths, config):
         _LOG.error("No results from Production pings.")
 
     if stage_ping_results:
-        sent_percent = round((len([k for k,v in stage_ping_results.items() if v == 'ok']) / sent_total) * 100, 2)
+        sent_percent = round((len([k for k, v in stage_ping_results.items() if v == 'ok']) / sent_total) * 100, 2)
         _LOG.info("{}% of staging URLs successfully sent.".format(sent_percent))
 
         if sent_percent < 100:
-            stage_sent_errors = [k for k,v in stage_ping_results.items() if v == 'error']
+            stage_sent_errors = [k for k, v in stage_ping_results.items() if v == 'error']
             for e in stage_sent_errors:
                 _LOG.error("Staging URL Ping Error: {}".format(e))
         else:
@@ -299,9 +296,7 @@ def _check_results(paths, config=None, data=None):
     unchecked = paths.copy()
     results = []
 
-    time_zone = data['time_zone']
-    start_time = data['start_time']
-    time_col = data['time_col']
+
 
 
     while unchecked:
@@ -315,9 +310,9 @@ def _check_results(paths, config=None, data=None):
 
             url_data = load_report('url', config, id=data['site_id'], url=url)
 
-            if url_data and time_col in url_data:
-                last_check = datetime.fromisoformat(url_data[time_col]).astimezone(time_zone)
-                time_delta = (start_time - last_check).total_seconds()
+            if url_data and data['time_col'] in url_data:
+                last_check = datetime.fromisoformat(url_data[data['time_col']]).astimezone(data['time_zone'])
+                time_delta = (data['start_time'] - last_check).total_seconds()
 
                 if time_delta < 0:
                     # Has been crawled prior to start of process.
@@ -332,7 +327,7 @@ def _check_results(paths, config=None, data=None):
             else:
                 results.append({'url': url, 'path': path, 'issues': [], 'content': [], 'error': "Invalid response from API URL report."})
 
-        except Exception as e:
+        except Exception as e:  # noqa
             results.append({'url': url, 'path': path, 'issues': [], 'content': [], 'error': "Unkown Error: " + str(e)})
 
     return results
@@ -419,7 +414,7 @@ def run_check_results(sample_paths, start_time, time_zone, config):
         Default timezone to keep times the same.
     """
 
-    batches = [b for b in group_batcher(sample_paths, list, config.contentking.BATCH_SIZE, fill=None)]
+    batches = group_batcher(sample_paths, list, config.contentking.BATCH_SIZE, fill=None)
 
     prod_data = {
         'start_time': start_time,

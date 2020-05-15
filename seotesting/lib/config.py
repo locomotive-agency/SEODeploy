@@ -28,7 +28,7 @@ from parse_it import ParseIt
 from .exceptions import ModuleNotImplemented
 
 
-class Config(object):
+class Config():
 
     """ Class for loading configuration data from Yaml settings file and module information.
 
@@ -36,53 +36,53 @@ class Config(object):
         module: <str> Name of module to add config data as attribute.
         mdirs: <list> Override directory to look for modules in.
         cfiles: <list> Override name of config file.
-
     """
 
-    def __init__(self, module=None, mdirs=[], cfiles=[]):
-        self.mdirs = mdirs + ['seotesting/modules', '.modules']
-        self.cfiles = cfiles + ['seotesting_config.yaml']
-        self.vars = {}
-        self.modules = []
+    def __init__(self, module=None, mdirs=None, cfiles=None):
+        self.mdirs = mdirs + ['seotesting/modules', '.modules'] if mdirs else ['seotesting/modules', '.modules']
+        self.cfiles = cfiles + ['seotesting_config.yaml'] if cfiles else ['seotesting_config.yaml']
+        self.modules = None
         self.module = module
 
         super(Config, self).__init__()
 
         self.build()
 
+
     def _load_modules(self):
-        for dir in self.mdirs:
+        self.modules = []
+        for mdir in self.mdirs:
             try:
-                self.modules.extend([module for module in os.listdir(dir) if os.path.isdir(os.path.join(dir, module))])
+                self.modules.extend([module for module in os.listdir(mdir) if os.path.isdir(os.path.join(mdir, module))])
                 break
             except FileNotFoundError:
                 pass
+
 
     def _load_configs(self):
         for cfile in self.cfiles:
             try:
                 parser = ParseIt(config_location=cfile, config_type_priority=['cli_args', 'yaml'])
-                vars = parser.read_all_configuration_variables()
+                config = parser.read_all_configuration_variables()
 
                 # TODO: Need to namespace config settings at some point as this currently
                 # can lead to collisions
                 if self.module:
                     if self.module in self.modules:
-                        modules = vars.pop('modules_activated')
+                        modules = config.pop('modules_activated')
                         self.__setattr__(self.module, Config())
                         for name, value in modules[self.module].items():
                             self.__getattribute__(self.module).__setattr__(name, value)
                     else:
                         raise ModuleNotImplemented("The module `{}` was not found in the modules directory.".format(self.module))
 
-                for name,value in vars.items():
+                for name, value in config.items():
                     self.__setattr__(name, value)
 
                 break
 
             except FileNotFoundError:
                 pass
-
 
     def build(self):
         self._load_modules()
@@ -91,6 +91,7 @@ class Config(object):
 
     def __setattr__(self, name, value):
         super().__setattr__(name.lower(), value)
+
 
     def __getattribute__(self, name):
         return super().__getattribute__(name.lower())
