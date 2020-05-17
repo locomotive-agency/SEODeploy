@@ -2,7 +2,7 @@
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 
-# SEOTesting: Use Content King or BYOM to automate CI/CD testing.
+# SEOTesting: Use ContentKing or BYOM to automate CI/CD testing.
 
 ![SEOTesting](https://raw.githubusercontent.com/jroakes/SEOTesting/master/docs/overview.png "SEO Testing Overview")
 
