@@ -26,3 +26,8 @@
 class HeadlessException(Exception):
     """Base class for exceptions in this module."""
     pass  # noqa
+
+
+class HTMLMissing(Exception):
+    '''An exception for a missing or invalid HTML.'''
+    pass
