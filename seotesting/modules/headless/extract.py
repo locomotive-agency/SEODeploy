@@ -31,12 +31,7 @@ EXTRACTIONS = {
     'links':                    "() => [...document.querySelectorAll('a')].map( el => {return {'href': el.href, 'text': el.textContent, 'rel':el.rel};})",
     'images':                   "() => [...document.querySelectorAll('img')].map( el => {return {'src': el.src, 'alt': el.alt};})",
     'canonical':                "() => [...document.querySelectorAll('link[rel=canonical]')].map( el => {return el.href;})",
-    'robots':                   "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return el.content;})",
-    'firstPaint':               "() => {return performance.getEntriesByName('first-paint')[0].startTime;}",
-    'firstContentfulPaint':     "() => {return performance.getEntriesByName('first-contentful-paint')[0].startTime;}",
-    'largestContentfulPaint':   "() => {return window.largestContentfulPaint;}",
-    'cumulativeLayoutShift':    "() => {return window.cumulativeLayoutShiftScore;}",
-    'performanceTiming':        "() => {return JSON.parse(JSON.stringify(window.performance.timing));}"
+    'robots':                   "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return el.content;})"
 }
 
 

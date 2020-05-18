@@ -58,7 +58,7 @@ from pyppeteer import launch
 #from lib.logging import get_logger
 from exceptions import HeadlessException, URLMissingException
 from extract import EXTRACTIONS, DOCUMENT_SCRIPTS
-from functions import parseCoverage
+from functions import parse_coverage, parse_performance_timing, parse_numerical_dict
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
 
@@ -124,12 +124,8 @@ class HeadlessChrome():
         for key, expression in EXTRACTIONS.items():
             dom[key] = await self.page.evaluate(expression)
 
-        dom['metrics'] = await self.page.metrics()
-        dom['coverage'] = parseCoverage(self.coverage['JSCoverage'], self.coverage['CSSCoverage'])
-
-        pMetrics = await self.client.send('Performance.getMetrics');
-        dom['metrics'].update({i['name']:float(i['value']) for i in pMetrics['metrics'] if 'name' in i})
-
+        dom['metrics'] = await self._extract_performance_metrics()
+        dom['coverage'] = self._extract_coverage()
         # This removes elements from the page -- run last.
         dom['content'] = await self._extract_content()
 
@@ -139,8 +135,9 @@ class HeadlessChrome():
 
 
     async def _build_page(self, url):
+
         self.page = await self.browser.newPage()
-        #await self.page.setBypassCSP(True) # Ignore content security issues.
+        await self.page.setBypassCSP(True) # Ignore content security issues.
         await self.page.setUserAgent(USER_AGENT)
         await self.page.setViewport({"width": 360, "height": 640, "isMobile": True})
         await self.page.evaluateOnNewDocument(DOCUMENT_SCRIPTS)
@@ -150,9 +147,9 @@ class HeadlessChrome():
 
         await self.page.coverage.startJSCoverage()
         await self.page.coverage.startCSSCoverage()
+
         await self.page.goto(url, waitUntil='networkidle2', timeout=60000)
 
-        # parse coverage: https://github.com/tammullen/upgraded-guacamole/blob/02317e7aebbfc95518da58bb5ed5ed578c68c007/lib/coverage-helper.js
         self.coverage['JSCoverage'] = await self.page.coverage.stopJSCoverage()
         self.coverage['CSSCoverage'] = await self.page.coverage.stopCSSCoverage()
 
@@ -164,10 +161,54 @@ class HeadlessChrome():
         self.page = None
         self.coverage = None
 
+
     async def _extract_content(self):
         await self.page.evaluate("document.querySelectorAll('script, iframe, style, noscript, link').forEach(function(el){el.remove()})", force_expr=True)
         content = await self.page.evaluate("document.body.textContent", force_expr=True)
         return ' '.join(content.split()).strip().lower()
+
+
+    async def _extract_performance_metrics(self):
+
+        metrics = {}
+
+        # Page Metrics
+        page_metrics = await self.page.metrics()
+        metrics['pageMetrics'] = parse_numerical_dict(page_metrics)
+
+        # Performance Metrics
+        perf_metrics = await self.client.send('Performance.getMetrics');
+        metrics['performanceMetrics'] = parse_numerical_dict({i['name']:i['value'] for i in perf_metrics['metrics'] if 'name' in i})
+
+        # Timing Metrics
+        t_metrics = await self.page.evaluate("() => {return JSON.parse(JSON.stringify(window.performance.timing));}")
+        metrics['timing'] = parse_numerical_dict(parse_performance_timing(t_metrics))
+
+        # Calculated Metrics
+        calculated = await self._calculated_metrics()
+        metrics['calculated'] = parse_numerical_dict(calculated)
+
+        return metrics
+
+
+    async def _calculated_metrics(self):
+        metrics = {}
+        expressions = {
+                    'firstPaint':               "() => {return performance.getEntriesByName('first-paint')[0].startTime;}",
+                    'firstContentfulPaint':     "() => {return performance.getEntriesByName('first-contentful-paint')[0].startTime;}",
+                    'largestContentfulPaint':   "() => {return window.largestContentfulPaint;}",
+                    'cumulativeLayoutShift':    "() => {return window.cumulativeLayoutShiftScore;}",
+                    }
+
+        for key, expression in expressions.items():
+            metrics[key] = await self.page.evaluate(expression)
+
+        return {k:v for k,v in metrics.items()}
+
+
+    def _extract_coverage(self):
+        return parse_coverage(self.coverage['JSCoverage'], self.coverage['CSSCoverage'])
+
 
 
 

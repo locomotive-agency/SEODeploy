@@ -298,81 +298,100 @@ Navigating to: https://locomotive.agency/
   "robots": [
     "max-snippet:-1, max-image-preview:large, max-video-preview:-1"
   ],
-  "firstPaint": 736.2299999804236,
-  "firstContentfulPaint": 736.2299999804236,
-  "largestContentfulPaint": 736.229,
-  "cumulativeLayoutShift": 0.43131462944878474,
-  "performanceTiming": {
-    "connectStart": 1589772068130,
-    "navigationStart": 1589772068041,
-    "loadEventEnd": 1589772069900,
-    "domLoading": 1589772068290,
-    "secureConnectionStart": 1589772068149,
-    "fetchStart": 1589772068041,
-    "domContentLoadedEventStart": 1589772068870,
-    "responseStart": 1589772068282,
-    "responseEnd": 1589772068284,
-    "domInteractive": 1589772068824,
-    "domainLookupEnd": 1589772068130,
-    "redirectStart": 0,
-    "requestStart": 1589772068244,
-    "unloadEventEnd": 0,
-    "unloadEventStart": 0,
-    "domComplete": 1589772069889,
-    "domainLookupStart": 1589772068046,
-    "loadEventStart": 1589772069889,
-    "domContentLoadedEventEnd": 1589772068874,
-    "redirectEnd": 0,
-    "connectEnd": 1589772068243
-  },
   "metrics": {
-    "Timestamp": 351489.1914,
-    "Documents": 2.0,
-    "Frames": 2.0,
-    "JSEventListeners": 178.0,
-    "Nodes": 1603.0,
-    "LayoutCount": 33.0,
-    "RecalcStyleCount": 120.0,
-    "LayoutDuration": 0.158316,
-    "RecalcStyleDuration": 0.099386,
-    "ScriptDuration": 0.698784,
-    "TaskDuration": 1.513029,
-    "JSHeapUsedSize": 9149720.0,
-    "JSHeapTotalSize": 20852736.0,
-    "AudioHandlers": 0.0,
-    "LayoutObjects": 621.0,
-    "MediaKeySessions": 0.0,
-    "MediaKeys": 0.0,
-    "Resources": 198.0,
-    "ContextLifecycleStateObservers": 10.0,
-    "V8PerContextDatas": 2.0,
-    "WorkerGlobalScopes": 0.0,
-    "UACSSResources": 0.0,
-    "RTCPeerConnections": 0.0,
-    "ResourceFetchers": 2.0,
-    "AdSubframes": 0.0,
-    "DetachedScriptStates": 2.0,
-    "ArrayBufferContents": 0.0,
-    "DevToolsCommandDuration": 0.234873,
-    "V8CompileDuration": 0.034865,
-    "TaskOtherDuration": 0.286805,
-    "ThreadTime": 1.603495,
-    "FirstMeaningfulPaint": 351485.785491,
-    "DomContentLoaded": 351485.878459,
-    "NavigationStart": 351485.049261
+    "pageMetrics": {
+      "Timestamp": 389589.17,
+      "Documents": 2,
+      "Frames": 2,
+      "JSEventListeners": 170,
+      "Nodes": 1608,
+      "LayoutCount": 38,
+      "RecalcStyleCount": 121,
+      "LayoutDuration": 0.19,
+      "RecalcStyleDuration": 0.14,
+      "ScriptDuration": 0.72,
+      "TaskDuration": 1.66,
+      "JSHeapUsedSize": 9021272,
+      "JSHeapTotalSize": 20590592
+    },
+    "performanceMetrics": {
+      "Timestamp": 389589.17,
+      "AudioHandlers": 0,
+      "Documents": 2,
+      "Frames": 2,
+      "JSEventListeners": 170,
+      "LayoutObjects": 621,
+      "MediaKeySessions": 0,
+      "MediaKeys": 0,
+      "Nodes": 1608,
+      "Resources": 197,
+      "ContextLifecycleStateObservers": 10,
+      "V8PerContextDatas": 2,
+      "WorkerGlobalScopes": 0,
+      "UACSSResources": 0,
+      "RTCPeerConnections": 0,
+      "ResourceFetchers": 2,
+      "AdSubframes": 0,
+      "DetachedScriptStates": 2,
+      "ArrayBufferContents": 0,
+      "LayoutCount": 35,
+      "RecalcStyleCount": 119,
+      "LayoutDuration": 0.19,
+      "RecalcStyleDuration": 0.14,
+      "DevToolsCommandDuration": 0.24,
+      "ScriptDuration": 0.72,
+      "V8CompileDuration": 0.03,
+      "TaskDuration": 1.65,
+      "TaskOtherDuration": 0.33,
+      "ThreadTime": 1.67,
+      "JSHeapUsedSize": 9021272,
+      "JSHeapTotalSize": 20590592,
+      "FirstMeaningfulPaint": 389585.64,
+      "DomContentLoaded": 389585.74,
+      "NavigationStart": 389585.06
+    },
+    "timing": {
+      "connectStart": 42,
+      "navigationStart": 0,
+      "loadEventEnd": 1691,
+      "domLoading": 185,
+      "secureConnectionStart": 60,
+      "fetchStart": 1,
+      "domContentLoadedEventStart": 683,
+      "responseStart": 179,
+      "responseEnd": 181,
+      "domInteractive": 633,
+      "domainLookupEnd": 42,
+      "redirectStart": 0,
+      "requestStart": 156,
+      "unloadEventEnd": 0,
+      "unloadEventStart": 0,
+      "domComplete": 1668,
+      "domainLookupStart": 6,
+      "loadEventStart": 1669,
+      "domContentLoadedEventEnd": 686,
+      "redirectEnd": 0,
+      "connectEnd": 155
+    },
+    "calculated": {
+      "firstPaint": 582.65,
+      "firstContentfulPaint": 582.65,
+      "largestContentfulPaint": 582.65,
+      "cumulativeLayoutShift": 0.79
+    }
   },
   "coverage": {
     "Summary": {
       "totalBytes": 2224057,
-      "totalUnused": 1538293,
-      "unusedPc": 69.17
+      "totalUnused": 1515778,
+      "unusedPc": 68.15
     },
     "CSS": {
       "results": {
         "https://mk0locomotiveagoonti.kinstacdn.com/wp-content/cache/autoptimize/css/autoptimize_91b9f88598908d42fbf3af74addc6f25.css": {
           "total": 355804,
-          "unused": 335598,
-          "unusedPc": 94.32
+          "unused": 335547,
+          "unusedPc": 94.31
         },
         "https://locomotive.agency/": {
           "total": 0,
@@ -390,7 +409,7 @@ Navigating to: https://locomotive.agency/
           "unusedPc": 94.67
         }
       },
-      "totalUnused": 464205,
+      "totalUnused": 464154,
       "totalBytes": 488477
     },
     "JS": {
@@ -442,11 +461,11 @@ Navigating to: https://locomotive.agency/
         },
         "https://static.chatra.io/jscss/d96cafc4a2aa41145cd1ed33e9a3dce71aaab009.js?meteor_js_resource=true": {
           "total": 882782,
-          "unused": 502192,
-          "unusedPc": 56.89
+          "unused": 479728,
+          "unusedPc": 54.34
         }
       },
-      "totalUnused": 1074088,
+      "totalUnused": 1051624,
       "totalBytes": 1735580
     }
   },

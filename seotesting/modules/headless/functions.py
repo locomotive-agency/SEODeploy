@@ -30,7 +30,27 @@ from exceptions import HeadlessException  # noqa
 #_LOG = get_logger(__name__)
 
 
-def parseCoverageObjects(coverage, typ):
+def parse_numerical_dict(data, r=2):
+    result = {}
+    for k,v in data.items():
+        if isinstance(v, str):
+            v = float(v) if '.' in v else int(v)
+
+        if isinstance(v, float):
+            result[k] = round(v, r)
+        else:
+            result[k] = int(v)
+
+    return result
+
+
+# Performance Timing Functions
+def parse_performance_timing(p_timing):
+    ns = p_timing['navigationStart']
+    return {k:v-ns if v else 0 for k,v in p_timing.items()}
+
+# Coverage Functions
+def parse_coverage_objects(coverage, typ):
 
     totalUnused = 0
     totalBytes = 0
@@ -61,10 +81,10 @@ def parseCoverageObjects(coverage, typ):
 
 
 
-def parseCoverage(coverageJS, coverageCSS):
+def parse_coverage(coverageJS, coverageCSS):
 
-    parsedJSCoverage = parseCoverageObjects(coverageJS, 'JS');
-    parsedCSSCoverage = parseCoverageObjects(coverageCSS, 'CSS');
+    parsedJSCoverage = parse_coverage_objects(coverageJS, 'JS');
+    parsedCSSCoverage = parse_coverage_objects(coverageCSS, 'CSS');
 
     totalUnused = parsedJSCoverage['totalUnused'] + parsedCSSCoverage['totalUnused']
     totalBytes = parsedJSCoverage['totalBytes'] + parsedCSSCoverage['totalBytes']

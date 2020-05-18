@@ -50,7 +50,7 @@ pip install seotesting
 
       Using a ContentKing website:
 
-    `seotesting sample -siteid 12346`
+    `seotesting sample --siteid 1-12346`
 
       Using a XML sitemap or sitemap index file:
 
