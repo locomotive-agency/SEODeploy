@@ -49,14 +49,20 @@ import asyncio
 import threading
 import nest_asyncio
 
+import os
+os.environ["PYPPETEER_CHROMIUM_REVISION"] = "769582"
+
 from pyppeteer.errors import NetworkError
 from pyppeteer import launch
 
-from lib.logging import get_logger
-from lib.helpers import group_batcher, mp_list_map
-from .exceptions import HeadlessException
+#from lib.logging import get_logger
+from exceptions import HeadlessException, URLMissingException
+from extract import EXTRACTIONS, DOCUMENT_SCRIPTS
+from functions import parseCoverage
 
-_LOG = get_logger(__name__)
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
+
+#_LOG = get_logger(__name__)
 
 try:
     get_ipython().config
@@ -65,79 +71,110 @@ except NameError:
     pass
 
 
-
 class HeadlessChrome():
 
-    def __init__(self, url=None):
+    def __init__(self, config=None):
 
         self.browser = None
+        self.page = None
+        self.coverage = {}
+        self.client = None
 
         asyncio.set_event_loop(asyncio.new_event_loop())
-
-        asyncio.get_event_loop().run_until_complete(self.build_page())
-
+        asyncio.get_event_loop().run_until_complete(self.build_browser())
+        print('Browser Built')
 
     async def build_browser(self):
-        browser = await launch(
-                                handleSIGINT=False,
-                                handleSIGTERM=False,
-                                handleSIGHUP=False
+        # browser = await launch()
+        browser = await launch( args=['--no-sandbox'],
+                                headless=True,
+                                devtools=True
                                )
-        self.browser = await browser.createIncognitoBrowserContext()
-        self.page = await browser.newPage()
-        await self.page.setUserAgent(cfg.browser_user_agent)
-        await self.page.goto('https://locomotive.agency/')
 
-    def render(self,  html=None):
-        html = self.html_set(html)
+        self.browser = await browser.createIncognitoBrowserContext()
+
+
+    def render(self,  url=None):
 
         # Multiple tries (3)
         for _ in range(3):
             try:
-                return asyncio.get_event_loop().run_until_complete(self._render(html))
+                return asyncio.get_event_loop().run_until_complete(self._render(url))
+
             except NetworkError:
+                #_LOG.error('Network Error trying url: ', url)
                 asyncio.set_event_loop(asyncio.new_event_loop())
                 asyncio.get_event_loop().run_until_complete(self.build_page())
 
-    async def _render(self, html):
-        await self.page.setContent(html)
-        dom = {}
-        dom['title']        = await self.page.evaluate("() => [...document.querySelectorAll('title')].map( el => {return el.textContent;})")
-        dom['description']  = await self.page.evaluate("() => [...document.querySelectorAll('meta[name=description]')].map( el => {return el.content;})")
-        dom['h1']           = await self.page.evaluate("() => [...document.querySelectorAll('h1')].map( el => {return el.textContent;})")
-        dom['h2']           = await self.page.evaluate("() => [...document.querySelectorAll('h2')].map( el => {return el.textContent;})")
-        dom['links']        = await self.page.evaluate("() => [...document.querySelectorAll('a')].map( el => {return {'href': el.href, 'text': el.textContent, 'rel':el.rel};})")
-        dom['images']       = await self.page.evaluate("() => [...document.querySelectorAll('img')].map( el => {return {'src': el.src, 'alt': el.alt};})")
-        dom['canonical']    = await self.page.evaluate("() => [...document.querySelectorAll('link[rel=canonical]')].map( el => {return el.href;})")
-        dom['robots']       = await self.page.evaluate("() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return el.content;})")
+            except URLMissingException:
+                #_LOG.error('A valid URL was not supplied: ', url)
+                break
 
-        # Strip non-text
-        await self.page.evaluate("document.querySelectorAll('script, iframe, style, noscript, link').forEach(function(el){el.remove()})", force_expr=True)
-        content = await self.page.evaluate("document.body.textContent", force_expr=True)
-        dom['content'] = ' '.join(content.split())
+
+    async def _render(self, url):
+
+        if not url:
+            raise URLMissingException('A URL is required to render.')
+
+        await self._build_page(url)
+        print("Navigating to:", url, "\n")
+
+        dom = {}
+
+        for key, expression in EXTRACTIONS.items():
+            dom[key] = await self.page.evaluate(expression)
+
+        dom['metrics'] = await self.page.metrics()
+        dom['coverage'] = parseCoverage(self.coverage['JSCoverage'], self.coverage['CSSCoverage'])
+
+        pMetrics = await self.client.send('Performance.getMetrics');
+        dom['metrics'].update({i['name']:float(i['value']) for i in pMetrics['metrics'] if 'name' in i})
+
+        # This removes elements from the page -- run last.
+        dom['content'] = await self._extract_content()
+
+        await self._close_page()
+
         return dom
 
-    def extract_content(self, html=None):
-        html = self.html_set(html)
-        return asyncio.get_event_loop().run_until_complete(self._extract_content(html))
 
-    def extract_links(self, html=None):
-        html = self.html_set(html)
-        return asyncio.get_event_loop().run_until_complete(self._extract_links(html))
+    async def _build_page(self, url):
+        self.page = await self.browser.newPage()
+        #await self.page.setBypassCSP(True) # Ignore content security issues.
+        await self.page.setUserAgent(USER_AGENT)
+        await self.page.setViewport({"width": 360, "height": 640, "isMobile": True})
+        await self.page.evaluateOnNewDocument(DOCUMENT_SCRIPTS)
 
-    async def _extract_links(self, html):
-        await self.page.setContent(html)
-        links = await self.page.evaluate("() => [...document.querySelectorAll('a')].map( a => {return  {'href': a.href, 'text': a.textContent, 'rel':a.rel};})")
-        return links
+        self.client = await self.page.target.createCDPSession();
+        await self.client.send('Performance.enable');
 
-    async def _extract_content(self, html):
-        await self.page.setContent(html)
-        await self.page.evaluate("document.querySelectorAll('script, iframe, style, noscript, link, nav').forEach(function(el){el.remove()})", force_expr=True)
+        await self.page.coverage.startJSCoverage()
+        await self.page.coverage.startCSSCoverage()
+        await self.page.goto(url, waitUntil='networkidle2', timeout=60000)
+
+        # parse coverage: https://github.com/tammullen/upgraded-guacamole/blob/02317e7aebbfc95518da58bb5ed5ed578c68c007/lib/coverage-helper.js
+        self.coverage['JSCoverage'] = await self.page.coverage.stopJSCoverage()
+        self.coverage['CSSCoverage'] = await self.page.coverage.stopCSSCoverage()
+
+        await self.page.waitFor(1000);
+
+
+    async def _close_page(self):
+        await self.page.close()
+        self.page = None
+        self.coverage = None
+
+    async def _extract_content(self):
+        await self.page.evaluate("document.querySelectorAll('script, iframe, style, noscript, link').forEach(function(el){el.remove()})", force_expr=True)
         content = await self.page.evaluate("document.body.textContent", force_expr=True)
-        return ' '.join(content.split())
+        return ' '.join(content.split()).strip().lower()
 
 
 
-def render_html(html):
-    renderer = RenderHTML(html=html)
-    return renderer.render()
+def render_url(url):
+    chrome = HeadlessChrome()
+    return chrome.render(url)
+
+if __name__ == "__main__":
+    import json
+    print(json.dumps(render_url('https://locomotive.agency/'), indent=2))

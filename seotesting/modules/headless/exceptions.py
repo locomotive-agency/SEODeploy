@@ -28,6 +28,6 @@ class HeadlessException(Exception):
     pass  # noqa
 
 
-class HTMLMissing(Exception):
-    '''An exception for a missing or invalid HTML.'''
+class URLMissingException(Exception):
+    '''An exception for a missing or invalid URL.'''
     pass

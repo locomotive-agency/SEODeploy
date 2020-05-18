@@ -23,12 +23,54 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from lib.logging import get_logger
-from lib.helpers import group_batcher, mp_list_map  # noqa
-from .exceptions import HeadlessException  # noqa
+#from lib.logging import get_logger
+#from lib.helpers import group_batcher, mp_list_map  # noqa
+from exceptions import HeadlessException  # noqa
 
-_LOG = get_logger(__name__)
+#_LOG = get_logger(__name__)
 
 
-def sample_function():
-    pass
+def parseCoverageObjects(coverage, typ):
+
+    totalUnused = 0
+    totalBytes = 0
+    results = {}
+
+    for file in coverage:
+
+        (url, ranges, text) = file.values()
+
+        totalLength = 0
+
+        for range in ranges:
+            (start, end) = range.values()
+            length = end - start
+            totalLength = totalLength + length
+
+        total = len(text);
+        unused = total - totalLength;
+
+        unusedPc = round(((unused + 1) / (total + 1)) * 100, 2);
+
+        results[url] = {'total': total, 'unused':unused, 'unusedPc':unusedPc}
+
+        totalUnused = totalUnused + unused;
+        totalBytes = totalBytes + total;
+
+    return {'results': results, 'totalUnused': totalUnused, 'totalBytes': totalBytes}
+
+
+
+def parseCoverage(coverageJS, coverageCSS):
+
+    parsedJSCoverage = parseCoverageObjects(coverageJS, 'JS');
+    parsedCSSCoverage = parseCoverageObjects(coverageCSS, 'CSS');
+
+    totalUnused = parsedJSCoverage['totalUnused'] + parsedCSSCoverage['totalUnused']
+    totalBytes = parsedJSCoverage['totalBytes'] + parsedCSSCoverage['totalBytes']
+    unusedPc = round(((totalUnused  + 1) / (totalBytes + 1)) * 100, 2)
+
+    return {'Summary': {'totalBytes': totalBytes, 'totalUnused': totalUnused, 'unusedPc': unusedPc},
+            'CSS': parsedCSSCoverage,
+            'JS': parsedJSCoverage
+            }
