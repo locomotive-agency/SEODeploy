@@ -185,25 +185,32 @@ class HeadlessChrome():
         metrics['timing'] = parse_numerical_dict(parse_performance_timing(t_metrics))
 
         # Calculated Metrics
-        calculated = await self._calculated_metrics()
+        calculated = await self._calculated_metrics(metrics)
         metrics['calculated'] = parse_numerical_dict(calculated)
 
         return metrics
 
 
-    async def _calculated_metrics(self):
-        metrics = {}
+    async def _calculated_metrics(self, metrics):
+        result = {}
         expressions = {
+                    'timeToFirstByte':          (metrics['timing']['responseStart'], ),
                     'firstPaint':               "() => {return performance.getEntriesByName('first-paint')[0].startTime;}",
                     'firstContentfulPaint':     "() => {return performance.getEntriesByName('first-contentful-paint')[0].startTime;}",
                     'largestContentfulPaint':   "() => {return window.largestContentfulPaint;}",
+                    'timeToInteractive':        (metrics['timing']['domInteractive'], ),
+                    'domContentLoaded':         (metrics['timing']['domContentLoadedEventStart'], ),
+                    'domComplete':              (metrics['timing']['domComplete'], ),
                     'cumulativeLayoutShift':    "() => {return window.cumulativeLayoutShiftScore;}",
                     }
 
         for key, expression in expressions.items():
-            metrics[key] = await self.page.evaluate(expression)
+            if isinstance(expression, str):
+                result[key] = await self.page.evaluate(expression)
+            else:
+                result[key] = expression[0]
 
-        return {k:v for k,v in metrics.items()}
+        return {k:v for k,v in result.items()}
 
 
     def _extract_coverage(self):

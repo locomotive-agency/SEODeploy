@@ -22,6 +22,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+from urllib.parse import quote_plus
 
 #from lib.logging import get_logger
 #from lib.helpers import group_batcher, mp_list_map  # noqa
@@ -54,7 +55,7 @@ def parse_coverage_objects(coverage, typ):
 
     totalUnused = 0
     totalBytes = 0
-    results = {}
+    results = []
 
     for file in coverage:
 
@@ -72,7 +73,7 @@ def parse_coverage_objects(coverage, typ):
 
         unusedPc = round(((unused + 1) / (total + 1)) * 100, 2);
 
-        results[url] = {'total': total, 'unused':unused, 'unusedPc':unusedPc}
+        results.append({'url':quote_plus(url), 'total': total, 'unused':unused, 'unusedPc':unusedPc})
 
         totalUnused = totalUnused + unused;
         totalBytes = totalBytes + total;

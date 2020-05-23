@@ -300,172 +300,250 @@ Navigating to: https://locomotive.agency/
   ],
   "metrics": {
     "pageMetrics": {
-      "Timestamp": 389589.17,
-      "Documents": 2,
+      "Timestamp": 407121.69,
+      "Documents": 12,
       "Frames": 2,
-      "JSEventListeners": 170,
-      "Nodes": 1608,
-      "LayoutCount": 38,
-      "RecalcStyleCount": 121,
-      "LayoutDuration": 0.19,
-      "RecalcStyleDuration": 0.14,
-      "ScriptDuration": 0.72,
-      "TaskDuration": 1.66,
-      "JSHeapUsedSize": 9021272,
-      "JSHeapTotalSize": 20590592
+      "JSEventListeners": 245,
+      "Nodes": 2351,
+      "LayoutCount": 35,
+      "RecalcStyleCount": 114,
+      "LayoutDuration": 0.18,
+      "RecalcStyleDuration": 0.1,
+      "ScriptDuration": 0.67,
+      "TaskDuration": 1.47,
+      "JSHeapUsedSize": 13171776,
+      "JSHeapTotalSize": 20537344
     },
     "performanceMetrics": {
-      "Timestamp": 389589.17,
+      "Timestamp": 407121.69,
       "AudioHandlers": 0,
-      "Documents": 2,
+      "Documents": 12,
       "Frames": 2,
-      "JSEventListeners": 170,
+      "JSEventListeners": 245,
       "LayoutObjects": 621,
       "MediaKeySessions": 0,
       "MediaKeys": 0,
-      "Nodes": 1608,
-      "Resources": 197,
-      "ContextLifecycleStateObservers": 10,
+      "Nodes": 2351,
+      "Resources": 215,
+      "ContextLifecycleStateObservers": 30,
       "V8PerContextDatas": 2,
       "WorkerGlobalScopes": 0,
       "UACSSResources": 0,
       "RTCPeerConnections": 0,
-      "ResourceFetchers": 2,
+      "ResourceFetchers": 12,
       "AdSubframes": 0,
-      "DetachedScriptStates": 2,
-      "ArrayBufferContents": 0,
-      "LayoutCount": 35,
-      "RecalcStyleCount": 119,
-      "LayoutDuration": 0.19,
-      "RecalcStyleDuration": 0.14,
-      "DevToolsCommandDuration": 0.24,
-      "ScriptDuration": 0.72,
+      "DetachedScriptStates": 3,
+      "ArrayBufferContents": 158,
+      "LayoutCount": 32,
+      "RecalcStyleCount": 112,
+      "LayoutDuration": 0.18,
+      "RecalcStyleDuration": 0.1,
+      "DevToolsCommandDuration": 0.23,
+      "ScriptDuration": 0.67,
       "V8CompileDuration": 0.03,
-      "TaskDuration": 1.65,
-      "TaskOtherDuration": 0.33,
-      "ThreadTime": 1.67,
-      "JSHeapUsedSize": 9021272,
-      "JSHeapTotalSize": 20590592,
-      "FirstMeaningfulPaint": 389585.64,
-      "DomContentLoaded": 389585.74,
-      "NavigationStart": 389585.06
+      "TaskDuration": 1.46,
+      "TaskOtherDuration": 0.25,
+      "ThreadTime": 1.47,
+      "JSHeapUsedSize": 13171776,
+      "JSHeapTotalSize": 20537344,
+      "FirstMeaningfulPaint": 407118.22,
+      "DomContentLoaded": 407118.32,
+      "NavigationStart": 407114.43
     },
     "timing": {
-      "connectStart": 42,
+      "connectStart": 3162,
       "navigationStart": 0,
-      "loadEventEnd": 1691,
-      "domLoading": 185,
-      "secureConnectionStart": 60,
-      "fetchStart": 1,
-      "domContentLoadedEventStart": 683,
-      "responseStart": 179,
-      "responseEnd": 181,
-      "domInteractive": 633,
-      "domainLookupEnd": 42,
+      "loadEventEnd": 4938,
+      "domLoading": 3323,
+      "secureConnectionStart": 3181,
+      "fetchStart": 0,
+      "domContentLoadedEventStart": 3888,
+      "responseStart": 3317,
+      "responseEnd": 3319,
+      "domInteractive": 3837,
+      "domainLookupEnd": 3162,
       "redirectStart": 0,
-      "requestStart": 156,
+      "requestStart": 3293,
       "unloadEventEnd": 0,
       "unloadEventStart": 0,
-      "domComplete": 1668,
-      "domainLookupStart": 6,
-      "loadEventStart": 1669,
-      "domContentLoadedEventEnd": 686,
+      "domComplete": 4931,
+      "domainLookupStart": 3059,
+      "loadEventStart": 4931,
+      "domContentLoadedEventEnd": 3892,
       "redirectEnd": 0,
-      "connectEnd": 155
+      "connectEnd": 3293
     },
     "calculated": {
-      "firstPaint": 582.65,
-      "firstContentfulPaint": 582.65,
-      "largestContentfulPaint": 582.65,
+      "timeToFirstByte": 3317,
+      "firstPaint": 3788.28,
+      "firstContentfulPaint": 3788.28,
+      "largestContentfulPaint": 3788.28,
+      "timeToInteractive": 3837,
+      "domContentLoaded": 3888,
+      "domComplete": 4931,
       "cumulativeLayoutShift": 0.79
     }
   },
   "coverage": {
     "Summary": {
       "totalBytes": 2224057,
-      "totalUnused": 1515778,
-      "unusedPc": 68.15
+      "totalUnused": 1556045,
+      "unusedPc": 69.96
     },
     "CSS": {
-      "results": {
-        "https://mk0locomotiveagoonti.kinstacdn.com/wp-content/cache/autoptimize/css/autoptimize_91b9f88598908d42fbf3af74addc6f25.css": {
+      "results": [
+        {
+          "url": "https%3A%2F%2Fmk0locomotiveagoonti.kinstacdn.com%2Fwp-content%2Fcache%2Fautoptimize%2Fcss%2Fautoptimize_91b9f88598908d42fbf3af74addc6f25.css",
           "total": 355804,
           "unused": 335547,
           "unusedPc": 94.31
         },
-        "https://locomotive.agency/": {
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 337,
+          "unused": 86,
+          "unusedPc": 25.74
+        },
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 527,
+          "unused": 527,
+          "unusedPc": 100.0
+        },
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
           "total": 0,
           "unused": 0,
           "unusedPc": 100.0
         },
-        "https://fonts.googleapis.com/css?family=http://Bitter|Lato|Libre+Baskerville|Montserrat|Neuton|Open+Sans|Pacifico|Raleway|Roboto|Sacramento|Varela+Round|ABeeZee|Abel|Abril+Fatface|Alegreya+Sans|Alex+Brush|Alfa+Slab+One|Amarante|Amatic+SC|Amita|Architects+Daughter|Arizonia|Arvo|Average+Sans|Bad+Script|Berkshire+Swash|Bigshot+One|Bowlby+One|Cabin|Cabin+Condensed|Cabin+Sketch|Cherry+Cream+Soda|Codystar|Coming+Soon|Cookie|Cutive+Mono|Fjalla+One|Freckle+Face|Fredericka+the+Great|Gabriela|Grand+Hotel|Great+Vibes|Habibi|Happy+Monkey|Julius+Sans+One|Just+Another+Hand|Kaushan+Script|Lobster|Lobster+Two|Maven+Pro|Oregano|Plaster|Playball|Pontano+Sans|Quicksand|Roboto+Condensed|Roboto+Mono|Roboto+Slab|Tenor+Sans|Lato|Open%20Sans|Libre%20Baskerville|Montserrat|Neuton|Raleway|Roboto|Sacramento|Varela%20Round|Pacifico|Bitter": {
+        {
+          "url": "https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3Dhttp%3A%2F%2FBitter%7CLato%7CLibre%2BBaskerville%7CMontserrat%7CNeuton%7COpen%2BSans%7CPacifico%7CRaleway%7CRoboto%7CSacramento%7CVarela%2BRound%7CABeeZee%7CAbel%7CAbril%2BFatface%7CAlegreya%2BSans%7CAlex%2BBrush%7CAlfa%2BSlab%2BOne%7CAmarante%7CAmatic%2BSC%7CAmita%7CArchitects%2BDaughter%7CArizonia%7CArvo%7CAverage%2BSans%7CBad%2BScript%7CBerkshire%2BSwash%7CBigshot%2BOne%7CBowlby%2BOne%7CCabin%7CCabin%2BCondensed%7CCabin%2BSketch%7CCherry%2BCream%2BSoda%7CCodystar%7CComing%2BSoon%7CCookie%7CCutive%2BMono%7CFjalla%2BOne%7CFreckle%2BFace%7CFredericka%2Bthe%2BGreat%7CGabriela%7CGrand%2BHotel%7CGreat%2BVibes%7CHabibi%7CHappy%2BMonkey%7CJulius%2BSans%2BOne%7CJust%2BAnother%2BHand%7CKaushan%2BScript%7CLobster%7CLobster%2BTwo%7CMaven%2BPro%7COregano%7CPlaster%7CPlayball%7CPontano%2BSans%7CQuicksand%7CRoboto%2BCondensed%7CRoboto%2BMono%7CRoboto%2BSlab%7CTenor%2BSans%7CLato%7COpen%2520Sans%7CLibre%2520Baskerville%7CMontserrat%7CNeuton%7CRaleway%7CRoboto%7CSacramento%7CVarela%2520Round%7CPacifico%7CBitter",
           "total": 60279,
           "unused": 60279,
           "unusedPc": 100.0
         },
-        "https://static.chatra.io/jscss/776ec41e64f678ad9d7aa59afdd48cc3467641fe.css?meteor_css_resource=true": {
+        {
+          "url": "https%3A%2F%2Fstatic.chatra.io%2Fjscss%2F776ec41e64f678ad9d7aa59afdd48cc3467641fe.css%3Fmeteor_css_resource%3Dtrue",
           "total": 71530,
           "unused": 67715,
           "unusedPc": 94.67
         }
-      },
+      ],
       "totalUnused": 464154,
       "totalBytes": 488477
     },
     "JS": {
-      "results": {
-        "https://locomotive.agency/": {
-          "total": 27,
-          "unused": 0,
-          "unusedPc": 3.57
+      "results": [
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 341,
+          "unused": 8,
+          "unusedPc": 2.63
         },
-        "https://mk0locomotiveagoonti.kinstacdn.com/wp-includes/js/jquery/jquery.js?ver=1.12.4-wp": {
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 733,
+          "unused": 454,
+          "unusedPc": 61.99
+        },
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 738,
+          "unused": 456,
+          "unusedPc": 61.84
+        },
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 740,
+          "unused": 0,
+          "unusedPc": 0.13
+        },
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 126,
+          "unused": 0,
+          "unusedPc": 0.79
+        },
+        {
+          "url": "https%3A%2F%2Fmk0locomotiveagoonti.kinstacdn.com%2Fwp-includes%2Fjs%2Fjquery%2Fjquery.js%3Fver%3D1.12.4-wp",
           "total": 96873,
           "unused": 69606,
           "unusedPc": 71.85
         },
-        "https://mk0locomotiveagoonti.kinstacdn.com/wp-content/cache/autoptimize/js/autoptimize_5cf3996955ffa3025839bc437fd2f12b.js": {
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 70,
+          "unused": 0,
+          "unusedPc": 1.41
+        },
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 81,
+          "unused": 0,
+          "unusedPc": 1.22
+        },
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 30,
+          "unused": 0,
+          "unusedPc": 3.23
+        },
+        {
+          "url": "https%3A%2F%2Fmk0locomotiveagoonti.kinstacdn.com%2Fwp-content%2Fcache%2Fautoptimize%2Fjs%2Fautoptimize_5cf3996955ffa3025839bc437fd2f12b.js",
           "total": 303842,
           "unused": 233611,
           "unusedPc": 76.89
         },
-        "https://www.googletagmanager.com/gtm.js?id=GTM-TCVSKL3": {
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2F",
+          "total": 27,
+          "unused": 0,
+          "unusedPc": 3.57
+        },
+        {
+          "url": "https%3A%2F%2Fwww.googletagmanager.com%2Fgtm.js%3Fid%3DGTM-TCVSKL3",
           "total": 116111,
           "unused": 62942,
           "unusedPc": 54.21
         },
-        "https://locomotive.agency/wp-content/themes/locomotive/dist/scripts/formvalidation.js": {
+        {
+          "url": "https%3A%2F%2Flocomotive.agency%2Fwp-content%2Fthemes%2Flocomotive%2Fdist%2Fscripts%2Fformvalidation.js",
           "total": 71120,
           "unused": 53516,
           "unusedPc": 75.25
         },
-        "https://call.chatra.io/chatra.js": {
-          "total": 36525,
-          "unused": 13595,
-          "unusedPc": 37.22
-        },
-        "https://www.google-analytics.com/analytics.js": {
+        {
+          "url": "https%3A%2F%2Fwww.google-analytics.com%2Fanalytics.js",
           "total": 45892,
           "unused": 24885,
           "unusedPc": 54.23
         },
-        "https://v2.listenloop.com/loop.bundle.js": {
+        {
+          "url": "https%3A%2F%2Fcall.chatra.io%2Fchatra.js",
+          "total": 36525,
+          "unused": 14785,
+          "unusedPc": 40.48
+        },
+        {
+          "url": "https%3A%2F%2Fv2.listenloop.com%2Floop.bundle.js",
           "total": 179166,
           "unused": 112823,
           "unusedPc": 62.97
         },
-        "https://chat.chatra.io/meteor_runtime_config.js?h=6226696b0b4dc7f431702d87dca4c49059b7939f": {
+        {
+          "url": "https%3A%2F%2Fchat.chatra.io%2Fmeteor_runtime_config.js%3Fh%3D6226696b0b4dc7f431702d87dca4c49059b7939f",
           "total": 383,
           "unused": 0,
           "unusedPc": 0.26
         },
-        "https://static.chatra.io/jscss/d96cafc4a2aa41145cd1ed33e9a3dce71aaab009.js?meteor_js_resource=true": {
+        {
+          "url": "https%3A%2F%2Fstatic.chatra.io%2Fjscss%2Fd96cafc4a2aa41145cd1ed33e9a3dce71aaab009.js%3Fmeteor_js_resource%3Dtrue",
           "total": 882782,
-          "unused": 479728,
-          "unusedPc": 54.34
+          "unused": 518805,
+          "unusedPc": 58.77
         }
-      },
-      "totalUnused": 1051624,
+      ],
+      "totalUnused": 1091891,
       "totalBytes": 1735580
     }
   },

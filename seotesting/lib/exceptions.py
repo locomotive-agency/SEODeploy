@@ -31,3 +31,8 @@ class IncorrectParameters(Exception):
 class ModuleNotImplemented(Exception):
     """Base class for exceptions in this module."""
     pass  # noqa
+
+
+class StrategyNotImplemented(Exception):
+    """Base class for exceptions in this module."""
+    pass  # noqa

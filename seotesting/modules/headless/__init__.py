@@ -25,7 +25,7 @@
 
 from lib.modules import ModuleBase
 from lib.config import Config
-from .functions import sample_function  # noqa
+#from .functions import sample_function  # noqa
 
 
 class SEOTestingModule(ModuleBase):
