@@ -24,18 +24,46 @@
 
 
 EXTRACTIONS = {
-    'title':                    "() => [...document.querySelectorAll('title')].map( el => {return el.textContent;})",
-    'description':              "() => [...document.querySelectorAll('meta[name=description]')].map( el => {return el.content;})",
-    'h1':                       "() => [...document.querySelectorAll('h1')].map( el => {return el.textContent;})",
-    'h2':                       "() => [...document.querySelectorAll('h2')].map( el => {return el.textContent;})",
-    'links':                    "() => [...document.querySelectorAll('a')].map( el => {return {'href': el.href, 'text': el.textContent, 'rel':el.rel};})",
-    'images':                   "() => [...document.querySelectorAll('img')].map( el => {return {'src': el.src, 'alt': el.alt};})",
-    'canonical':                "() => [...document.querySelectorAll('link[rel=canonical]')].map( el => {return el.href;})",
-    'robots':                   "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return el.content;})"
+    'title':                    "() => [...document.querySelectorAll('title')].map( el => {return {'xpath':xpath(el), 'content': el.textContent};})",
+    'description':              "() => [...document.querySelectorAll('meta[name=description]')].map( el => {return {'xpath':xpath(el), 'content': el.content};})",
+    'h1':                       "() => [...document.querySelectorAll('h1')].map( el => {return {'xpath':xpath(el), 'content': el.textContent};})",
+    'h2':                       "() => [...document.querySelectorAll('h2')].map( el => {return {'xpath':xpath(el), 'content': el.textContent};})",
+    'links':                    "() => [...document.querySelectorAll('a')].map( el => {return {'xpath':xpath(el), 'content': {'href': el.href, 'text': el.textContent, 'rel':el.rel}};})",
+    'images':                   "() => [...document.querySelectorAll('img')].map( el => {return {'xpath':xpath(el), 'content': {'src': el.src, 'alt': el.alt}};})",
+    'canonical':                "() => [...document.querySelectorAll('link[rel=canonical]')].map( el => {return {'xpath':xpath(el), 'content': el.href};})",
+    'robots':                   "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return {'xpath':xpath(el), 'content': el.content};})"
 }
 
 
 DOCUMENT_SCRIPTS = """() => {
+
+ window.xpath = (elt) => {
+        var path = "" ,
+    		getElementIdx = function(elt) {
+    	    	var before = 1 ,
+    				after = 0 ;
+    	    	for (var sib = elt.previousSibling; sib ; sib = sib.previousSibling) {
+    		        if(sib.nodeType == 1 && sib.tagName == elt.tagName)	before++
+       			}
+    	    	for (var sib = elt.nextSibling; sib ; sib = sib.nextSibling) {
+    		        if(sib.nodeType == 1 && sib.tagName == elt.tagName)	after++
+       			}
+    	    	if( before == 1 && after == 0 )
+    				return 0 ;
+    			else
+    				return before ;
+    		} ;
+
+        for (; elt && elt.nodeType == 1; elt = elt.parentNode) {
+    	   	idx = getElementIdx(elt);
+    		xname = elt.tagName;
+    		if (idx > 0) xname += "[" + idx + "]";
+    		path = "/" + xname + path;
+        }
+
+        return path.toLowerCase() ;
+    }
+
 
     // Calculate LCP
     window.largestContentfulPaint = 0;
