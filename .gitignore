@@ -144,3 +144,4 @@ static
 # Seotesting Specific
 seotesting.log
 NotebookExamples.ipynb
+seotesting_config_private.yaml

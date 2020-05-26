@@ -11,3 +11,4 @@
 8. [ ] Develop Headless Module using Pypeteer.
 9. [ ] Integration with Screaming Frog?
 10. [ ] Create PyPI library.
+11. [ ] Add timeout to ContentKing checking to keep from running infinitely long.
