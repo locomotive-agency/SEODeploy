@@ -22,47 +22,24 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-'''
-Using: https://github.com/miyakogi/pyppeteer
-Sample:
-import asyncio
-from pyppeteer import launch
-async def main():
-    browser = await launch()
-    page = await browser.newPage()
-    await page.goto('https://locomotive.agency/')
-    await page.screenshot({'path': 'locomotive.png'})
-    dimensions = await page.evaluate('() => {
-        return {
-            width: document.documentElement.clientWidth,
-            height: document.documentElement.clientHeight,
-            deviceScaleFactor: window.devicePixelRatio,
-        }
-    }')
-    print(dimensions)
-    # >>> {'width': 800, 'height': 600, 'deviceScaleFactor': 1}
-    await browser.close()
-asyncio.get_event_loop().run_until_complete(main())
-'''
 
 import asyncio
 import threading
 import nest_asyncio
 
 import os
-os.environ["PYPPETEER_CHROMIUM_REVISION"] = "769582"
+os.environ["PYPPETEER_CHROMIUM_REVISION"] = "769582" # TODO: Move out to config file.
 
 from pyppeteer.errors import NetworkError
 from pyppeteer import launch
 
-#from lib.logging import get_logger
-from exceptions import HeadlessException, URLMissingException
-from extract import EXTRACTIONS, DOCUMENT_SCRIPTS
-from functions import parse_coverage, parse_performance_timing, parse_numerical_dict
+from lib.logging import get_logger # TODO: Fix this
+from .exceptions import HeadlessException, URLMissingException
+from .extract import EXTRACTIONS, DOCUMENT_SCRIPTS, NETWORK_LIMITING, USER_AGENT
+from .functions import parse_coverage, parse_performance_timing, parse_numerical_dict
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
 
-#_LOG = get_logger(__name__)
+_LOG = get_logger(__name__)
 
 try:
     get_ipython().config
@@ -87,8 +64,7 @@ class HeadlessChrome():
     async def build_browser(self):
         # browser = await launch()
         browser = await launch( args=['--no-sandbox'],
-                                headless=True,
-                                devtools=True
+                                headless=True
                                )
 
         self.browser = await browser.createIncognitoBrowserContext()
@@ -104,10 +80,10 @@ class HeadlessChrome():
             except NetworkError:
                 #_LOG.error('Network Error trying url: ', url)
                 asyncio.set_event_loop(asyncio.new_event_loop())
-                asyncio.get_event_loop().run_until_complete(self.build_page())
+                asyncio.get_event_loop().run_until_complete(self._build_page(url))
 
             except URLMissingException:
-                #_LOG.error('A valid URL was not supplied: ', url)
+                _LOG.error('A valid URL was not supplied: ', url)
                 break
 
 
@@ -126,6 +102,7 @@ class HeadlessChrome():
 
         dom['metrics'] = await self._extract_performance_metrics()
         dom['coverage'] = self._extract_coverage()
+
         # This removes elements from the page -- run last.
         dom['content'] = await self._extract_content()
 
@@ -143,6 +120,11 @@ class HeadlessChrome():
         await self.page.evaluateOnNewDocument(DOCUMENT_SCRIPTS)
 
         self.client = await self.page.target.createCDPSession();
+
+        # Limit network to cosistent slow.
+        await self.client.send('Network.emulateNetworkConditions', NETWORK_LIMITING)
+
+        # Enable performance reporting
         await self.client.send('Performance.enable');
 
         await self.page.coverage.startJSCoverage()
@@ -153,6 +135,7 @@ class HeadlessChrome():
         self.coverage['JSCoverage'] = await self.page.coverage.stopJSCoverage()
         self.coverage['CSSCoverage'] = await self.page.coverage.stopCSSCoverage()
 
+        # Small wait to ensure all is complete.
         await self.page.waitFor(1000);
 
 
@@ -172,17 +155,17 @@ class HeadlessChrome():
 
         metrics = {}
 
-        # Page Metrics
-        page_metrics = await self.page.metrics()
-        metrics['pageMetrics'] = parse_numerical_dict(page_metrics)
+        # Page Metrics #NOTE: Removing this because no current additive value.
+        # page_metrics = await self.page.metrics()
+        # metrics['pageMetrics'] = parse_numerical_dict(page_metrics)
 
         # Performance Metrics
         perf_metrics = await self.client.send('Performance.getMetrics');
         metrics['performanceMetrics'] = parse_numerical_dict({i['name']:i['value'] for i in perf_metrics['metrics'] if 'name' in i})
 
         # Timing Metrics
-        t_metrics = await self.page.evaluate("() => {return JSON.parse(JSON.stringify(window.performance.timing));}")
-        metrics['timing'] = parse_numerical_dict(parse_performance_timing(t_metrics))
+        timing_metrics = await self.page.evaluate("() => {return JSON.parse(JSON.stringify(window.performance.timing));}")
+        metrics['timing'] = parse_numerical_dict(parse_performance_timing(timing_metrics))
 
         # Calculated Metrics
         calculated = await self._calculated_metrics(metrics)
@@ -217,12 +200,6 @@ class HeadlessChrome():
         return parse_coverage(self.coverage['JSCoverage'], self.coverage['CSSCoverage'])
 
 
-
-
 def render_url(url):
     chrome = HeadlessChrome()
     return chrome.render(url)
-
-if __name__ == "__main__":
-    import json
-    print(json.dumps(render_url('https://locomotive.agency/'), indent=2))

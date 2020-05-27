@@ -23,6 +23,22 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+# User Agent for requests TODO: Should probably move this to YAML config file.
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
+
+
+
+# This sets network conditions to slowest speed to remove variance by downgrading
+# all requests to slowest possible.  This will magnify speed differences.
+NETWORK_LIMITING = {
+    'offline': False,
+    'latency': 100,
+    'downloadThroughput': 100000, # Near Regular 3G
+    'uploadThroughput': 100000, # Near Good 3G
+}
+
+
+# Various extractions to run on Chrome.
 EXTRACTIONS = {
     'title':                    "() => [...document.querySelectorAll('title')].map( el => {return {'xpath':xpath(el), 'content': el.textContent};})",
     'description':              "() => [...document.querySelectorAll('meta[name=description]')].map( el => {return {'xpath':xpath(el), 'content': el.content};})",
@@ -31,10 +47,13 @@ EXTRACTIONS = {
     'links':                    "() => [...document.querySelectorAll('a')].map( el => {return {'xpath':xpath(el), 'content': {'href': el.href, 'text': el.textContent, 'rel':el.rel}};})",
     'images':                   "() => [...document.querySelectorAll('img')].map( el => {return {'xpath':xpath(el), 'content': {'src': el.src, 'alt': el.alt}};})",
     'canonical':                "() => [...document.querySelectorAll('link[rel=canonical]')].map( el => {return {'xpath':xpath(el), 'content': el.href};})",
-    'robots':                   "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return {'xpath':xpath(el), 'content': el.content};})"
+    'robots':                   "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return {'xpath':xpath(el), 'content': el.content};})",
+    'schema':                   "() => [...document.querySelectorAll('script[type=\"application/ld+json\"]')].map( el => {return {'xpath':xpath(el), 'content': JSON.parse(el.textContent)};})"
+
 }
 
 
+# Helper Scripts to include in document on page launch.
 DOCUMENT_SCRIPTS = """() => {
 
  window.xpath = (elt) => {

@@ -24,9 +24,9 @@
 
 from urllib.parse import quote_plus
 
-#from lib.logging import get_logger
-#from lib.helpers import group_batcher, mp_list_map  # noqa
-from exceptions import HeadlessException  # noqa
+from lib.logging import get_logger
+from lib.helpers import group_batcher, mp_list_map  # noqa
+from .exceptions import HeadlessException  # noqa
 
 #_LOG = get_logger(__name__)
 
@@ -49,6 +49,7 @@ def parse_numerical_dict(data, r=2):
 def parse_performance_timing(p_timing):
     ns = p_timing['navigationStart']
     return {k:v-ns if v else 0 for k,v in p_timing.items()}
+
 
 # Coverage Functions
 def parse_coverage_objects(coverage, typ):
@@ -78,7 +79,10 @@ def parse_coverage_objects(coverage, typ):
         totalUnused = totalUnused + unused;
         totalBytes = totalBytes + total;
 
-    return {'results': results, 'totalUnused': totalUnused, 'totalBytes': totalBytes}
+
+    totalUnusedPc = round(((totalUnused + 1) / (totalBytes + 1)) * 100, 2);
+
+    return {'results': results, 'summary': {'totalUnused': totalUnused, 'totalBytes': totalBytes, 'totalUnusedPc':totalUnusedPc} }
 
 
 
@@ -87,11 +91,11 @@ def parse_coverage(coverageJS, coverageCSS):
     parsedJSCoverage = parse_coverage_objects(coverageJS, 'JS');
     parsedCSSCoverage = parse_coverage_objects(coverageCSS, 'CSS');
 
-    totalUnused = parsedJSCoverage['totalUnused'] + parsedCSSCoverage['totalUnused']
-    totalBytes = parsedJSCoverage['totalBytes'] + parsedCSSCoverage['totalBytes']
+    totalUnused = parsedJSCoverage['summary']['totalUnused'] + parsedCSSCoverage['summary']['totalUnused']
+    totalBytes = parsedJSCoverage['summary']['totalBytes'] + parsedCSSCoverage['summary']['totalBytes']
     unusedPc = round(((totalUnused  + 1) / (totalBytes + 1)) * 100, 2)
 
-    return {'Summary': {'totalBytes': totalBytes, 'totalUnused': totalUnused, 'unusedPc': unusedPc},
-            'CSS': parsedCSSCoverage,
-            'JS': parsedJSCoverage
+    return {'summary': {'totalBytes': totalBytes, 'totalUnused': totalUnused, 'totalUnusedPc': unusedPc},
+            'css': parsedCSSCoverage,
+            'js': parsedJSCoverage
             }
