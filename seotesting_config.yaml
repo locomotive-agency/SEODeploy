@@ -11,17 +11,60 @@ url_limit: 1000
 max_threads: 5
 
 modules_activated:
+
   headless:
     batch_size: 10
     prod_host: https://locomotive.agency
     stage_host: https://locomotive.agency
     user_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36
+
     ignore_content:
         canonical: False
+        robots: False
         title: False
         meta_description: False
         h1: False
         h2: False
+        links: False
+        images: False
+        schema: False
+
+    ignore_performance:
+        nodes: False
+        resources: False
+        layout_duration: False
+        recalc_style_duration: False
+        script_duration: False
+        v8_compile_duration: False
+        task_duration: False
+        task_other_duration: False
+        thread_time: False
+        jd_heap_used_size: False
+        js_heap_total_size: False
+        time_to_first_byte: False
+        first_paint: False
+        first_contentful_paint: False
+        largest_contentful_paint: False
+        time_to_interactive: False
+        dom_content_loaded: False
+        dom_complete: False
+        cumulative_layout_shift: False
+
+    ignore_coverage:
+      summary:
+        total_unused: False
+        total_bytes: False
+        unused_pc: False
+
+      css:
+        total_unused: False
+        total_bytes: False
+        unused_pc: False
+
+      js:
+        total_unused: False
+        total_bytes: False
+        unused_pc: False
 
 
   contentking:

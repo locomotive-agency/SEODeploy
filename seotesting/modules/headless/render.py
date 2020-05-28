@@ -34,12 +34,15 @@ from pyppeteer.errors import NetworkError
 from pyppeteer import launch
 
 from lib.logging import get_logger # TODO: Fix this
+from lib.config import Config
+
 from .exceptions import HeadlessException, URLMissingException
 from .extract import EXTRACTIONS, DOCUMENT_SCRIPTS, NETWORK_LIMITING, USER_AGENT
 from .functions import parse_coverage, parse_performance_timing, parse_numerical_dict
 
 
 _LOG = get_logger(__name__)
+
 
 try:
     get_ipython().config
@@ -56,10 +59,11 @@ class HeadlessChrome():
         self.page = None
         self.coverage = {}
         self.client = None
+        self.config = config or Config(module="headless")
 
         asyncio.set_event_loop(asyncio.new_event_loop())
         asyncio.get_event_loop().run_until_complete(self.build_browser())
-        print('Browser Built')
+
 
     async def build_browser(self):
         # browser = await launch()
@@ -70,21 +74,40 @@ class HeadlessChrome():
         self.browser = await browser.createIncognitoBrowserContext()
 
 
-    def render(self,  url=None):
+    def render(self, url):
+
+        result = {'page_data': None, 'error': None}
 
         # Multiple tries (3)
         for _ in range(3):
             try:
-                return asyncio.get_event_loop().run_until_complete(self._render(url))
+                result['page_data'] = asyncio.get_event_loop().run_until_complete(self._render(url))
+                break
 
             except NetworkError:
                 #_LOG.error('Network Error trying url: ', url)
                 asyncio.set_event_loop(asyncio.new_event_loop())
-                asyncio.get_event_loop().run_until_complete(self._build_page(url))
+                pass
 
             except URLMissingException:
-                _LOG.error('A valid URL was not supplied: ', url)
+                error = 'A valid URL was not supplied: ' + url
+                _LOG.error(error)
+                result['error'] = error
                 break
+
+            except Exception as e:
+                error = 'An unknown render exception has occured: ' + str(e)
+                _LOG.error(error)
+                result['error'] = error
+
+        else:
+            error = 'Max tries exhausted for: ' + url
+            _LOG.error(error)
+            result['error'] = error
+
+
+        return result
+
 
 
     async def _render(self, url):

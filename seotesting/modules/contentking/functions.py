@@ -400,6 +400,7 @@ def _process_results(data):
     for i in data:
         if i['error']:
             _LOG.error("URL: {} encountered an error: {}".format(i['url'], i['error']))
+            # TODO: Probably need to fail if there are errors.
         else:
             result[i.pop('path')] = i
 
