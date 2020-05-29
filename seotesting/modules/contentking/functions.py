@@ -407,6 +407,16 @@ def _process_results(data):
     return result
 
 
+def format_results(data):
+
+    return {
+        'content': [{'element': c['type'], 'content': c['content']} for c in data['content']],
+        'schema_org': data['schema_org'],
+        'open_issues': [c['name'] for c in data['open_issues']]
+    }
+
+
+
 def run_check_results(sample_paths, start_time, time_zone, config):
 
     """Monitors paths that were pinged for updated timestamp. Compares allowed differences.

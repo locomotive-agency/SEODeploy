@@ -60,9 +60,9 @@ class SEOTesting():
         self.modules = self.module_config.module_names
         self.summary.update({'modules': ','.join(self.modules)})
 
-        for module in self.module_config.active_modules:
+        for active_module in self.module_config.active_modules:
 
-            module = self.module_config.active_modules[module].SEOTestingModule()
+            module = self.module_config.active_modules[active_module].SEOTestingModule()
 
             passing, messages = module.run(self.samples)
 

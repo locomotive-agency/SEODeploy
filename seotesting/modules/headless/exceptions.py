@@ -31,3 +31,7 @@ class HeadlessException(Exception):
 class URLMissingException(Exception):
     '''An exception for a missing or invalid URL.'''
     pass
+
+class IncorectConfigException(Exception):
+    '''An exception for a missing or invalid URL.'''
+    pass

@@ -25,29 +25,48 @@
 
 from lib.modules import ModuleBase
 from lib.config import Config
-#from .functions import sample_function  # noqa
+
+from .exceptions import IncorectConfigException
+from .functions import run_render  # noqa
 
 
 class SEOTestingModule(ModuleBase):
 
-    def __init__(self, config=None, samples=None):
+    def __init__(self, config=None):
 
-        super(SEOTestingModule, self).__init__(config, samples)
+        super(SEOTestingModule, self).__init__()
 
         self.modulename = "headless"
         self.config = config or Config(module=self.modulename)
+        self.exclusions = config.headless.ignore
+
+        # item: item name.
+        # loc: dot dictionary location of exclusions dict, and page_data dict
+        self.mappings = [
+            {'item': 'canonical', 'loc': 'content.canonical'},
+            {'item': 'robots', 'loc': 'content.robots'},
+            {'item': 'title', 'loc': 'content.title'},
+            {'item': 'meta_description', 'loc': 'content.meta_description'},
+            {'item': 'h1', 'loc': 'content.h1'},
+            {'item': 'h2', 'loc': 'content.h2'},
+            {'item': 'links', 'loc': 'content.links'},
+            {'item': 'images', 'loc': 'content.images'},
+            {'item': 'schema', 'loc': 'content.schema'},
+            {'item': 'performance', 'loc': 'content.performance'},
+            {'item': 'coverage-summary', 'loc': 'content.coverage.summary'},
+            {'item': 'coverage-css', 'loc': 'content.coverage.css'},
+            {'item': 'coverage-js', 'loc': 'content.coverage.js'}
+        ]
 
 
+    def run(self, sample_paths):
 
-    def run(self, samples):
+        self.sample_paths = sample_paths
 
-        # start_time = datetime.now()
+        page_data = process_results(run_render(sample_paths, self.config))
 
-        print(len(samples))
+        messages = self.prepare_messages(self.run_diffs(page_data))
 
-        messages = [{'path': '/', 'url': 'https://stage.domain.com/', 'issue': 'Single headless test result'}]
-        messages = self.prepare_messages(messages)
+        passing = not len(messages)
 
-        passing = True
-
-        return passing, messages
+        return passing, messages, self.errors

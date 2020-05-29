@@ -25,10 +25,13 @@
 import os
 import sys
 import importlib
+from functools import reduce
 
 from .config import Config
+from .comparison import CompareDiffs
 from .logging import get_logger
-from .exceptions import ModuleNotImplemented
+
+from .exceptions import ModuleNotImplemented, IncorectConfigException
 
 
 _LOG = get_logger(__name__)
@@ -36,37 +39,115 @@ _LOG = get_logger(__name__)
 
 class ModuleBase():
 
-    def __init__(self, config=None, samples=None):
+    def __init__(self, config=None, sample_paths=None, exclusions=None):
         self.messages = None
-        self.samples = samples
+        self.errors = None
+        self.mappings = None
+        self.modulename = None
+        self.sample_paths = sample_paths
+        self.exclusions = exclusions
         self.config = config or Config()
 
 
-    def prepare_messages(self, data):
+    def run_diffs(self, page_data):
+
+        """
+        Parameters
+        -----------------
+        page_data: {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
+                   ...
+                   }
+        """
+
+        if self.mappings and self.modulename and self.exclusions:
+
+            self.errors = []
+
+            diffmodule = CompareDiffs(self.modulename)
+
+            def get(dot_not, data):
+                try:
+                    return reduce(dict.get, dot_not.split('.'), data)
+                except:
+                    return None
+
+            # Iterate paths
+            for path in page_data:
+                path_data = data[path]
+                error = path_data['error']
+
+                if error:
+                    self.errors.append{{'path': path, 'error': error}}
+
+                else:
+                    for mapping in self.mappings:
+                        try:
+                            self.iter_mappings(diffmodule, mapping, path_data)
+                        except IncorectConfigException as e:
+                            # TODO: Placeholder to dump page_data here for easy reload.
+                            self.errors.append{{'path': path, 'error': str(e)}}
+                            break
+
+
+            return diffmodule.get_diffs()
+
+        else:
+            raise NotImplementedError('This module cannot be called directly.')
+
+
+
+    def iter_mappings(self, diffmodule, mapping, path_data):
+
+        item = mapping['item']
+        loc  = mapping['loc']
+        exc = get(loc, self.exclusions)
+        d1 = get(loc, path_data['prod'])
+        d2 = get(loc, path_data['stage'])
+
+        if exc is not None and d1 and d2:
+
+            if isinstance(exc, bool):
+                if not exc:
+                    diffmodule.compare(path, item, d1, d2, tolerance=None)
+            elif isinstance(exc, float):
+                if item
+                diffmodule.compare(path, item, d1, d2, tolerance=exc)
+            else:
+                # TODO: It would be nice to save the page_data here so that it can be reloaded
+                #       after the issue is fixed.
+                raise IncorectConfigException('Config ignore values must be `bool` or `float`')
+
+        else:
+            raise IncorectConfigException('Config mapping data is not correct.')
+
+
+    def prepare_messages(self, diffs):
         """ Data should be in format of
-            [{'path': <str>, 'url': <str>, 'issue': <str>}, ...]
+            [{'path': <str>, 'diffs': <list>}, ...]
 
             Output in format:
-            [{'module': <str>, 'path': <str>, 'url': <str>, 'issue': [list]}, ...]
+            [{'module': <str>, 'path': <str>, 'diffs': [list]}, ...]
         """
-        path_data = {}
-        for i in data:
+        messages = []
 
-            # Consolidate rows:
-            if i['path'] in path_data:
-                path_data[i['path']]['issues'].append(i['issue'])
-            else:
-                path_data[i['path']] = {'url': i['url'], 'issues': [i['issue']]}
+        for item in diffs:
 
-        messages = [{'module': self.modulename, 'path': k, 'url': v['url'],
-                     'issues': v['issues']} for k, v in path_data.items()]
+            path = item['path']
+            item_diffs = item['diffs']
+
+            for id in item_diffs:
+
+                #make sure all values are strings.
+                id = {k:str(v) for k,v in id.items()}.update({'module': self.modulename, 'path': path})
+
+                messages.append(id)
 
         self.messages = messages
 
         return messages
 
 
-    def run(self, samples):
+    def run(self, sample_paths):
         raise NotImplementedError
 
 
@@ -86,9 +167,6 @@ class ModuleConfig():
         self.active_modules = {}
 
         self._build_modules()
-
-
-
 
 
     def _build_modules(self):

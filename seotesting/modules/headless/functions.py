@@ -22,80 +22,89 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from urllib.parse import quote_plus
 
 from lib.logging import get_logger
-from lib.helpers import group_batcher, mp_list_map  # noqa
+from lib.helpers import group_batcher, mp_list_map, list_to_dict  # noqa
+
+from .render import HeadlessChrome  # noqa
 from .exceptions import HeadlessException  # noqa
 
-#_LOG = get_logger(__name__)
+_LOG = get_logger(__name__)
 
 
-def parse_numerical_dict(data, r=2):
-    result = {}
-    for k,v in data.items():
-        if isinstance(v, str):
-            v = float(v) if '.' in v else int(v)
+def _render_paths(paths, config=None, host=None):
 
-        if isinstance(v, float):
-            result[k] = round(v, r)
+    """Renders paths in Google Chrome and returns extracted <dict>.
+
+    """
+
+    chrome = HeadlessChrome(config=config)
+
+    results = []
+
+    for path in paths:
+
+        url = urljoin(host, path)
+
+        result = chrome.render(url)
+
+        if result['error']:
+            results.append({'path': path, 'page_data': None, 'error': result['error']})
         else:
-            result[k] = int(v)
+            results.append({'path': path, 'page_data': result['page_data'], 'error': None})
+
+    return results
+
+
+
+def _process_results(sample_paths, prod_result, stage_result):
+
+    """Reviews the returned results for errors. Build single
+       result dictionary in the format:
+
+       {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
+       ...
+       }
+
+
+    """
+
+    result = {}
+
+    prod_data = list_to_dict(prod_result, 'path')
+    stage_data = list_to_dict(stage_result, 'path')
+
+    for path in sample_paths:
+        error = prod_data[path]['error'] or stage_data[path]['error']
+        result[path] = {'prod': prod_data[path]['page_data'], 'stage': stage_data[path]['page_data'], 'error': error}
 
     return result
 
 
-# Performance Timing Functions
-def parse_performance_timing(p_timing):
-    ns = p_timing['navigationStart']
-    return {k:v-ns if v else 0 for k,v in p_timing.items()}
+
+def run_render(sample_paths, config):
+
+    """Monitors paths that were pinged for updated timestamp. Compares allowed differences.
+
+    Parameters
+    ----------
+    sample_paths: <list> List of paths to check.
+    config: <class> Configuration class
+    """
+
+    batches = group_batcher(sample_paths, list, config.headless.BATCH_SIZE, fill=None)
+
+    prod_result = []
+    stage_result = []
+
+    # Iterates batches to send to API for data update.
+    for batch in tqdm(batches, desc="Rendering URLs"):
+
+        prod_result.extend(mp_list_map(batch, _render_paths, config=config, host=config.headless.PROD_HOST))
+        stage_result.extend(mp_list_map(batch, _render_paths, config=config, host=config.headless.STAGE_HOST))
 
 
-# Coverage Functions
-def parse_coverage_objects(coverage, typ):
+    # Review for Errors and process into dictionary:
+    page_data = _process_results(sample_paths, prod_result, stage_result)
 
-    totalUnused = 0
-    totalBytes = 0
-    results = []
-
-    for file in coverage:
-
-        (url, ranges, text) = file.values()
-
-        totalLength = 0
-
-        for range in ranges:
-            (start, end) = range.values()
-            length = end - start
-            totalLength = totalLength + length
-
-        total = len(text);
-        unused = total - totalLength;
-
-        unusedPc = round(((unused + 1) / (total + 1)) * 100, 2);
-
-        results.append({'url':quote_plus(url), 'total': total, 'unused':unused, 'unusedPc':unusedPc})
-
-        totalUnused = totalUnused + unused;
-        totalBytes = totalBytes + total;
-
-
-    totalUnusedPc = round(((totalUnused + 1) / (totalBytes + 1)) * 100, 2);
-
-    return {'results': results, 'summary': {'totalUnused': totalUnused, 'totalBytes': totalBytes, 'totalUnusedPc':totalUnusedPc} }
-
-
-
-def parse_coverage(coverageJS, coverageCSS):
-
-    parsedJSCoverage = parse_coverage_objects(coverageJS, 'JS');
-    parsedCSSCoverage = parse_coverage_objects(coverageCSS, 'CSS');
-
-    totalUnused = parsedJSCoverage['summary']['totalUnused'] + parsedCSSCoverage['summary']['totalUnused']
-    totalBytes = parsedJSCoverage['summary']['totalBytes'] + parsedCSSCoverage['summary']['totalBytes']
-    unusedPc = round(((totalUnused  + 1) / (totalBytes + 1)) * 100, 2)
-
-    return {'summary': {'totalBytes': totalBytes, 'totalUnused': totalUnused, 'totalUnusedPc': unusedPc},
-            'css': parsedCSSCoverage,
-            'js': parsedJSCoverage
-            }
+    return page_data

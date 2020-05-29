@@ -212,3 +212,18 @@ JS
   "totalUnused": 467266,
   "totalBytes": 491643
   "unusedPc": 68.12
+
+
+
+
+
+Data into CompareBase
+
+  path, desc, d1, d2
+
+  d1 = {'issues': ['issue1', 'issue2', 'issue3']}
+  d1 = {'content': [
+        {
+            "type": "canonical",
+            "content": "https://locomotive.agency/category/google/"
+        }]}

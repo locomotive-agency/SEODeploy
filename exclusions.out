@@ -1,0 +1,51 @@
+{
+  "content": {
+    "canonical": false,
+    "robots": false,
+    "title": false,
+    "meta_description": false,
+    "h1": false,
+    "h2": false,
+    "links": false,
+    "images": false,
+    "schema": false
+  },
+  "performance": {
+    "nodes": false,
+    "resources": false,
+    "layout_duration": false,
+    "recalc_style_duration": false,
+    "script_duration": false,
+    "v8_compile_duration": false,
+    "task_duration": false,
+    "task_other_duration": false,
+    "thread_time": false,
+    "jd_heap_used_size": false,
+    "js_heap_total_size": false,
+    "time_to_first_byte": false,
+    "first_paint": false,
+    "first_contentful_paint": false,
+    "largest_contentful_paint": false,
+    "time_to_interactive": false,
+    "dom_content_loaded": false,
+    "dom_complete": false,
+    "cumulative_layout_shift": false
+  },
+  "coverage": {
+    "summary": {
+      "total_unused": false,
+      "total_bytes": false,
+      "unused_pc": false
+    },
+    "css": {
+      "total_unused": false,
+      "total_bytes": false,
+      "unused_pc": false
+    },
+    "js": {
+      "total_unused": false,
+      "total_bytes": false,
+      "unused_pc": false
+    }
+  }
+}

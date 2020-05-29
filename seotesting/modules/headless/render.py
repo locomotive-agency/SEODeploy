@@ -27,18 +27,19 @@ import asyncio
 import threading
 import nest_asyncio
 
+from lib.logging import get_logger # TODO: Fix this
+from lib.config import Config
+
+CONFIG = Config(module="headless")
+
 import os
-os.environ["PYPPETEER_CHROMIUM_REVISION"] = "769582" # TODO: Move out to config file.
+os.environ["PYPPETEER_CHROMIUM_REVISION"] = str(CONFIG.headless.PYPPETEER_CHROMIUM_REVISION)
 
 from pyppeteer.errors import NetworkError
 from pyppeteer import launch
 
-from lib.logging import get_logger # TODO: Fix this
-from lib.config import Config
-
 from .exceptions import HeadlessException, URLMissingException
-from .extract import EXTRACTIONS, DOCUMENT_SCRIPTS, NETWORK_LIMITING, USER_AGENT
-from .functions import parse_coverage, parse_performance_timing, parse_numerical_dict
+from .helpers import *
 
 
 _LOG = get_logger(__name__)
@@ -60,6 +61,7 @@ class HeadlessChrome():
         self.coverage = {}
         self.client = None
         self.config = config or Config(module="headless")
+        self.network = self.config.headless.network_preset or "Regular3G"
 
         asyncio.set_event_loop(asyncio.new_event_loop())
         asyncio.get_event_loop().run_until_complete(self.build_browser())
@@ -74,6 +76,7 @@ class HeadlessChrome():
         self.browser = await browser.createIncognitoBrowserContext()
 
 
+
     def render(self, url):
 
         result = {'page_data': None, 'error': None}
@@ -81,7 +84,7 @@ class HeadlessChrome():
         # Multiple tries (3)
         for _ in range(3):
             try:
-                result['page_data'] = asyncio.get_event_loop().run_until_complete(self._render(url))
+                result['page_data'] = format_results(asyncio.get_event_loop().run_until_complete(self._render(url)))
                 break
 
             except NetworkError:
@@ -145,7 +148,7 @@ class HeadlessChrome():
         self.client = await self.page.target.createCDPSession();
 
         # Limit network to cosistent slow.
-        await self.client.send('Network.emulateNetworkConditions', NETWORK_LIMITING)
+        await self.client.send('Network.emulateNetworkConditions', NETWORK_PRESETS[self.network])
 
         # Enable performance reporting
         await self.client.send('Performance.enable');
