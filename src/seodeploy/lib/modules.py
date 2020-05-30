@@ -37,8 +37,7 @@ from .exceptions import ModuleNotImplemented, IncorectConfigException
 _LOG = get_logger(__name__)
 
 
-class ModuleBase():
-
+class ModuleBase:
     def __init__(self, config=None, sample_paths=None, exclusions=None):
         self.messages = None
         self.errors = None
@@ -47,7 +46,6 @@ class ModuleBase():
         self.sample_paths = sample_paths
         self.exclusions = exclusions
         self.config = config or Config()
-
 
     def run_diffs(self, page_data):
 
@@ -67,17 +65,17 @@ class ModuleBase():
 
             def get(dot_not, data):
                 try:
-                    return reduce(dict.get, dot_not.split('.'), data)
+                    return reduce(dict.get, dot_not.split("."), data)
                 except:
                     return None
 
             # Iterate paths
             for path in page_data:
                 path_data = data[path]
-                error = path_data['error']
+                error = path_data["error"]
 
                 if error:
-                    self.errors.append({'path': path, 'error': error})
+                    self.errors.append({"path": path, "error": error})
 
                 else:
                     for mapping in self.mappings:
@@ -85,24 +83,21 @@ class ModuleBase():
                             self.iter_mappings(diffmodule, mapping, path_data)
                         except IncorectConfigException as e:
                             # TODO: Placeholder to dump page_data here for easy reload.
-                            self.errors.append({'path': path, 'error': str(e)})
+                            self.errors.append({"path": path, "error": str(e)})
                             break
-
 
             return diffmodule.get_diffs()
 
         else:
-            raise NotImplementedError('This module cannot be called directly.')
-
-
+            raise NotImplementedError("This module cannot be called directly.")
 
     def iter_mappings(self, diffmodule, mapping, path_data):
 
-        item = mapping['item']
-        loc  = mapping['loc']
+        item = mapping["item"]
+        loc = mapping["loc"]
         exc = get(loc, self.exclusions)
-        d1 = get(loc, path_data['prod'])
-        d2 = get(loc, path_data['stage'])
+        d1 = get(loc, path_data["prod"])
+        d2 = get(loc, path_data["stage"])
 
         if exc is not None and d1 and d2 and item:
 
@@ -114,11 +109,12 @@ class ModuleBase():
             else:
                 # TODO: It would be nice to save the page_data here so that it can be reloaded
                 #       after the issue is fixed.
-                raise IncorectConfigException('Config ignore values must be `bool` or `float`')
+                raise IncorectConfigException(
+                    "Config ignore values must be `bool` or `float`"
+                )
 
         else:
-            raise IncorectConfigException('Config mapping data is not correct.')
-
+            raise IncorectConfigException("Config mapping data is not correct.")
 
     def prepare_messages(self, diffs):
         """ Data should be in format of
@@ -131,13 +127,15 @@ class ModuleBase():
 
         for item in diffs:
 
-            path = item['path']
-            item_diffs = item['diffs']
+            path = item["path"]
+            item_diffs = item["diffs"]
 
             for id in item_diffs:
 
-                #make sure all values are strings.
-                id = {k:str(v) for k,v in id.items()}.update({'module': self.modulename, 'path': path})
+                # make sure all values are strings.
+                id = {k: str(v) for k, v in id.items()}.update(
+                    {"module": self.modulename, "path": path}
+                )
 
                 messages.append(id)
 
@@ -145,19 +143,15 @@ class ModuleBase():
 
         return messages
 
-
     def run(self, sample_paths):
         raise NotImplementedError
 
 
-
-
-class ModuleConfig():
-
+class ModuleConfig:
     def __init__(self, config=None, mdirs=None):
 
         self.config = config or Config()
-        self.mdirs = mdirs + ['modules'] if mdirs else ['modules']
+        self.mdirs = mdirs + ["modules"] if mdirs else ["modules"]
         self.data = self._get_module_data()
 
         self.module_paths = self._get_module_paths(self.data)
@@ -167,28 +161,25 @@ class ModuleConfig():
 
         self._build_modules()
 
-
     def _build_modules(self):
 
         sys.path.append(self.module_path)
 
         for k, v in self.data.items():
-            if v['is_config']:
+            if v["is_config"]:
                 self.active_modules[k] = importlib.import_module(k)
-
 
     def _is_confugured(self, module):
 
-        if hasattr(self.config, 'modules_activated'):
+        if hasattr(self.config, "modules_activated"):
             return module in list(self.config.modules_activated.keys())
         return False
-
 
     def _get_module_data(self):
 
         for mdir in self.mdirs:
 
-            mdir = os.path.join(os.path.dirname(__file__), '..', mdir)
+            mdir = os.path.join(os.path.dirname(__file__), "..", mdir)
 
             if not os.path.isdir(mdir):
                 continue
@@ -196,17 +187,27 @@ class ModuleConfig():
             break
 
         else:
-            raise ModuleNotImplemented('Modules directory not found in: {}'.format(','.join(self.mdirs)))
+            raise ModuleNotImplemented(
+                "Modules directory not found in: {}".format(",".join(self.mdirs))
+            )
 
         self.module_path = mdir
 
-        return {f.name: {'name': f.name, 'path': f.path, 'mdir': mdir,
-                         'is_config': self._is_confugured(f.name)} for f in os.scandir(mdir) if f.is_dir()}
+        return {
+            f.name: {
+                "name": f.name,
+                "path": f.path,
+                "mdir": mdir,
+                "is_config": self._is_confugured(f.name),
+            }
+            for f in os.scandir(mdir)
+            if f.is_dir()
+        }
 
     @staticmethod
     def _get_module_names(data):
-        return [k for k, v in data.items() if v['is_config']]
+        return [k for k, v in data.items() if v["is_config"]]
 
     @staticmethod
     def _get_module_paths(data):
-        return [v['path'] for k, v in data.items() if v['is_config']]
+        return [v["path"] for k, v in data.items() if v["is_config"]]

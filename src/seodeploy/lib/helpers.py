@@ -81,7 +81,6 @@ def url_to_path(url):
     return parts.path if not parts.query else parts.path + "?" + parts.query
 
 
-
 def list_to_dict(lst, key):
     result = {}
     for i in lst:

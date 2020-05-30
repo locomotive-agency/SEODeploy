@@ -48,13 +48,14 @@ def _render_paths(paths, config=None, host=None):
 
         result = chrome.render(url)
 
-        if result['error']:
-            results.append({'path': path, 'page_data': None, 'error': result['error']})
+        if result["error"]:
+            results.append({"path": path, "page_data": None, "error": result["error"]})
         else:
-            results.append({'path': path, 'page_data': result['page_data'], 'error': None})
+            results.append(
+                {"path": path, "page_data": result["page_data"], "error": None}
+            )
 
     return results
-
 
 
 def _process_results(sample_paths, prod_result, stage_result):
@@ -71,15 +72,18 @@ def _process_results(sample_paths, prod_result, stage_result):
 
     result = {}
 
-    prod_data = list_to_dict(prod_result, 'path')
-    stage_data = list_to_dict(stage_result, 'path')
+    prod_data = list_to_dict(prod_result, "path")
+    stage_data = list_to_dict(stage_result, "path")
 
     for path in sample_paths:
-        error = prod_data[path]['error'] or stage_data[path]['error']
-        result[path] = {'prod': prod_data[path]['page_data'], 'stage': stage_data[path]['page_data'], 'error': error}
+        error = prod_data[path]["error"] or stage_data[path]["error"]
+        result[path] = {
+            "prod": prod_data[path]["page_data"],
+            "stage": stage_data[path]["page_data"],
+            "error": error,
+        }
 
     return result
-
 
 
 def run_render(sample_paths, config):
@@ -100,9 +104,16 @@ def run_render(sample_paths, config):
     # Iterates batches to send to API for data update.
     for batch in tqdm(batches, desc="Rendering URLs"):
 
-        prod_result.extend(mp_list_map(batch, _render_paths, config=config, host=config.headless.PROD_HOST))
-        stage_result.extend(mp_list_map(batch, _render_paths, config=config, host=config.headless.STAGE_HOST))
-
+        prod_result.extend(
+            mp_list_map(
+                batch, _render_paths, config=config, host=config.headless.PROD_HOST
+            )
+        )
+        stage_result.extend(
+            mp_list_map(
+                batch, _render_paths, config=config, host=config.headless.STAGE_HOST
+            )
+        )
 
     # Review for Errors and process into dictionary:
     page_data = _process_results(sample_paths, prod_result, stage_result)

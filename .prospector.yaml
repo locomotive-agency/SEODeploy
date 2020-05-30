@@ -10,6 +10,7 @@ autodetect: false
 ignore-paths:
   - docs/
   - jenkins/
+  - etc/
 
 pylint:
   disable:
@@ -40,10 +41,11 @@ pep257:
     - D101
     - D102
     - D103
+    - D104
     - D205
     - D400
     - D401
-    
+
 pyroma:
   run: true
 

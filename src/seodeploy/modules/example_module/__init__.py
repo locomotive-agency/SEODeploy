@@ -29,13 +29,11 @@ from .functions import sample_function  # noqa
 
 
 class SEOTestingModule(ModuleBase):
-
     def __init__(self, config=None, samples=None):
 
         super(SEOTestingModule, self).__init__(config, samples)
         self.modulename = "example"
         self.config = config or Config(module=self.modulename)
-
 
     def run(self, samples):
 

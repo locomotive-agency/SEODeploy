@@ -31,7 +31,6 @@ from .functions import run_render  # noqa
 
 
 class SEOTestingModule(ModuleBase):
-
     def __init__(self, config=None):
 
         super(SEOTestingModule, self).__init__()
@@ -43,21 +42,20 @@ class SEOTestingModule(ModuleBase):
         # item: item name.
         # loc: dot dictionary location of exclusions dict, and page_data dict
         self.mappings = [
-            {'item': 'canonical', 'loc': 'content.canonical'},
-            {'item': 'robots', 'loc': 'content.robots'},
-            {'item': 'title', 'loc': 'content.title'},
-            {'item': 'meta_description', 'loc': 'content.meta_description'},
-            {'item': 'h1', 'loc': 'content.h1'},
-            {'item': 'h2', 'loc': 'content.h2'},
-            {'item': 'links', 'loc': 'content.links'},
-            {'item': 'images', 'loc': 'content.images'},
-            {'item': 'schema', 'loc': 'content.schema'},
-            {'item': 'performance', 'loc': 'content.performance'},
-            {'item': 'coverage-summary', 'loc': 'content.coverage.summary'},
-            {'item': 'coverage-css', 'loc': 'content.coverage.css'},
-            {'item': 'coverage-js', 'loc': 'content.coverage.js'}
+            {"item": "canonical", "loc": "content.canonical"},
+            {"item": "robots", "loc": "content.robots"},
+            {"item": "title", "loc": "content.title"},
+            {"item": "meta_description", "loc": "content.meta_description"},
+            {"item": "h1", "loc": "content.h1"},
+            {"item": "h2", "loc": "content.h2"},
+            {"item": "links", "loc": "content.links"},
+            {"item": "images", "loc": "content.images"},
+            {"item": "schema", "loc": "content.schema"},
+            {"item": "performance", "loc": "content.performance"},
+            {"item": "coverage-summary", "loc": "content.coverage.summary"},
+            {"item": "coverage-css", "loc": "content.coverage.css"},
+            {"item": "coverage-js", "loc": "content.coverage.js"},
         ]
-
 
     def run(self, sample_paths):
 

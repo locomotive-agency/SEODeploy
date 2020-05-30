@@ -36,8 +36,6 @@ from .logging import get_logger
 from .helpers import url_to_path
 
 
-
-
 _LOG = get_logger(__name__)
 
 
@@ -51,7 +49,13 @@ def get_sample_size(population_size, confidence_level, confidence_interval):
     n_0 = 0.0  # noqa
     n = 0.0  # noqa
 
-    confidence_level_constant = [50, .67], [68, .99], [90, 1.64], [95, 1.96], [99, 2.57]
+    confidence_level_constant = (
+        [50, 0.67],
+        [68, 0.99],
+        [90, 1.64],
+        [95, 1.96],
+        [99, 2.57],
+    )
 
     # LOOP THROUGH SUPPORTED CONFIDENCE LEVELS AND FIND THE NUM STD
     # DEVIATIONS FOR THAT CONFIDENCE LEVEL
@@ -71,17 +75,18 @@ def get_sample_size(population_size, confidence_level, confidence_interval):
     return int(math.ceil(n))  # noqa
 
 
-
 def read_sitemap_urls(sitemap_url, limit=None):
 
     all_urls = []
 
-    headers = {'User-Agent': "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-               'Accept-Encoding': "gzip"}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        "Accept-Encoding": "gzip",
+    }
 
     try:
         response = requests.get(sitemap_url, headers=headers)
-        if response.headers['Content-Type'].lower() == 'application/x-gzip':
+        if response.headers["Content-Type"].lower() == "application/x-gzip":
             xml = gzip.decompress(response.content)
         else:
             xml = response.content
@@ -92,7 +97,7 @@ def read_sitemap_urls(sitemap_url, limit=None):
 
             url = urls.pop(0)
 
-            if '.xml' in url[-8:]:
+            if ".xml" in url[-8:]:
                 urls.extend(read_sitemap_urls(url))
                 continue
 
@@ -101,12 +106,10 @@ def read_sitemap_urls(sitemap_url, limit=None):
             if limit and len(all_urls) >= limit:
                 break
 
-
     except Exception as e:  # noqa
-        _LOG.error('Read Sitemap Error: ', str(e))
+        _LOG.error("Read Sitemap Error: ", str(e))
 
     return all_urls
-
 
 
 def get_sample_paths(config, site_id=None, sitemap_url=None, limit=None, filename=None):
@@ -115,7 +118,7 @@ def get_sample_paths(config, site_id=None, sitemap_url=None, limit=None, filenam
     filename = filename or config.SAMPLES_FILENAME
 
     if os.path.isfile(filename):
-        _LOG.info('Reloading Existing Sample File: ' + filename)
+        _LOG.info("Reloading Existing Sample File: " + filename)
         with open(filename) as file:
             content = file.readlines()
 
@@ -130,20 +133,22 @@ def get_sample_paths(config, site_id=None, sitemap_url=None, limit=None, filenam
         all_urls = read_sitemap_urls(sitemap_url, limit)
 
     else:
-        _LOG.error('No file found and site_id not specified. Returning an empty list.')
+        _LOG.error("No file found and site_id not specified. Returning an empty list.")
         return []
 
     count_urls = len(all_urls)
-    sample_size = get_sample_size(count_urls, config.CONFIDENCE_LEVEL, config.CONFIDENCE_INTERVAL)
+    sample_size = get_sample_size(
+        count_urls, config.CONFIDENCE_LEVEL, config.CONFIDENCE_INTERVAL
+    )
     random_sample = random.sample(range(count_urls), sample_size)
 
     sample_urls = [v for i, v in enumerate(all_urls) if i in random_sample]  # noqa
     sample_paths = [url_to_path(u) for u in sample_urls]
 
-    _LOG.info('Total URLs: {} Samples: {}'.format(count_urls, len(sample_paths)))
+    _LOG.info("Total URLs: {} Samples: {}".format(count_urls, len(sample_paths)))
 
-    with open(filename, 'w') as file:
+    with open(filename, "w") as file:
         file.writelines("{}\n".format(path) for path in sample_paths)
-        _LOG.info('Saved Sample File: ' + filename)
+        _LOG.info("Saved Sample File: " + filename)
 
     return sample_paths

@@ -31,8 +31,7 @@ from .exceptions import StrategyNotImplemented, TypesMismatched
 _LOG = get_logger(__name__)
 
 
-
-class CompareDiffs():
+class CompareDiffs:
     """Base strategy module. Strategy modules run comparative analysis on module content
     based on selected strategy.
 
@@ -40,7 +39,6 @@ class CompareDiffs():
 
     def __init__(self):
         self.diffs = []
-
 
     def compare(self, path, item, d1, d2, tolerance=None):
 
@@ -66,54 +64,59 @@ class CompareDiffs():
 
         """
         if type(d1) != type(d1):
-            raise TypesMismatched('`d1` and `d2` must be the same type. Currently: {} and {}'.format(type(d1), type(d2)))
+            raise TypesMismatched(
+                "`d1` and `d2` must be the same type. Currently: {} and {}".format(
+                    type(d1), type(d2)
+                )
+            )
         elif isinstance(d1, dict):
             diffs = self.compare_objects(d1, d2, item=item, tolerance=tolerance)
         elif isinstance(d1, list) or isinstance(d1, set):
-            diffs = self.compare_lists_of_objects(self, d1, d2, item=item, tolerance=tolerance)
+            diffs = self.compare_lists_of_objects(
+                self, d1, d2, item=item, tolerance=tolerance
+            )
         else:
-            raise NotImplementedError('Only data of types `list`, `set`, or `dict` are supported.')
+            raise NotImplementedError(
+                "Only data of types `list`, `set`, or `dict` are supported."
+            )
 
         self.add_diffs(path, diffs)
 
-
     def add_diffs(self, path, diffs):
-        self.diffs.append({'path': path, 'diffs': diffs})
-
+        self.diffs.append({"path": path, "diffs": diffs})
 
     def get_diffs(self):
         return self.diffs
 
-
-    def compare_lists_of_objects(self, l1, l2, element='element', content='content',
-                                 item=None, tolerance=None):
+    def compare_lists_of_objects(
+        self, l1, l2, element="element", content="content", item=None, tolerance=None
+    ):
 
         # Changes list to dict based on given key_attr and content_attr values.
         d1, d2 = self._l2d(l1, l2, element, content)
 
         return self.compare_objects(d1, d2, item=item, tolerance=tolerance)
 
-
     def compare_objects(self, d1, d2, item=None, tolerance=None):
 
         tolerance = tolerance or 0
 
         if isinstance(d1, list) and isinstance(d2, list):
-            otype = 'set'
+            otype = "set"
             d1, d2 = set(d1), set(d2)
         elif isinstance(d1, set) and isinstance(d1, set):
-            otype = 'set'
+            otype = "set"
             pass
         elif isinstance(d1, dict) and isinstance(d1, dict):
-            otype = 'dict'
+            otype = "dict"
         else:
-            raise AttributeError('Unsupported object types provided.  Supports `list`, `set`, or `dict`')
-
+            raise AttributeError(
+                "Unsupported object types provided.  Supports `list`, `set`, or `dict`"
+            )
 
         diffs = diff(d1, d2, tolerance=tolerance)
 
         return self.format_diffs(diffs, otype, item)
-
 
     @staticmethod
     def format_diffs(diffs, otype, item):
@@ -126,33 +129,63 @@ class CompareDiffs():
             new = not location
 
             if ctype == "change":
-                element = ".".join([str(i) for i in location]) if isinstance(location, list) else location
+                element = (
+                    ".".join([str(i) for i in location])
+                    if isinstance(location, list)
+                    else location
+                )
                 item = item or location[0] if isinstance(location, list) else location
-                results.append({'type': ctype, 'item': item, 'element': element, 'before': details[0], 'after': details[1]})
+                results.append(
+                    {
+                        "type": ctype,
+                        "item": item,
+                        "element": element,
+                        "before": details[0],
+                        "after": details[1],
+                    }
+                )
             else:
                 for detail in details:
 
                     content = detail[1]
 
-                    if otype == 'dict' and new:
-                        element = '.'.join(detail[0]) if isinstance(detail[0], list) else detail[0]
+                    if otype == "dict" and new:
+                        element = (
+                            ".".join(detail[0])
+                            if isinstance(detail[0], list)
+                            else detail[0]
+                        )
                         item = item or detail[0]
                         content = detail[1][0]
-                    elif otype == 'dict':
-                        elements = ['.'.join([str(i) for i in location]) if isinstance(location, list) else str(location)]
-                        elements += ['.'.join(detail[0]) if isinstance(detail[0], list) else str(detail[0])]
-                        element = '.'.join(elements)
+                    elif otype == "dict":
+                        elements = [
+                            ".".join([str(i) for i in location])
+                            if isinstance(location, list)
+                            else str(location)
+                        ]
+                        elements += [
+                            ".".join(detail[0])
+                            if isinstance(detail[0], list)
+                            else str(detail[0])
+                        ]
+                        element = ".".join(elements)
                         item = item or elements[0]
                         content = detail[1]
                     else:
-                        item = ''.join(detail[1])
+                        item = "".join(detail[1])
                         element = None
                         content = None
 
-                    results.append({'type': ctype, 'item': item, 'element': element, 'content': content})
+                    results.append(
+                        {
+                            "type": ctype,
+                            "item": item,
+                            "element": element,
+                            "content": content,
+                        }
+                    )
 
         return results
-
 
     @staticmethod
     def _l2d(l1, l2, key_attr, content_attr):
@@ -172,13 +205,30 @@ class CompareDiffs():
                 o[k] = [c]
 
         if isinstance(content_attr, str):
-            _ = [adder(i[key_attr], i[content_attr], d1) for i in l1 if key_attr in i and len(i[key_attr])]
-            _ = [adder(i[key_attr], i[content_attr], d2) for i in l2 if key_attr in i and len(i[key_attr])]
+            _ = [
+                adder(i[key_attr], i[content_attr], d1)
+                for i in l1
+                if key_attr in i and len(i[key_attr])
+            ]
+            _ = [
+                adder(i[key_attr], i[content_attr], d2)
+                for i in l2
+                if key_attr in i and len(i[key_attr])
+            ]
         elif isinstance(content_attr, list):
-            _ = [adder(i[key_attr], {i[v] for v in content_attr}, d1) for i in l1 if i[key_attr] and len(i[key_attr])]
-            _ = [adder(i[key_attr], {i[v] for v in content_attr}, d2) for i in l2 if i[key_attr] and len(i[key_attr])]
+            _ = [
+                adder(i[key_attr], {i[v] for v in content_attr}, d1)
+                for i in l1
+                if i[key_attr] and len(i[key_attr])
+            ]
+            _ = [
+                adder(i[key_attr], {i[v] for v in content_attr}, d2)
+                for i in l2
+                if i[key_attr] and len(i[key_attr])
+            ]
         else:
-            raise NotImplementedError("`content_attr` can only be of type `str` or `list`")
+            raise NotImplementedError(
+                "`content_attr` can only be of type `str` or `list`"
+            )
 
-
-        return d1,d2
+        return d1, d2

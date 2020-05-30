@@ -25,22 +25,29 @@
 
 class IncorrectParameters(Exception):
     """Base class for exceptions in this module."""
+
     pass  # noqa
 
 
 class ModuleNotImplemented(Exception):
     """Base class for exceptions in this module."""
+
     pass  # noqa
 
 
 class StrategyNotImplemented(Exception):
     """Base class for exceptions in this module."""
+
     pass  # noqa
+
 
 class TypesMismatched(Exception):
     """Base class for exceptions in this module."""
+
     pass  # noqa
 
+
 class IncorectConfigException(Exception):
-    '''An exception for a missing or invalid URL.'''
+    """An exception for a missing or invalid URL."""
+
     pass  # noqa

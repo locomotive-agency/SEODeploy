@@ -28,7 +28,7 @@ from parse_it import ParseIt
 from .exceptions import ModuleNotImplemented
 
 
-class Config():
+class Config:
 
     """ Class for loading configuration data from Yaml settings file and module information.
 
@@ -39,8 +39,16 @@ class Config():
     """
 
     def __init__(self, module=None, mdirs=None, cfiles=None):
-        self.mdirs = mdirs + ['seotesting/modules', '.modules'] if mdirs else ['seotesting/modules', '.modules']
-        self.cfiles = cfiles + ['seotesting_config.yaml'] if cfiles else ['seotesting_config.yaml']
+        self.mdirs = (
+            mdirs + ["seotesting/modules", ".modules"]
+            if mdirs
+            else ["seotesting/modules", ".modules"]
+        )
+        self.cfiles = (
+            cfiles + ["seotesting_config.yaml"]
+            if cfiles
+            else ["seotesting_config.yaml"]
+        )
         self.modules = None
         self.module = module
 
@@ -48,35 +56,41 @@ class Config():
 
         self.build()
 
-
     def _load_modules(self):
         self.modules = []
         for mdir in self.mdirs:
             try:
-                self.modules.extend([module for module in os.listdir(mdir)
-                                     if os.path.isdir(os.path.join(mdir, module))])
+                self.modules.extend(
+                    [
+                        module
+                        for module in os.listdir(mdir)
+                        if os.path.isdir(os.path.join(mdir, module))
+                    ]
+                )
                 break
             except FileNotFoundError:
                 pass
 
-
     def _load_configs(self):
         for cfile in self.cfiles:
             try:
-                parser = ParseIt(config_location=cfile, config_type_priority=['yaml'])
+                parser = ParseIt(config_location=cfile, config_type_priority=["yaml"])
                 config = parser.read_all_configuration_variables()
 
                 # TODO: Need to namespace config settings at some point as this currently
                 # can lead to collisions
                 if self.module:
                     if self.module in self.modules:
-                        modules = config.pop('modules_activated')
+                        modules = config.pop("modules_activated")
                         self.__setattr__(self.module, Config())
                         for name, value in modules[self.module].items():
                             self.__getattribute__(self.module).__setattr__(name, value)
                     else:
-                        raise ModuleNotImplemented("The module `{}` was not found in the modules directory."
-                                                   .format(self.module))
+                        raise ModuleNotImplemented(
+                            "The module `{}` was not found in the modules directory.".format(
+                                self.module
+                            )
+                        )
 
                 for name, value in config.items():
                     self.__setattr__(name, value)
@@ -90,10 +104,8 @@ class Config():
         self._load_modules()
         self._load_configs()
 
-
     def __setattr__(self, name, value):
         super().__setattr__(name.lower(), value)
-
 
     def __getattribute__(self, name):
         return super().__getattribute__(name.lower())

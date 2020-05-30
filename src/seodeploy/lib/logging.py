@@ -30,19 +30,18 @@ from .config import Config
 CONFIG = Config()
 
 
-
-
 # file output
-FILE_HANDLER = logging.FileHandler(filename=CONFIG.LOG_FILE or 'seotesting.error.log')
+FILE_HANDLER = logging.FileHandler(filename=CONFIG.LOG_FILE or "seotesting.error.log")
 
-FILE_HANDLER.setFormatter(Formatter('%(asctime)s [%(levelname)s]'
-                                    '  %(name)s,%(lineno)s  %(message)s'))
+FILE_HANDLER.setFormatter(
+    Formatter("%(asctime)s [%(levelname)s]" "  %(name)s,%(lineno)s  %(message)s")
+)
 FILE_HANDLER.setLevel(DEBUG)
 
 # console output
 CONSOLE_HANDLER = logging.StreamHandler()
 CONSOLE_HANDLER.setLevel(INFO)
-CONSOLE_HANDLER.setFormatter(Formatter('%(message)s'))
+CONSOLE_HANDLER.setFormatter(Formatter("%(message)s"))
 
 
 SDCT_LOGGER = getLogger(CONFIG.SEOTESTING_NAME)

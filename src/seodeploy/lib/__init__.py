@@ -34,8 +34,7 @@ from seodeploy.lib.config import Config
 _LOG = get_logger(__name__)
 
 
-class SEOTesting():
-
+class SEOTesting:
     def __init__(self, config=None):
 
         self.config = config or Config()
@@ -47,18 +46,17 @@ class SEOTesting():
         self.summary = None
         self.passing = True
 
-
     def execute(self, samples_filename=None):
 
-        self.summary = {'started': str(datetime.now())}
+        self.summary = {"started": str(datetime.now())}
 
         # Get Sample Paths
         self.samples = get_sample_paths(self.config, filename=samples_filename)
-        self.summary.update({'samples': len(self.samples)})
+        self.summary.update({"samples": len(self.samples)})
 
         # get Modules
         self.modules = self.module_config.module_names
-        self.summary.update({'modules': ','.join(self.modules)})
+        self.summary.update({"modules": ",".join(self.modules)})
 
         for active_module in self.module_config.active_modules:
 
@@ -69,14 +67,13 @@ class SEOTesting():
             self.update_messages(messages)
             self.update_passing(passing)
 
-            self.summary.update({'{} passing: '.format(module.modulename): passing})
+            self.summary.update({"{} passing: ".format(module.modulename): passing})
 
-        self.get_messages().to_csv('output.csv', index=False)
+        self.get_messages().to_csv("output.csv", index=False)
 
         self.print_summary()
 
         return self.passing
-
 
     def update_messages(self, messages):
         self.messages.extend(messages)
@@ -87,9 +84,8 @@ class SEOTesting():
     def get_messages(self):
         return pd.DataFrame(self.messages)
 
-
     def print_summary(self):
-        print('Run CSV saved to:', 'output.csv')
+        print("Run CSV saved to:", "output.csv")
         print()
-        print('Run Summary')
+        print("Run Summary")
         print(json.dumps(self.summary, indent=2))

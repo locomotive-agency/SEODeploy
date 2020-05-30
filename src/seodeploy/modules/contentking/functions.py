@@ -39,7 +39,7 @@ _LOG = get_logger(__name__)
 
 
 def load_report(report, config, **data):
-    '''
+    """
         Description: Receives a report type and names parameters passed to function.
         Requests from ContentKing Reporting API.
 
@@ -65,18 +65,18 @@ def load_report(report, config, **data):
             * Should this be turned into a class?
             * Need to add rate limit to generator function `get_paged_reports`.
 
-    '''
+    """
 
     def api_reports(report, data=None):
         reports = {
-            'websites': 'websites',
-            'alerts': 'websites/{id}/alerts',
-            'issues': 'websites/{id}/issues',
-            'segments': 'websites/{id}/segments',
-            'statistics': 'websites/{id}/statistics/website',
-            'statistics:segment': 'websites/{id}/statistics/segment:{segment_id}',
-            'url': 'websites/{id}/pages?url={url}',
-            'pages': 'websites/{id}/pages/list'
+            "websites": "websites",
+            "alerts": "websites/{id}/alerts",
+            "issues": "websites/{id}/issues",
+            "segments": "websites/{id}/segments",
+            "statistics": "websites/{id}/statistics/website",
+            "statistics:segment": "websites/{id}/statistics/segment:{segment_id}",
+            "url": "websites/{id}/pages?url={url}",
+            "pages": "websites/{id}/pages/list",
         }
         return reports.get(report, "404").format(**data)
 
@@ -85,17 +85,22 @@ def load_report(report, config, **data):
         api_url = urljoin(config.contentking.ENDPOINT, api_reports(report, data))
 
         headers = {
-            'User-Agent': 'Python CI/CD Testing',
-            'Authorization': 'token {}'.format(config.contentking.REPORT_API_KEY),
-            'Content-Type': 'application/json'
+            "User-Agent": "Python CI/CD Testing",
+            "Authorization": "token {}".format(config.contentking.REPORT_API_KEY),
+            "Content-Type": "application/json",
         }
 
         tries = 3
         for i in range(tries):
 
             try:
-                response = requests.get(api_url, params=query_string, headers=headers,
-                                        timeout=config.contentking.API_TIMEOUT, verify=False)
+                response = requests.get(
+                    api_url,
+                    params=query_string,
+                    headers=headers,
+                    timeout=config.contentking.API_TIMEOUT,
+                    verify=False,
+                )
 
                 # Raise HTTPError if not 20X
                 response.raise_for_status()
@@ -111,13 +116,13 @@ def load_report(report, config, **data):
                 time.sleep((i + 1) * 10)
 
             except requests.exceptions.HTTPError as err:
-                api_message = response.json()['message']
+                api_message = response.json()["message"]
                 _LOG.error("{} ({})".format(str(err), api_message))
                 break
 
             # If it is an unknown error, let's break and raise exception.
             except Exception as err:  # noqa
-                _LOG.error('Unspecified ContentKing Error:' + str(err))
+                _LOG.error("Unspecified ContentKing Error:" + str(err))
                 raise ContentKingAPIError(str(err))
 
         if response and response.status_code == 200:
@@ -125,17 +130,16 @@ def load_report(report, config, **data):
 
         return None
 
-
     def get_paged_report(report, config, data):
         page = 1
-        per_page = data.get('per_page', 100)
+        per_page = data.get("per_page", 100)
         while True:
-            query_string = {'page': page, 'per_page': per_page}
+            query_string = {"page": page, "per_page": per_page}
 
             result = get_report(report, config, data, query_string=query_string)
 
             if result:
-                urls = result['urls']
+                urls = result["urls"]
                 yield urls
 
                 time.sleep(2)  # Arbitrarily selected wait.
@@ -149,7 +153,7 @@ def load_report(report, config, **data):
                 yield []
                 break
 
-    paged_reports = ['pages']
+    paged_reports = ["pages"]
 
     if report in paged_reports:
         return get_paged_report(report, config, data)
@@ -159,12 +163,12 @@ def load_report(report, config, **data):
 
 def _notify_change(url, config):
 
-    api_url = urljoin(config.contentking.ENDPOINT, 'check_url')
+    api_url = urljoin(config.contentking.ENDPOINT, "check_url")
 
     headers = {
-        'User-Agent': 'Python CI/CD Testing',
-        'Authorization': 'token {}'.format(config.contentking.CMS_API_KEY),
-        'Content-Type': 'application/json',
+        "User-Agent": "Python CI/CD Testing",
+        "Authorization": "token {}".format(config.contentking.CMS_API_KEY),
+        "Content-Type": "application/json",
     }
 
     data = json.dumps({"url": url})
@@ -173,8 +177,13 @@ def _notify_change(url, config):
     for i in range(tries):
 
         try:
-            response = requests.post(api_url, data=data, headers=headers,
-                                     timeout=config.contentking.API_TIMEOUT, verify=False)
+            response = requests.post(
+                api_url,
+                data=data,
+                headers=headers,
+                timeout=config.contentking.API_TIMEOUT,
+                verify=False,
+            )
             # Raise HTTPError if not 20X
             response.raise_for_status()
             break
@@ -189,13 +198,13 @@ def _notify_change(url, config):
             time.sleep((i + 1) * 10)
 
         except requests.exceptions.HTTPError as err:
-            api_message = response.json()['message']
+            api_message = response.json()["message"]
             _LOG.error("{} ({})".format(str(err), api_message))
             break
 
         # Just want to catch any other errors to the log, so we can add in here.
         except Exception as err:  # noqa
-            _LOG.error('Unspecified Error:' + str(err))
+            _LOG.error("Unspecified Error:" + str(err))
             break
 
     if response and response.status_code == 200:
@@ -245,7 +254,9 @@ def run_path_pings(sample_paths, config):
     """
 
     # Ping Content King for Production and Staging URLs
-    batches = group_batcher(sample_paths, list, config.contentking.BATCH_SIZE, fill=None)
+    batches = group_batcher(
+        sample_paths, list, config.contentking.BATCH_SIZE, fill=None
+    )
     prod_ping_results = {}
     stage_ping_results = {}
 
@@ -259,11 +270,15 @@ def run_path_pings(sample_paths, config):
 
     # Check results
     if prod_ping_results:
-        sent_percent = round((len([k for k, v in prod_ping_results.items() if v == 'ok']) / sent_total) * 100, 2)
+        sent_percent = round(
+            (len([k for k, v in prod_ping_results.items() if v == "ok"]) / sent_total)
+            * 100,
+            2,
+        )
         _LOG.info("{}% of production URLs successfully sent.".format(sent_percent))
 
         if sent_percent < 100:
-            prod_sent_errors = [k for k, v in prod_ping_results.items() if v == 'error']
+            prod_sent_errors = [k for k, v in prod_ping_results.items() if v == "error"]
             for i in prod_sent_errors:
                 _LOG.error("Production URL Ping Error: {}".format(i))
         else:
@@ -272,11 +287,17 @@ def run_path_pings(sample_paths, config):
         _LOG.error("No results from Production pings.")
 
     if stage_ping_results:
-        sent_percent = round((len([k for k, v in stage_ping_results.items() if v == 'ok']) / sent_total) * 100, 2)
+        sent_percent = round(
+            (len([k for k, v in stage_ping_results.items() if v == "ok"]) / sent_total)
+            * 100,
+            2,
+        )
         _LOG.info("{}% of staging URLs successfully sent.".format(sent_percent))
 
         if sent_percent < 100:
-            stage_sent_errors = [k for k, v in stage_ping_results.items() if v == 'error']
+            stage_sent_errors = [
+                k for k, v in stage_ping_results.items() if v == "error"
+            ]
             for i in stage_sent_errors:
                 _LOG.error("Staging URL Ping Error: {}".format(i))
         else:
@@ -286,8 +307,10 @@ def run_path_pings(sample_paths, config):
         _LOG.error("No results from Staging pings.")
 
     if prod_sent_errors or stage_sent_errors:
-        raise ContentKingAPIError("There were issues sending the production and/or staging URLs to COntentKing. "
-                                  "Please check the error log.")
+        raise ContentKingAPIError(
+            "There were issues sending the production and/or staging URLs to COntentKing. "
+            "Please check the error log."
+        )
 
     return True
 
@@ -307,32 +330,60 @@ def _check_results(paths, config=None, data=None):
         # Grab the first
         path = unchecked.pop(0)
 
-        url = urljoin(data['host'], path)
+        url = urljoin(data["host"], path)
 
         try:
 
-            url_data = load_report('url', config, id=data['site_id'], url=url)
+            url_data = load_report("url", config, id=data["site_id"], url=url)
 
-            if url_data and data['time_col'] in url_data:
-                last_check = datetime.fromisoformat(url_data[data['time_col']]).astimezone(data['time_zone'])
-                time_delta = (data['start_time'] - last_check).total_seconds()
+            if url_data and data["time_col"] in url_data:
+                last_check = datetime.fromisoformat(
+                    url_data[data["time_col"]]
+                ).astimezone(data["time_zone"])
+                time_delta = (data["start_time"] - last_check).total_seconds()
 
                 if time_delta < 0:
                     # Has been crawled prior to start of process.
-                    content = ["{}--/--{}".format(i['type'], i['content']) for i in url_data['content']]
-                    issues = [i['name'] for i in url_data['open_issues']]
-                    results.append({'url': url, 'path': path, 'issues': issues, 'content': content, 'error': None})
+                    content = [
+                        "{}--/--{}".format(i["type"], i["content"])
+                        for i in url_data["content"]
+                    ]
+                    issues = [i["name"] for i in url_data["open_issues"]]
+                    results.append(
+                        {
+                            "url": url,
+                            "path": path,
+                            "issues": issues,
+                            "content": content,
+                            "error": None,
+                        }
+                    )
                 else:
                     # We have a good response, but the URL has not been crawled yet.
                     # Add to the back of the line.
                     unchecked.append(path)
 
             else:
-                results.append({'url': url, 'path': path, 'issues': [], 'content': [],
-                                'error': "Invalid response from API URL report."})
+                results.append(
+                    {
+                        "url": url,
+                        "path": path,
+                        "issues": [],
+                        "content": [],
+                        "error": "Invalid response from API URL report.",
+                    }
+                )
 
         except Exception as e:  # noqa
-            results.append({'url': url, 'path': path, 'issues': [], 'content': [], 'error': "Unkown Error: " + str(e)})
+            results.append(
+                {
+                    "url": url,
+                    "path": path,
+                    "issues": [],
+                    "content": [],
+                    "error": "Unkown Error: " + str(e),
+                }
+            )
 
     return results
 
@@ -347,7 +398,11 @@ def _compare_diffs(prod, stage, typ, config):
     diffs = [i for i in stage_issues if i not in prod_issues]
 
     if typ == "content":
-        return [d for d in diffs if not config.contentking.IGNORE_CONTENT[d.split('--/--')[0]]]
+        return [
+            d
+            for d in diffs
+            if not config.contentking.IGNORE_CONTENT[d.split("--/--")[0]]
+        ]
 
     return [d for d in diffs if not config.contentking.IGNORE_ISSUES[d]]
 
@@ -371,19 +426,36 @@ def _compare_results(sample_paths, prod, stage, config):
 
             if content_diffs:
                 _LOG.info("{} contains content differences.".format(path))
-                results.extend([{'path': path, 'url': stage[path]['url'],
-                                 'issue': "Difference: " + d} for d in content_diffs])
+                results.extend(
+                    [
+                        {
+                            "path": path,
+                            "url": stage[path]["url"],
+                            "issue": "Difference: " + d,
+                        }
+                        for d in content_diffs
+                    ]
+                )
                 passing = False
             if issue_diffs:
                 _LOG.info("{} contains issue differences.".format(path))
-                results.extend([{'path': path, 'url': stage[path]['url'],
-                                 'issue': "Difference: " + d} for d in issue_diffs])
+                results.extend(
+                    [
+                        {
+                            "path": path,
+                            "url": stage[path]["url"],
+                            "issue": "Difference: " + d,
+                        }
+                        for d in issue_diffs
+                    ]
+                )
                 passing = False
 
         else:
-            _LOG.error("{} not found in both production and staging results.".format(path))
+            _LOG.error(
+                "{} not found in both production and staging results.".format(path)
+            )
             passing = False
-
 
     return passing, results
 
@@ -398,11 +470,11 @@ def _process_results(data):
     result = {}
 
     for i in data:
-        if i['error']:
-            _LOG.error("URL: {} encountered an error: {}".format(i['url'], i['error']))
+        if i["error"]:
+            _LOG.error("URL: {} encountered an error: {}".format(i["url"], i["error"]))
             # TODO: Probably need to fail if there are errors.
         else:
-            result[i.pop('path')] = i
+            result[i.pop("path")] = i
 
     return result
 
@@ -410,11 +482,12 @@ def _process_results(data):
 def format_results(data):
 
     return {
-        'content': [{'element': c['type'], 'content': c['content']} for c in data['content']],
-        'schema_org': data['schema_org'],
-        'open_issues': [c['name'] for c in data['open_issues']]
+        "content": [
+            {"element": c["type"], "content": c["content"]} for c in data["content"]
+        ],
+        "schema_org": data["schema_org"],
+        "open_issues": [c["name"] for c in data["open_issues"]],
     }
-
 
 
 def run_check_results(sample_paths, start_time, time_zone, config):
@@ -431,22 +504,24 @@ def run_check_results(sample_paths, start_time, time_zone, config):
         Default timezone to keep times the same.
     """
 
-    batches = group_batcher(sample_paths, list, config.contentking.BATCH_SIZE, fill=None)
+    batches = group_batcher(
+        sample_paths, list, config.contentking.BATCH_SIZE, fill=None
+    )
 
     prod_data = {
-        'start_time': start_time,
-        'time_zone': time_zone,
-        'site_id': config.contentking.PROD_SITE_ID,
-        'host': config.contentking.PROD_HOST,
-        'time_col': config.contentking.TIME_COL
+        "start_time": start_time,
+        "time_zone": time_zone,
+        "site_id": config.contentking.PROD_SITE_ID,
+        "host": config.contentking.PROD_HOST,
+        "time_col": config.contentking.TIME_COL,
     }
 
     stage_data = {
-        'start_time': start_time,
-        'time_zone': time_zone,
-        'site_id': config.contentking.STAGE_SITE_ID,
-        'host': config.contentking.STAGE_HOST,
-        'time_col': config.contentking.TIME_COL
+        "start_time": start_time,
+        "time_zone": time_zone,
+        "site_id": config.contentking.STAGE_SITE_ID,
+        "host": config.contentking.STAGE_HOST,
+        "time_col": config.contentking.TIME_COL,
     }
 
     prod_result = []
@@ -455,12 +530,15 @@ def run_check_results(sample_paths, start_time, time_zone, config):
     # Iterates batches to send to API for data update.
     for batch in tqdm(batches, desc="Checking crawl status of URLs"):
 
-        prod_result.extend(mp_list_map(batch, _check_results, config=config, data=prod_data))
-        stage_result.extend(mp_list_map(batch, _check_results, config=config, data=stage_data))
+        prod_result.extend(
+            mp_list_map(batch, _check_results, config=config, data=prod_data)
+        )
+        stage_result.extend(
+            mp_list_map(batch, _check_results, config=config, data=stage_data)
+        )
 
         # TODO: Can adjust this as necessary, pull out to config, or remove.
         time.sleep(config.contentking.BATCH_WAIT)
-
 
     # Review for Errors and process into dictionary:
     prod_result = _process_results(prod_result)

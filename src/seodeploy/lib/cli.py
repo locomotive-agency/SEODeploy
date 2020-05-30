@@ -50,14 +50,30 @@ def cli():
 
 # Create Samples CLI.
 @click.command()
-@click.option('--site_id', type=str, default=None,
-              help='If given, the this will sample URLs from your ContentKing site, up to the limit set.')
-@click.option('--sitemap_url', type=str, default=None,
-              help='If given, the this will sample URLs from the specified sitemap or sitemap index.')
-@click.option('--limit', type=int, default=None,
-              help='Limits the output to this many total paths. Overrides limit set in seotesting_config.yaml.')
-@click.option('--samples_filename', type=str, default=None,
-              help='Filename for the outputted txt file. Overrides filename set in seotesting_config.yaml.')
+@click.option(
+    "--site_id",
+    type=str,
+    default=None,
+    help="If given, the this will sample URLs from your ContentKing site, up to the limit set.",
+)
+@click.option(
+    "--sitemap_url",
+    type=str,
+    default=None,
+    help="If given, the this will sample URLs from the specified sitemap or sitemap index.",
+)
+@click.option(
+    "--limit",
+    type=int,
+    default=None,
+    help="Limits the output to this many total paths. Overrides limit set in seotesting_config.yaml.",
+)
+@click.option(
+    "--samples_filename",
+    type=str,
+    default=None,
+    help="Filename for the outputted txt file. Overrides filename set in seotesting_config.yaml.",
+)
 def sample(site_id, sitemap_url, limit=None, samples_filename=None):
 
     """Creates a file of sample paths to use in testing.
@@ -82,23 +98,31 @@ def sample(site_id, sitemap_url, limit=None, samples_filename=None):
 
     # Main function
     if site_id:
-        samples = get_sample_paths(CONFIG, site_id=site_id, limit=limit, filename=samples_filename)
-        _LOG.info('Top 5 out of {} sampled Paths for {}'.format(len(samples), site_id))
+        samples = get_sample_paths(
+            CONFIG, site_id=site_id, limit=limit, filename=samples_filename
+        )
+        _LOG.info("Top 5 out of {} sampled Paths for {}".format(len(samples), site_id))
         _LOG.info(json.dumps(samples[:5], indent=4))
     else:
-        samples = get_sample_paths(CONFIG, sitemap_url=sitemap_url, limit=limit, filename=samples_filename)
-        _LOG.info('Top 5 out of {} sampled Paths for {}'.format(len(samples), sitemap_url))
+        samples = get_sample_paths(
+            CONFIG, sitemap_url=sitemap_url, limit=limit, filename=samples_filename
+        )
+        _LOG.info(
+            "Top 5 out of {} sampled Paths for {}".format(len(samples), sitemap_url)
+        )
         _LOG.info(json.dumps(samples[:5], indent=4))
-
-
 
     return 0
 
 
 # Main Test Function
 @click.command()
-@click.option('--samples_filename', type=str, default=None,
-              help="Filename for the samples file. Overrides filename set in seotesting_config.yaml.")
+@click.option(
+    "--samples_filename",
+    type=str,
+    default=None,
+    help="Filename for the samples file. Overrides filename set in seotesting_config.yaml.",
+)
 def execute(samples_filename=None):
 
     """Runs a difftest of staging vs production based on
@@ -115,8 +139,10 @@ def execute(samples_filename=None):
 
     # Error Cheching
     if not samples_filename:
-        raise IncorrectParameters("You must provide either `samples_filename` " +
-                                  "or set `samples_filename` in `seotesting_config.yaml`.")
+        raise IncorrectParameters(
+            "You must provide either `samples_filename` "
+            + "or set `samples_filename` in `seotesting_config.yaml`."
+        )
 
     # Main function
     seotesting = SEOTesting(CONFIG)

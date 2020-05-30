@@ -27,13 +27,16 @@ import asyncio
 import threading
 import nest_asyncio
 
-from seodeploy.lib.logging import get_logger # TODO: Fix this
+from seodeploy.lib.logging import get_logger  # TODO: Fix this
 from seodeploy.lib.config import Config
 
 CONFIG = Config(module="headless")
 
 import os
-os.environ["PYPPETEER_CHROMIUM_REVISION"] = str(CONFIG.headless.PYPPETEER_CHROMIUM_REVISION)
+
+os.environ["PYPPETEER_CHROMIUM_REVISION"] = str(
+    CONFIG.headless.PYPPETEER_CHROMIUM_REVISION
+)
 
 from pyppeteer.errors import NetworkError
 from pyppeteer import launch
@@ -52,8 +55,7 @@ except NameError:
     pass
 
 
-class HeadlessChrome():
-
+class HeadlessChrome:
     def __init__(self, config=None):
 
         self.browser = None
@@ -66,57 +68,51 @@ class HeadlessChrome():
         asyncio.set_event_loop(asyncio.new_event_loop())
         asyncio.get_event_loop().run_until_complete(self.build_browser())
 
-
     async def build_browser(self):
         # browser = await launch()
-        browser = await launch( args=['--no-sandbox'],
-                                headless=True
-                               )
+        browser = await launch(args=["--no-sandbox"], headless=True)
 
         self.browser = await browser.createIncognitoBrowserContext()
 
-
-
     def render(self, url):
 
-        result = {'page_data': None, 'error': None}
+        result = {"page_data": None, "error": None}
 
         # Multiple tries (3)
         for _ in range(3):
             try:
-                result['page_data'] = format_results(asyncio.get_event_loop().run_until_complete(self._render(url)))
+                result["page_data"] = format_results(
+                    asyncio.get_event_loop().run_until_complete(self._render(url))
+                )
                 break
 
             except NetworkError:
-                #_LOG.error('Network Error trying url: ', url)
+                # _LOG.error('Network Error trying url: ', url)
                 asyncio.set_event_loop(asyncio.new_event_loop())
                 pass
 
             except URLMissingException:
-                error = 'A valid URL was not supplied: ' + url
+                error = "A valid URL was not supplied: " + url
                 _LOG.error(error)
-                result['error'] = error
+                result["error"] = error
                 break
 
             except Exception as e:
-                error = 'An unknown render exception has occured: ' + str(e)
+                error = "An unknown render exception has occured: " + str(e)
                 _LOG.error(error)
-                result['error'] = error
+                result["error"] = error
 
         else:
-            error = 'Max tries exhausted for: ' + url
+            error = "Max tries exhausted for: " + url
             _LOG.error(error)
-            result['error'] = error
-
+            result["error"] = error
 
         return result
-
-
 
     async def _render(self, url):
 
         if not url:
-            raise URLMissingException('A URL is required to render.')
+            raise URLMissingException("A URL is required to render.")
 
         await self._build_page(url)
         print("Navigating to:", url, "\n")
@@ -126,56 +122,57 @@ class HeadlessChrome():
         for key, expression in EXTRACTIONS.items():
             dom[key] = await self.page.evaluate(expression)
 
-        dom['metrics'] = await self._extract_performance_metrics()
-        dom['coverage'] = self._extract_coverage()
+        dom["metrics"] = await self._extract_performance_metrics()
+        dom["coverage"] = self._extract_coverage()
 
         # This removes elements from the page -- run last.
-        dom['content'] = await self._extract_content()
+        dom["content"] = await self._extract_content()
 
         await self._close_page()
 
         return dom
 
-
     async def _build_page(self, url):
 
         self.page = await self.browser.newPage()
-        await self.page.setBypassCSP(True) # Ignore content security issues.
+        await self.page.setBypassCSP(True)  # Ignore content security issues.
         await self.page.setUserAgent(USER_AGENT)
         await self.page.setViewport({"width": 360, "height": 640, "isMobile": True})
         await self.page.evaluateOnNewDocument(DOCUMENT_SCRIPTS)
 
-        self.client = await self.page.target.createCDPSession();
+        self.client = await self.page.target.createCDPSession()
 
         # Limit network to cosistent slow.
-        await self.client.send('Network.emulateNetworkConditions', NETWORK_PRESETS[self.network])
+        await self.client.send(
+            "Network.emulateNetworkConditions", NETWORK_PRESETS[self.network]
+        )
 
         # Enable performance reporting
-        await self.client.send('Performance.enable');
+        await self.client.send("Performance.enable")
 
         await self.page.coverage.startJSCoverage()
         await self.page.coverage.startCSSCoverage()
 
-        await self.page.goto(url, waitUntil='networkidle2', timeout=60000)
+        await self.page.goto(url, waitUntil="networkidle2", timeout=60000)
 
-        self.coverage['JSCoverage'] = await self.page.coverage.stopJSCoverage()
-        self.coverage['CSSCoverage'] = await self.page.coverage.stopCSSCoverage()
+        self.coverage["JSCoverage"] = await self.page.coverage.stopJSCoverage()
+        self.coverage["CSSCoverage"] = await self.page.coverage.stopCSSCoverage()
 
         # Small wait to ensure all is complete.
-        await self.page.waitFor(1000);
-
+        await self.page.waitFor(1000)
 
     async def _close_page(self):
         await self.page.close()
         self.page = None
         self.coverage = None
 
-
     async def _extract_content(self):
-        await self.page.evaluate("document.querySelectorAll('script, iframe, style, noscript, link').forEach(function(el){el.remove()})", force_expr=True)
+        await self.page.evaluate(
+            "document.querySelectorAll('script, iframe, style, noscript, link').forEach(function(el){el.remove()})",
+            force_expr=True,
+        )
         content = await self.page.evaluate("document.body.textContent", force_expr=True)
-        return ' '.join(content.split()).strip().lower()
-
+        return " ".join(content.split()).strip().lower()
 
     async def _extract_performance_metrics(self):
 
@@ -186,32 +183,37 @@ class HeadlessChrome():
         # metrics['pageMetrics'] = parse_numerical_dict(page_metrics)
 
         # Performance Metrics
-        perf_metrics = await self.client.send('Performance.getMetrics');
-        metrics['performanceMetrics'] = parse_numerical_dict({i['name']:i['value'] for i in perf_metrics['metrics'] if 'name' in i})
+        perf_metrics = await self.client.send("Performance.getMetrics")
+        metrics["performanceMetrics"] = parse_numerical_dict(
+            {i["name"]: i["value"] for i in perf_metrics["metrics"] if "name" in i}
+        )
 
         # Timing Metrics
-        timing_metrics = await self.page.evaluate("() => {return JSON.parse(JSON.stringify(window.performance.timing));}")
-        metrics['timing'] = parse_numerical_dict(parse_performance_timing(timing_metrics))
+        timing_metrics = await self.page.evaluate(
+            "() => {return JSON.parse(JSON.stringify(window.performance.timing));}"
+        )
+        metrics["timing"] = parse_numerical_dict(
+            parse_performance_timing(timing_metrics)
+        )
 
         # Calculated Metrics
         calculated = await self._calculated_metrics(metrics)
-        metrics['calculated'] = parse_numerical_dict(calculated)
+        metrics["calculated"] = parse_numerical_dict(calculated)
 
         return metrics
-
 
     async def _calculated_metrics(self, metrics):
         result = {}
         expressions = {
-                    'timeToFirstByte':          (metrics['timing']['responseStart'], ),
-                    'firstPaint':               "() => {return performance.getEntriesByName('first-paint')[0].startTime;}",
-                    'firstContentfulPaint':     "() => {return performance.getEntriesByName('first-contentful-paint')[0].startTime;}",
-                    'largestContentfulPaint':   "() => {return window.largestContentfulPaint;}",
-                    'timeToInteractive':        (metrics['timing']['domInteractive'], ),
-                    'domContentLoaded':         (metrics['timing']['domContentLoadedEventStart'], ),
-                    'domComplete':              (metrics['timing']['domComplete'], ),
-                    'cumulativeLayoutShift':    "() => {return window.cumulativeLayoutShiftScore;}",
-                    }
+            "timeToFirstByte": (metrics["timing"]["responseStart"],),
+            "firstPaint": "() => {return performance.getEntriesByName('first-paint')[0].startTime;}",
+            "firstContentfulPaint": "() => {return performance.getEntriesByName('first-contentful-paint')[0].startTime;}",
+            "largestContentfulPaint": "() => {return window.largestContentfulPaint;}",
+            "timeToInteractive": (metrics["timing"]["domInteractive"],),
+            "domContentLoaded": (metrics["timing"]["domContentLoadedEventStart"],),
+            "domComplete": (metrics["timing"]["domComplete"],),
+            "cumulativeLayoutShift": "() => {return window.cumulativeLayoutShiftScore;}",
+        }
 
         for key, expression in expressions.items():
             if isinstance(expression, str):
@@ -219,11 +221,10 @@ class HeadlessChrome():
             else:
                 result[key] = expression[0]
 
-        return {k:v for k,v in result.items()}
-
+        return {k: v for k, v in result.items()}
 
     def _extract_coverage(self):
-        return parse_coverage(self.coverage['JSCoverage'], self.coverage['CSSCoverage'])
+        return parse_coverage(self.coverage["JSCoverage"], self.coverage["CSSCoverage"])
 
 
 def render_url(url):

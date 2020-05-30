@@ -24,8 +24,8 @@
 
 
 from seodeploy.lib.logging import get_logger
-from seodeploy.lib.helpers import group_batcher, mp_list_map # noqa
-from .exceptions import ExampleExceptions # noqa
+from seodeploy.lib.helpers import group_batcher, mp_list_map  # noqa
+from .exceptions import ExampleExceptions  # noqa
 
 
 _LOG = get_logger(__name__)
