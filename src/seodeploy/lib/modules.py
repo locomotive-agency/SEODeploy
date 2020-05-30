@@ -77,7 +77,7 @@ class ModuleBase():
                 error = path_data['error']
 
                 if error:
-                    self.errors.append{{'path': path, 'error': error}}
+                    self.errors.append({'path': path, 'error': error})
 
                 else:
                     for mapping in self.mappings:
@@ -85,7 +85,7 @@ class ModuleBase():
                             self.iter_mappings(diffmodule, mapping, path_data)
                         except IncorectConfigException as e:
                             # TODO: Placeholder to dump page_data here for easy reload.
-                            self.errors.append{{'path': path, 'error': str(e)}}
+                            self.errors.append({'path': path, 'error': str(e)})
                             break
 
 
@@ -104,13 +104,12 @@ class ModuleBase():
         d1 = get(loc, path_data['prod'])
         d2 = get(loc, path_data['stage'])
 
-        if exc is not None and d1 and d2:
+        if exc is not None and d1 and d2 and item:
 
             if isinstance(exc, bool):
                 if not exc:
                     diffmodule.compare(path, item, d1, d2, tolerance=None)
             elif isinstance(exc, float):
-                if item
                 diffmodule.compare(path, item, d1, d2, tolerance=exc)
             else:
                 # TODO: It would be nice to save the page_data here so that it can be reloaded

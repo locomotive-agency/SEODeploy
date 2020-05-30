@@ -31,8 +31,8 @@ import time
 import requests
 from tqdm.auto import tqdm
 
-from lib.logging import get_logger
-from lib.helpers import group_batcher, mp_list_map
+from seodeploy.lib.logging import get_logger
+from seodeploy.lib.helpers import group_batcher, mp_list_map
 from .exceptions import ContentKingAPIError
 
 _LOG = get_logger(__name__)

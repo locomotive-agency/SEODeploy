@@ -23,7 +23,9 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from lib.cli import cli
+from seodeploy.lib.cli import cli
+
+from . import __version__
 
 
 def run():

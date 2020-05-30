@@ -23,8 +23,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from lib.logging import get_logger
-from lib.helpers import group_batcher, mp_list_map # noqa
+from seodeploy.lib.logging import get_logger
+from seodeploy.lib.helpers import group_batcher, mp_list_map # noqa
 from .exceptions import ExampleExceptions # noqa
 
 

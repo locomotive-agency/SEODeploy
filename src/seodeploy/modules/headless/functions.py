@@ -23,8 +23,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from lib.logging import get_logger
-from lib.helpers import group_batcher, mp_list_map, list_to_dict  # noqa
+from seodeploy.lib.logging import get_logger
+from seodeploy.lib.helpers import group_batcher, mp_list_map, list_to_dict  # noqa
 
 from .render import HeadlessChrome  # noqa
 from .exceptions import HeadlessException  # noqa

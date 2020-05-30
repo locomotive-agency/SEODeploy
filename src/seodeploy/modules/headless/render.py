@@ -27,8 +27,8 @@ import asyncio
 import threading
 import nest_asyncio
 
-from lib.logging import get_logger # TODO: Fix this
-from lib.config import Config
+from seodeploy.lib.logging import get_logger # TODO: Fix this
+from seodeploy.lib.config import Config
 
 CONFIG = Config(module="headless")
 

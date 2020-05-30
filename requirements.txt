@@ -1,3 +1,4 @@
+# Main
 click
 requests
 numpy
@@ -6,5 +7,13 @@ tqdm
 parse_it
 bs4
 lxml
+dictdiffer
 
+# headless
+asyncio
+nest_asyncio
+pyppeteer
+dictdiffer
+
+# Dev
 prospector[with_pyroma]

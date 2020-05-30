@@ -31,7 +31,7 @@ import gzip
 import requests
 from bs4 import BeautifulSoup
 
-from modules.contentking import SEOTestingModule
+from seodeploy.modules.contentking import SEOTestingModule
 from .logging import get_logger
 from .helpers import url_to_path
 

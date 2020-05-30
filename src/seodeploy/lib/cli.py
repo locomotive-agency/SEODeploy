@@ -25,7 +25,10 @@
 
 import json
 import click
-from lib import SEOTesting
+
+from seodeploy.lib import SEOTesting
+from seodeploy import __version__
+
 from .logging import get_logger
 from .exceptions import IncorrectParameters
 from .sampling import get_sample_paths
@@ -38,7 +41,10 @@ _LOG = get_logger(__name__)
 
 # Group all parameter functions....
 @click.group()
+@click.version_option(version=__version__)
 def cli():
+    """Library which provides a flexible framework to allow developers to
+    incorporate SEO checks into development workflows"""
     pass
 
 
@@ -95,7 +101,8 @@ def sample(site_id, sitemap_url, limit=None, samples_filename=None):
               help="Filename for the samples file. Overrides filename set in seotesting_config.yaml.")
 def execute(samples_filename=None):
 
-    """Runs a difftest of staging vs production based on `seotesting_config.yaml` settings and sample URLs.
+    """Runs a difftest of staging vs production based on
+       `seotesting_config.yaml` settings and sample URLs.
 
     Parameters
     ----------

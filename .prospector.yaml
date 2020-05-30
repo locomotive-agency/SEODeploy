@@ -1,19 +1,22 @@
-output-format: text
+output-format: grouped
 
 strictness: high
+doc-warnings: true
+test-warnings: false
+max-line-length: 120
 
 autodetect: false
 
 ignore-paths:
-  - docs
-  - jenkins
-  - API
-  - config-template.py
+  - docs/
+  - jenkins/
 
 pylint:
   disable:
-    - import-error
-    - too-many-branches
+    - bad-builtin
+    - too-few-public-methods
+    - missing-docstring
+    - star-args
 
   options:
     good-names:
@@ -25,12 +28,22 @@ pylint:
 
 pep8:
   disable:
-    - E303
-    - L237
+    - E126
+
   full: true
   options:
     max-line-length: 120
 
+pep257:
+  disable:
+    - D100
+    - D101
+    - D102
+    - D103
+    - D205
+    - D400
+    - D401
+    
 pyroma:
   run: true
 

@@ -23,8 +23,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from lib.modules import ModuleBase
-from lib.config import Config
+from seodeploy.lib.modules import ModuleBase
+from seodeploy.lib.config import Config
 
 from .exceptions import IncorectConfigException
 from .functions import run_render  # noqa

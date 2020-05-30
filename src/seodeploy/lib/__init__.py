@@ -26,10 +26,10 @@ import json
 from datetime import datetime
 import pandas as pd
 
-from lib.modules import ModuleConfig
-from lib.sampling import get_sample_paths
-from lib.logging import get_logger
-from lib.config import Config
+from seodeploy.lib.modules import ModuleConfig
+from seodeploy.lib.sampling import get_sample_paths
+from seodeploy.lib.logging import get_logger
+from seodeploy.lib.config import Config
 
 _LOG = get_logger(__name__)
 
