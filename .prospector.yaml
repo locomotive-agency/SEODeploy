@@ -1,53 +1,56 @@
 output-format: grouped
 
-strictness: high
+strictness: veryhigh
 doc-warnings: true
 test-warnings: false
+
 max-line-length: 120
 
 autodetect: false
 
+ignore-patterns:
+  - ^setup.py$
+
 ignore-paths:
-  - docs/
-  - jenkins/
-  - etc/
+  - docs
+  - jenkins
+  - etc
+  - etc\setup.py
 
 pylint:
   disable:
-    - bad-builtin
-    - too-few-public-methods
-    - missing-docstring
+    - wildcard-import
     - star-args
+    - missing-docstring
+    - too-many-arguments
+    - invalid-name
+    - too-few-public-methods
+
+  enable:
+    - fixme
 
   options:
-    good-names:
-      - i
-      - k
-      - v
-      - df
     max-line-length: 120
 
 pep8:
-  disable:
-    - E126
-
-  full: true
-  options:
-    max-line-length: 120
+    run: true
+    full: true
+    disable:
+        - E302
+        - E305
+        - E501
 
 pep257:
-  disable:
-    - D100
-    - D101
-    - D102
-    - D103
-    - D104
-    - D205
-    - D400
-    - D401
+  run: false
+
+dodgy:
+    run: true
 
 pyroma:
   run: true
+
+pyflakes:
+    run: true
 
 mccabe:
   options:

@@ -43,9 +43,7 @@ _LOG = get_logger(__name__)
 @click.group()
 @click.version_option(version=__version__)
 def cli():
-    """Library which provides a flexible framework to allow developers to
-    incorporate SEO checks into development workflows"""
-    pass
+    """SEODeploy CLI Module."""
 
 
 # Create Samples CLI.
@@ -75,7 +73,6 @@ def cli():
     help="Filename for the outputted txt file. Overrides filename set in seotesting_config.yaml.",
 )
 def sample(site_id, sitemap_url, limit=None, samples_filename=None):
-
     """Creates a file of sample paths to use in testing.
 
     Parameters
@@ -124,7 +121,6 @@ def sample(site_id, sitemap_url, limit=None, samples_filename=None):
     help="Filename for the samples file. Overrides filename set in seotesting_config.yaml.",
 )
 def execute(samples_filename=None):
-
     """Runs a difftest of staging vs production based on
        `seotesting_config.yaml` settings and sample URLs.
 

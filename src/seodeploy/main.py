@@ -25,8 +25,6 @@
 
 from seodeploy.lib.cli import cli
 
-from . import __version__
-
 
 def run():
     cli()

@@ -35,11 +35,11 @@ class SEOTestingModule(ModuleBase):
         self.modulename = "example"
         self.config = config or Config(module=self.modulename)
 
-    def run(self, samples):
+    def run(self, sample_paths):
 
         # do stuff
         print(self.config)
-        print(samples)
+        print(sample_paths)
 
         passing = True
         messages = []

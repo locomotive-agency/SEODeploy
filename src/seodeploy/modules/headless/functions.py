@@ -22,6 +22,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+from urllib.parse import urljoin
+from tqdm import tqdm
 
 from seodeploy.lib.logging import get_logger
 from seodeploy.lib.helpers import group_batcher, mp_list_map, list_to_dict  # noqa
@@ -76,7 +78,9 @@ def _process_results(sample_paths, prod_result, stage_result):
     stage_data = list_to_dict(stage_result, "path")
 
     for path in sample_paths:
-        error = prod_data[path]["error"] or stage_data[path]["error"]
+        error = (
+            prod_data[path]["error"] or stage_data[path]["error"]
+        )  # TODO: This is not correct.
         result[path] = {
             "prod": prod_data[path]["page_data"],
             "stage": stage_data[path]["page_data"],

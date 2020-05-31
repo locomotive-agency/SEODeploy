@@ -27,22 +27,21 @@ from urllib.parse import quote_plus
 
 
 # User Agent for requests TODO: Should probably move this to YAML config file.
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"  # pylint: disable=line-too-long
 
 
 # Various extractions to run on Chrome.
 EXTRACTIONS = {
-    "title": "() => [...document.querySelectorAll('title')].map( el => {return {'element':xpath(el), 'content': el.textContent};})",
-    "description": "() => [...document.querySelectorAll('meta[name=description]')].map( el => {return {'element':xpath(el), 'content': el.content};})",
-    "h1": "() => [...document.querySelectorAll('h1')].map( el => {return {'element':xpath(el), 'content': el.textContent};})",
-    "h2": "() => [...document.querySelectorAll('h2')].map( el => {return {'element':xpath(el), 'content': el.textContent};})",
-    "links": "() => [...document.querySelectorAll('a')].map( el => {return {'element':xpath(el), 'content': {'href': el.href, 'text': el.textContent, 'rel':el.rel}};})",
-    "images": "() => [...document.querySelectorAll('img')].map( el => {return {'element':xpath(el), 'content': {'src': el.src, 'alt': el.alt}};})",
-    "canonical": "() => [...document.querySelectorAll('link[rel=canonical]')].map( el => {return {'element':xpath(el), 'content': el.href};})",
-    "robots": "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return {'element':xpath(el), 'content': el.content};})",
-    "schema": "() => [...document.querySelectorAll('script[type=\"application/ld+json\"]')].map( el => {return {'element':xpath(el), 'content': JSON.parse(el.textContent)};})",
+    "title": "() => [...document.querySelectorAll('title')].map( el => {return {'element':xpath(el), 'content': el.textContent};})",  # pylint: disable=line-too-long
+    "description": "() => [...document.querySelectorAll('meta[name=description]')].map( el => {return {'element':xpath(el), 'content': el.content};})",  # pylint: disable=line-too-long
+    "h1": "() => [...document.querySelectorAll('h1')].map( el => {return {'element':xpath(el), 'content': el.textContent};})",  # pylint: disable=line-too-long
+    "h2": "() => [...document.querySelectorAll('h2')].map( el => {return {'element':xpath(el), 'content': el.textContent};})",  # pylint: disable=line-too-long
+    "links": "() => [...document.querySelectorAll('a')].map( el => {return {'element':xpath(el), 'content': {'href': el.href, 'text': el.textContent, 'rel':el.rel}};})",  # pylint: disable=line-too-long
+    "images": "() => [...document.querySelectorAll('img')].map( el => {return {'element':xpath(el), 'content': {'src': el.src, 'alt': el.alt}};})",  # pylint: disable=line-too-long
+    "canonical": "() => [...document.querySelectorAll('link[rel=canonical]')].map( el => {return {'element':xpath(el), 'content': el.href};})",  # pylint: disable=line-too-long
+    "robots": "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return {'element':xpath(el), 'content': el.content};})",  # pylint: disable=line-too-long
+    "schema": "() => [...document.querySelectorAll('script[type=\"application/ld+json\"]')].map( el => {return {'element':xpath(el), 'content': JSON.parse(el.textContent)};})",  # pylint: disable=line-too-long
 }
-
 
 # Helper Scripts to include in document on page launch.
 DOCUMENT_SCRIPTS = """() => {
@@ -111,7 +110,7 @@ DOCUMENT_SCRIPTS = """() => {
     });
 
 }
-"""
+"""  # noqa
 
 # Regular3G is a good way to remove variance by downgrading all loads to consistently slow.
 
@@ -248,74 +247,81 @@ def parse_performance_timing(p_timing):
     return {k: v - ns if v else 0 for k, v in p_timing.items()}
 
 
-# Coverage Functions
-def parse_coverage_objects(coverage, typ):
+def parse_ranges(ranges):
+    total_length = 0
 
-    totalUnused = 0
-    totalBytes = 0
+    for single_range in ranges:
+        (start, end) = single_range.values()
+        length = end - start
+        total_length = total_length + length
+
+    return total_length
+
+
+# Coverage Functions
+def parse_coverage_objects(coverage):
+
+    total_unused = 0
+    total_bytes = 0
     results = []
 
     for file in coverage:
 
         (url, ranges, text) = file.values()
 
-        totalLength = 0
-
-        for range in ranges:
-            (start, end) = range.values()
-            length = end - start
-            totalLength = totalLength + length
-
+        used = parse_ranges(ranges)
         total = len(text)
-        unused = total - totalLength
 
-        unusedPc = round(((unused + 1) / (total + 1)) * 100, 2)
+        unused = total - used
+
+        unused_pct = round(((unused + 1) / (total + 1)) * 100, 2)
 
         results.append(
             {
                 "url": quote_plus(url),
                 "total": total,
                 "unused": unused,
-                "unusedPc": unusedPc,
+                "unusedPc": unused_pct,
             }
         )
 
-        totalUnused = totalUnused + unused
-        totalBytes = totalBytes + total
+        total_unused = total_unused + unused
+        total_bytes = total_bytes + total
 
-    totalUnusedPc = round(((totalUnused + 1) / (totalBytes + 1)) * 100, 2)
+    total_unused_pct = round(((total_unused + 1) / (total_bytes + 1)) * 100, 2)
 
     return {
         "results": results,
         "summary": {
-            "totalUnused": totalUnused,
-            "totalBytes": totalBytes,
-            "totalUnusedPc": totalUnusedPc,
+            "totalUnused": total_unused,
+            "totalBytes": total_bytes,
+            "totalUnusedPc": total_unused_pct,
         },
     }
 
 
-def parse_coverage(coverageJS, coverageCSS):
+def parse_coverage(coverage_js, coverage_css):
 
-    parsedJSCoverage = parse_coverage_objects(coverageJS, "JS")
-    parsedCSSCoverage = parse_coverage_objects(coverageCSS, "CSS")
+    parsed_js_coverage = parse_coverage_objects(coverage_js)
+    parsed_css_coverage = parse_coverage_objects(coverage_css)
 
-    totalUnused = (
-        parsedJSCoverage["summary"]["totalUnused"]
-        + parsedCSSCoverage["summary"]["totalUnused"]
+    total_unused = (
+        parsed_js_coverage["summary"]["totalUnused"]
+        + parsed_css_coverage["summary"]["totalUnused"]
     )
-    totalBytes = (
-        parsedJSCoverage["summary"]["totalBytes"]
-        + parsedCSSCoverage["summary"]["totalBytes"]
+    total_bytes = (
+        parsed_js_coverage["summary"]["totalBytes"]
+        + parsed_css_coverage["summary"]["totalBytes"]
     )
-    unusedPc = round(((totalUnused + 1) / (totalBytes + 1)) * 100, 2)
+
+    total_unused_pct = round(((total_unused + 1) / (total_bytes + 1)) * 100, 2)
 
     return {
         "summary": {
-            "totalBytes": totalBytes,
-            "totalUnused": totalUnused,
-            "totalUnusedPc": unusedPc,
+            "totalBytes": total_unused,
+            "totalUnused": total_bytes,
+            "totalUnusedPc": total_unused_pct,
         },
-        "css": parsedCSSCoverage,
-        "js": parsedJSCoverage,
+        "css": parsed_css_coverage,
+        "js": parsed_js_coverage,
     }

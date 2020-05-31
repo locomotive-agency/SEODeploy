@@ -36,7 +36,7 @@ _LOG = get_logger(__name__)
 
 class SEOTesting:
     def __init__(self, config=None):
-
+        """ SEOTesting Class: Base Class for SEODeploy"""
         self.config = config or Config()
         self.messages = []
         self.module_config = ModuleConfig(self.config)

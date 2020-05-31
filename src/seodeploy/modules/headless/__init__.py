@@ -22,15 +22,23 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import os
 
 from seodeploy.lib.modules import ModuleBase
 from seodeploy.lib.config import Config
 
-from .exceptions import IncorectConfigException
+CONFIG = Config(module="headless")
+
+os.environ["PYPPETEER_CHROMIUM_REVISION"] = str(
+    CONFIG.headless.PYPPETEER_CHROMIUM_REVISION
+)
+
 from .functions import run_render  # noqa
 
 
 class SEOTestingModule(ModuleBase):
+    """SEO Testing Module: Headless Module"""
+
     def __init__(self, config=None):
 
         super(SEOTestingModule, self).__init__()
@@ -51,20 +59,22 @@ class SEOTestingModule(ModuleBase):
             {"item": "links", "loc": "content.links"},
             {"item": "images", "loc": "content.images"},
             {"item": "schema", "loc": "content.schema"},
-            {"item": "performance", "loc": "content.performance"},
-            {"item": "coverage-summary", "loc": "content.coverage.summary"},
-            {"item": "coverage-css", "loc": "content.coverage.css"},
-            {"item": "coverage-js", "loc": "content.coverage.js"},
+            {"item": "performance", "loc": "performance"},
+            {"item": "coverage-summary", "loc": "coverage.summary"},
+            {"item": "coverage-css", "loc": "coverage.css"},
+            {"item": "coverage-js", "loc": "coverage.js"},
         ]
 
     def run(self, sample_paths):
 
         self.sample_paths = sample_paths
 
-        page_data = process_results(run_render(sample_paths, self.config))
+        page_data = run_render(sample_paths, self.config)
 
-        messages = self.prepare_messages(self.run_diffs(page_data))
+        diffs = self.run_diffs(page_data)
 
-        passing = not len(messages)
+        self.messages = self.prepare_messages(diffs)
 
-        return passing, messages, self.errors
+        self.passing = len(self.messages) == 0
+
+        return self.errors

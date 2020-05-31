@@ -26,16 +26,10 @@
 class HeadlessException(Exception):
     """Base class for exceptions in this module."""
 
-    pass  # noqa
-
 
 class URLMissingException(Exception):
     """An exception for a missing or invalid URL."""
 
-    pass
 
-
-class IncorectConfigException(Exception):
+class IncorrectConfigException(Exception):
     """An exception for a missing or invalid URL."""
-
-    pass

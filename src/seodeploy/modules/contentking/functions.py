@@ -32,14 +32,15 @@ import requests
 from tqdm.auto import tqdm
 
 from seodeploy.lib.logging import get_logger
-from seodeploy.lib.helpers import group_batcher, mp_list_map
+from seodeploy.lib.helpers import group_batcher, mp_list_map, list_to_dict
 from .exceptions import ContentKingAPIError
 
 _LOG = get_logger(__name__)
 
 
 def load_report(report, config, **data):
-    """
+    """Reporting class for ContentKing.
+
         Description: Receives a report type and names parameters passed to function.
         Requests from ContentKing Reporting API.
 
@@ -68,6 +69,8 @@ def load_report(report, config, **data):
     """
 
     def api_reports(report, data=None):
+        """Report repository for ContentKing API"""
+
         reports = {
             "websites": "websites",
             "alerts": "websites/{id}/alerts",
@@ -81,6 +84,7 @@ def load_report(report, config, **data):
         return reports.get(report, "404").format(**data)
 
     def get_report(report, config, data, query_string=None):
+        """Requests report from ContenKing API"""
 
         api_url = urljoin(config.contentking.ENDPOINT, api_reports(report, data))
 
@@ -131,6 +135,8 @@ def load_report(report, config, **data):
         return None
 
     def get_paged_report(report, config, data):
+        """Function for handling paged reports from ContentKing API"""
+
         page = 1
         per_page = data.get("per_page", 100)
         while True:
@@ -162,6 +168,7 @@ def load_report(report, config, **data):
 
 
 def _notify_change(url, config):
+    """Pings ContentKing CMS API about URL changes"""
 
     api_url = urljoin(config.contentking.ENDPOINT, "check_url")
 
@@ -214,6 +221,7 @@ def _notify_change(url, config):
 
 
 def ping_prod_paths(paths, config):
+    """Converts all production paths to URLs and pings ContentKing"""
 
     results = {}
     for path in paths:
@@ -229,6 +237,7 @@ def ping_prod_paths(paths, config):
 
 
 def ping_stage_paths(paths, config):
+    """Converts all staging paths to URLs and pings ContentKing"""
 
     results = {}
     for path in paths:
@@ -243,14 +252,36 @@ def ping_stage_paths(paths, config):
     return results
 
 
+def has_ping_errors(name, sample_paths, ping_results):
+    """Checks ping results for errors"""
+
+    sent_total = len(sample_paths)
+
+    sent_percent = round(
+        (len([k for k, v in ping_results.items() if v == "ok"]) / sent_total) * 100, 2,
+    )
+    _LOG.info("{}% of {} URLs successfully sent.".format(sent_percent, name))
+
+    if sent_percent < 100:
+        sent_errors = [k for k, v in ping_results.items() if v == "error"]
+        for i in sent_errors:
+            _LOG.error("{} URL Ping Error: {}".format(name, i))
+
+        return True
+
+    return False
+
+
 def run_path_pings(sample_paths, config):
 
     """Pings ContentKing with Paths across both staging and production websites.
 
     Parameters
     ----------
-    sample_paths: list
+    sample_paths: <list>
         List of paths to check.
+    config: <class>
+        Module configuration class.
     """
 
     # Ping Content King for Production and Staging URLs
@@ -264,51 +295,22 @@ def run_path_pings(sample_paths, config):
         prod_ping_results.update(ping_prod_paths(batch, config))
         stage_ping_results.update(ping_stage_paths(batch, config))
 
-    # Check results were pinged correctly.
-    sent_total = len(sample_paths)
-    prod_sent_errors, stage_sent_errors = True, True
-
     # Check results
     if prod_ping_results:
-        sent_percent = round(
-            (len([k for k, v in prod_ping_results.items() if v == "ok"]) / sent_total)
-            * 100,
-            2,
+        prod_sent_errors = has_ping_errors(
+            "Production", sample_paths, prod_ping_results
         )
-        _LOG.info("{}% of production URLs successfully sent.".format(sent_percent))
-
-        if sent_percent < 100:
-            prod_sent_errors = [k for k, v in prod_ping_results.items() if v == "error"]
-            for i in prod_sent_errors:
-                _LOG.error("Production URL Ping Error: {}".format(i))
-        else:
-            prod_sent_errors = False
     else:
         _LOG.error("No results from Production pings.")
 
     if stage_ping_results:
-        sent_percent = round(
-            (len([k for k, v in stage_ping_results.items() if v == "ok"]) / sent_total)
-            * 100,
-            2,
-        )
-        _LOG.info("{}% of staging URLs successfully sent.".format(sent_percent))
-
-        if sent_percent < 100:
-            stage_sent_errors = [
-                k for k, v in stage_ping_results.items() if v == "error"
-            ]
-            for i in stage_sent_errors:
-                _LOG.error("Staging URL Ping Error: {}".format(i))
-        else:
-            stage_sent_errors = False
-
+        stage_sent_errors = has_ping_errors("Staging", sample_paths, stage_ping_results)
     else:
         _LOG.error("No results from Staging pings.")
 
     if prod_sent_errors or stage_sent_errors:
         raise ContentKingAPIError(
-            "There were issues sending the production and/or staging URLs to COntentKing. "
+            "There were issues sending the production and/or staging URLs to ContentKing. "
             "Please check the error log."
         )
 
@@ -318,6 +320,7 @@ def run_path_pings(sample_paths, config):
 def _check_results(paths, config=None, data=None):
 
     """Loads path data from ContentKing and returns cleaned data report.
+
        Checks to see if the latest crawl timestamp is more recent than when this process started.
 
     """
@@ -336,6 +339,14 @@ def _check_results(paths, config=None, data=None):
 
             url_data = load_report("url", config, id=data["site_id"], url=url)
 
+            fmt = {
+                "path": path,
+                "issues": [],
+                "content": [],
+                "schema": [],
+                "error": None,
+            }
+
             if url_data and data["time_col"] in url_data:
                 last_check = datetime.fromisoformat(
                     url_data[data["time_col"]]
@@ -343,151 +354,60 @@ def _check_results(paths, config=None, data=None):
                 time_delta = (data["start_time"] - last_check).total_seconds()
 
                 if time_delta < 0:
+
                     # Has been crawled prior to start of process.
-                    content = [
-                        "{}--/--{}".format(i["type"], i["content"])
+                    fmt["content"] = [
+                        {"element": i["type"], "content": i["content"]}
                         for i in url_data["content"]
                     ]
-                    issues = [i["name"] for i in url_data["open_issues"]]
-                    results.append(
-                        {
-                            "url": url,
-                            "path": path,
-                            "issues": issues,
-                            "content": content,
-                            "error": None,
-                        }
-                    )
+                    fmt["issues"] = [i["name"] for i in url_data["open_issues"]]
+                    fmt["schema"] = url_data["schema_org"]
+                    results.append(fmt)
+
                 else:
                     # We have a good response, but the URL has not been crawled yet.
                     # Add to the back of the line.
                     unchecked.append(path)
 
             else:
-                results.append(
-                    {
-                        "url": url,
-                        "path": path,
-                        "issues": [],
-                        "content": [],
-                        "error": "Invalid response from API URL report.",
-                    }
-                )
+                fmt["error"] = "Invalid response from API URL report."
+                results.append(fmt)
 
         except Exception as e:  # noqa
-            results.append(
-                {
-                    "url": url,
-                    "path": path,
-                    "issues": [],
-                    "content": [],
-                    "error": "Unkown Error: " + str(e),
-                }
-            )
+            fmt["error"] = "Unkown Error: " + str(e)
+            results.append(fmt)
 
     return results
 
 
-def _compare_diffs(prod, stage, typ, config):
+def _process_results(sample_paths, prod_result, stage_result):
 
-    """Compares diffs based on the given type (issue or content).
+    """Reviews the returned results for errors. Build single
+       result dictionary in the format:
 
-    """
+       {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
+       ...
+       }
 
-    prod_issues, stage_issues = prod[typ], stage[typ]
-    diffs = [i for i in stage_issues if i not in prod_issues]
-
-    if typ == "content":
-        return [
-            d
-            for d in diffs
-            if not config.contentking.IGNORE_CONTENT[d.split("--/--")[0]]
-        ]
-
-    return [d for d in diffs if not config.contentking.IGNORE_ISSUES[d]]
-
-
-def _compare_results(sample_paths, prod, stage, config):
-
-    """Using the original paths, runs the main review to check for
-       differences across both prod and staging results.
-
-    """
-
-    passing = True
-    results = []
-
-    for path in sample_paths:
-
-        if path in prod and path in stage:
-
-            content_diffs = _compare_diffs(prod[path], stage[path], "content", config)
-            issue_diffs = _compare_diffs(prod[path], stage[path], "issues", config)
-
-            if content_diffs:
-                _LOG.info("{} contains content differences.".format(path))
-                results.extend(
-                    [
-                        {
-                            "path": path,
-                            "url": stage[path]["url"],
-                            "issue": "Difference: " + d,
-                        }
-                        for d in content_diffs
-                    ]
-                )
-                passing = False
-            if issue_diffs:
-                _LOG.info("{} contains issue differences.".format(path))
-                results.extend(
-                    [
-                        {
-                            "path": path,
-                            "url": stage[path]["url"],
-                            "issue": "Difference: " + d,
-                        }
-                        for d in issue_diffs
-                    ]
-                )
-                passing = False
-
-        else:
-            _LOG.error(
-                "{} not found in both production and staging results.".format(path)
-            )
-            passing = False
-
-    return passing, results
-
-
-def _process_results(data):
-
-    """Reviews the returned results for errors.  Logs errors and returns only results with
-       valid data.
 
     """
 
     result = {}
 
-    for i in data:
-        if i["error"]:
-            _LOG.error("URL: {} encountered an error: {}".format(i["url"], i["error"]))
-            # TODO: Probably need to fail if there are errors.
-        else:
-            result[i.pop("path")] = i
+    prod_data = list_to_dict(prod_result, "path")
+    stage_data = list_to_dict(stage_result, "path")
+
+    for path in sample_paths:
+        error = (
+            prod_data[path]["error"] or stage_data[path]["error"]
+        )  # TODO: This is not correct.
+        result[path] = {
+            "prod": prod_data[path]["page_data"],
+            "stage": stage_data[path]["page_data"],
+            "error": error,
+        }
 
     return result
-
-
-def format_results(data):
-
-    return {
-        "content": [
-            {"element": c["type"], "content": c["content"]} for c in data["content"]
-        ],
-        "schema_org": data["schema_org"],
-        "open_issues": [c["name"] for c in data["open_issues"]],
-    }
 
 
 def run_check_results(sample_paths, start_time, time_zone, config):
@@ -496,12 +416,14 @@ def run_check_results(sample_paths, start_time, time_zone, config):
 
     Parameters
     ----------
-    sample_paths: list
+    sample_paths: <list>
         List of paths to check.
-    start_time: datetime
+    start_time: <datetime>
         When the difftest was started.
-    time_zone: pytz.timezone
+    time_zone: <pytz.timezone>
         Default timezone to keep times the same.
+    config: <class>
+        Module configuration class.
     """
 
     batches = group_batcher(
@@ -540,13 +462,7 @@ def run_check_results(sample_paths, start_time, time_zone, config):
         # TODO: Can adjust this as necessary, pull out to config, or remove.
         time.sleep(config.contentking.BATCH_WAIT)
 
-    # Review for Errors and process into dictionary:
-    prod_result = _process_results(prod_result)
-    stage_result = _process_results(stage_result)
+    # Review for Errors and process into dictionary
+    page_data = _process_results(sample_paths, prod_result, stage_result)
 
-    passing, results = _compare_results(sample_paths, prod_result, stage_result, config)
-
-    if not passing:
-        _LOG.error("Check completed with errors.  Please review")
-
-    return passing, results
+    return page_data

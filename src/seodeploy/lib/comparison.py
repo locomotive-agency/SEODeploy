@@ -23,29 +23,28 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-from dictdiffer import diff
+from dictdiffer import diff as differ
 
 from .logging import get_logger
-from .exceptions import StrategyNotImplemented, TypesMismatched
+from .exceptions import TypesMismatched
 
 _LOG = get_logger(__name__)
 
 
 class CompareDiffs:
-    """Base strategy module. Strategy modules run comparative analysis on module content
-    based on selected strategy.
-
-    """
+    """Comparison module for comparing various data types."""
 
     def __init__(self):
         self.diffs = []
 
     def compare(self, path, item, d1, d2, tolerance=None):
 
-        """ Parameters:
+        """ Compares differces in data for two given objects (d1,d2).
+
+            Parameters:
             -------------
             path: <str> the path compared.
-            desc: <str> a description of the objects compared.
+            item: <str> Name for the item compared.
             d1: <list> or <dict> of items to compare (PROD)
             d2: <list> or <dict> of items to compare (STAGE)
 
@@ -60,18 +59,19 @@ class CompareDiffs:
 
             Output
             -------------
-            self.diffs = [{'module': <str>, 'path': <str>, 'item': <str>, 'diffs': [list]}, ...]
+            self.diffs = [{'path': <str>, 'diffs': [list]}, ...]
 
         """
-        if type(d1) != type(d1):
+        if not isinstance(d1, type(d1)):
             raise TypesMismatched(
                 "`d1` and `d2` must be the same type. Currently: {} and {}".format(
                     type(d1), type(d2)
                 )
             )
-        elif isinstance(d1, dict):
+
+        if isinstance(d1, dict):
             diffs = self.compare_objects(d1, d2, item=item, tolerance=tolerance)
-        elif isinstance(d1, list) or isinstance(d1, set):
+        elif isinstance(d1, (list, set)):
             diffs = self.compare_lists_of_objects(
                 self, d1, d2, item=item, tolerance=tolerance
             )
@@ -106,7 +106,6 @@ class CompareDiffs:
             d1, d2 = set(d1), set(d2)
         elif isinstance(d1, set) and isinstance(d1, set):
             otype = "set"
-            pass
         elif isinstance(d1, dict) and isinstance(d1, dict):
             otype = "dict"
         else:
@@ -114,7 +113,7 @@ class CompareDiffs:
                 "Unsupported object types provided.  Supports `list`, `set`, or `dict`"
             )
 
-        diffs = diff(d1, d2, tolerance=tolerance)
+        diffs = differ(d1, d2, tolerance=tolerance)
 
         return self.format_diffs(diffs, otype, item)
 
@@ -190,7 +189,9 @@ class CompareDiffs:
     @staticmethod
     def _l2d(l1, l2, key_attr, content_attr):
         """Turns a list of dicts into a dict based on given key attribute and content attribute.
-            parameters:
+
+            Parameters:
+            ---------------------------
                 l1: <list> first list of dicts.
                 l2: <list> second list of dicts.
                 key_attr: <str> dict key to be used as key for new dict.

@@ -22,37 +22,25 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 import asyncio
-import threading
-import nest_asyncio
-
-from seodeploy.lib.logging import get_logger  # TODO: Fix this
-from seodeploy.lib.config import Config
-
-CONFIG = Config(module="headless")
-
-import os
-
-os.environ["PYPPETEER_CHROMIUM_REVISION"] = str(
-    CONFIG.headless.PYPPETEER_CHROMIUM_REVISION
-)
 
 from pyppeteer.errors import NetworkError
 from pyppeteer import launch
 
-from .exceptions import HeadlessException, URLMissingException
-from .helpers import *
+from seodeploy.lib.logging import get_logger
+from seodeploy.lib.config import Config
+
+from .exceptions import URLMissingException
+from .helpers import (
+    format_results,
+    parse_numerical_dict,
+    parse_performance_timing,
+    parse_coverage,
+)
+from .helpers import USER_AGENT, NETWORK_PRESETS, DOCUMENT_SCRIPTS, EXTRACTIONS
 
 
 _LOG = get_logger(__name__)
-
-
-try:
-    get_ipython().config
-    nest_asyncio.apply()
-except NameError:
-    pass
 
 
 class HeadlessChrome:
@@ -89,7 +77,6 @@ class HeadlessChrome:
             except NetworkError:
                 # _LOG.error('Network Error trying url: ', url)
                 asyncio.set_event_loop(asyncio.new_event_loop())
-                pass
 
             except URLMissingException:
                 error = "A valid URL was not supplied: " + url
@@ -97,7 +84,7 @@ class HeadlessChrome:
                 result["error"] = error
                 break
 
-            except Exception as e:
+            except Exception as e:  # noqa: broad-except
                 error = "An unknown render exception has occured: " + str(e)
                 _LOG.error(error)
                 result["error"] = error
@@ -115,7 +102,6 @@ class HeadlessChrome:
             raise URLMissingException("A URL is required to render.")
 
         await self._build_page(url)
-        print("Navigating to:", url, "\n")
 
         dom = {}
 
@@ -207,7 +193,7 @@ class HeadlessChrome:
         expressions = {
             "timeToFirstByte": (metrics["timing"]["responseStart"],),
             "firstPaint": "() => {return performance.getEntriesByName('first-paint')[0].startTime;}",
-            "firstContentfulPaint": "() => {return performance.getEntriesByName('first-contentful-paint')[0].startTime;}",
+            "firstContentfulPaint": "() => {return performance.getEntriesByName('first-contentful-paint')[0].startTime;}",  # noqa
             "largestContentfulPaint": "() => {return window.largestContentfulPaint;}",
             "timeToInteractive": (metrics["timing"]["domInteractive"],),
             "domContentLoaded": (metrics["timing"]["domContentLoadedEventStart"],),
@@ -221,7 +207,7 @@ class HeadlessChrome:
             else:
                 result[key] = expression[0]
 
-        return {k: v for k, v in result.items()}
+        return result
 
     def _extract_coverage(self):
         return parse_coverage(self.coverage["JSCoverage"], self.coverage["CSSCoverage"])

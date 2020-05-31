@@ -31,16 +31,18 @@ from .config import Config
 from .comparison import CompareDiffs
 from .logging import get_logger
 
-from .exceptions import ModuleNotImplemented, IncorectConfigException
-
+from .exceptions import ModuleNotImplemented, IncorrectConfigException
 
 _LOG = get_logger(__name__)
 
 
 class ModuleBase:
+    """Base Module class."""
+
     def __init__(self, config=None, sample_paths=None, exclusions=None):
         self.messages = None
         self.errors = None
+        self.passing = None
         self.mappings = None
         self.modulename = None
         self.sample_paths = sample_paths
@@ -48,8 +50,8 @@ class ModuleBase:
         self.config = config or Config()
 
     def run_diffs(self, page_data):
+        """Run diffs across dictionary of path, stage, and prod data.
 
-        """
         Parameters
         -----------------
         page_data: {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
@@ -61,17 +63,11 @@ class ModuleBase:
 
             self.errors = []
 
-            diffmodule = CompareDiffs(self.modulename)
-
-            def get(dot_not, data):
-                try:
-                    return reduce(dict.get, dot_not.split("."), data)
-                except:
-                    return None
+            diffmodule = CompareDiffs()
 
             # Iterate paths
-            for path in page_data:
-                path_data = data[path]
+            for path, path_data in page_data.items():
+
                 error = path_data["error"]
 
                 if error:
@@ -80,18 +76,24 @@ class ModuleBase:
                 else:
                     for mapping in self.mappings:
                         try:
-                            self.iter_mappings(diffmodule, mapping, path_data)
-                        except IncorectConfigException as e:
+                            self.iter_mappings(path, diffmodule, mapping, path_data)
+                        except IncorrectConfigException as e:
                             # TODO: Placeholder to dump page_data here for easy reload.
                             self.errors.append({"path": path, "error": str(e)})
                             break
 
             return diffmodule.get_diffs()
 
-        else:
-            raise NotImplementedError("This module cannot be called directly.")
+        raise NotImplementedError("This module cannot be called directly.")
 
-    def iter_mappings(self, diffmodule, mapping, path_data):
+    def iter_mappings(self, path, diffmodule, mapping, path_data):
+        """Iterates mappings to execute comparisions."""
+
+        def get(dot_not, data):
+            try:
+                return reduce(dict.get, dot_not.split("."), data)
+            except TypeError:
+                return None
 
         item = mapping["item"]
         loc = mapping["loc"]
@@ -109,18 +111,20 @@ class ModuleBase:
             else:
                 # TODO: It would be nice to save the page_data here so that it can be reloaded
                 #       after the issue is fixed.
-                raise IncorectConfigException(
+                raise IncorrectConfigException(
                     "Config ignore values must be `bool` or `float`"
                 )
 
         else:
-            raise IncorectConfigException("Config mapping data is not correct.")
+            raise IncorrectConfigException("Config mapping data is not correct.")
 
     def prepare_messages(self, diffs):
-        """ Data should be in format of
+        """ Prepares Diff data as consistent messages.
+
+        Data should be in format of
             [{'path': <str>, 'diffs': <list>}, ...]
 
-            Output in format:
+        Output in format:
             [{'module': <str>, 'path': <str>, 'diffs': [list]}, ...]
         """
         messages = []
@@ -130,14 +134,14 @@ class ModuleBase:
             path = item["path"]
             item_diffs = item["diffs"]
 
-            for id in item_diffs:
+            for item_diff in item_diffs:
 
                 # make sure all values are strings.
-                id = {k: str(v) for k, v in id.items()}.update(
+                item_diff = {k: str(v) for k, v in item_diff.items()}.update(
                     {"module": self.modulename, "path": path}
                 )
 
-                messages.append(id)
+                messages.append(item_diff)
 
         self.messages = messages
 
@@ -148,6 +152,8 @@ class ModuleBase:
 
 
 class ModuleConfig:
+    """Builds modules and contains module information."""
+
     def __init__(self, config=None, mdirs=None):
 
         self.config = config or Config()
