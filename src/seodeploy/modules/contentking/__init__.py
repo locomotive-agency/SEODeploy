@@ -41,7 +41,6 @@ class SEOTestingModule(ModuleBase):
 
         self.time_zone = pytz.timezone(self.config.contentking.TIMEZONE)
 
-
     def run(self, sample_paths):
 
         start_time = datetime.now().astimezone(self.time_zone)

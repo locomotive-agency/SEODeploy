@@ -68,7 +68,7 @@ def _map(args):
 
 
 def mp_list_map(lst, fnc, **args):
-    """Applies a function to a list by multiprocessing""""
+    """Applies a function to a list by multiprocessing"""
     threads = CONFIG.MAX_THREADS
 
     if threads > 1:
@@ -97,8 +97,12 @@ def list_to_dict(lst, key):
 
 def dot_set(data):
     """Transforms a dictionary to be indexable by dot notation"""
-    return SimpleNamespace(**{k:dot_not(v) for k,v in data.items()}) \
-           if isinstance(data, dict) else data
+    return (
+        SimpleNamespace(**{k: dot_not(v) for k, v in data.items()})
+        if isinstance(data, dict)
+        else data
+    )
+
 
 def dot_get(dot, data):
     """Transforms a dictionary to be indexable by dot notation"""
@@ -107,6 +111,7 @@ def dot_get(dot, data):
     except TypeError:
         return None
 
+
 def to_dot(data):
     """Returns a list of dot notations for non-dict values in a dict"""
 
@@ -114,9 +119,9 @@ def to_dot(data):
         if isinstance(data, dict):
             for k, v in data.items():
                 if not isinstance(v, dict):
-                    result.append(parent+[k])
-                iter_dot(v, parent=parent+[k], result=result)
+                    result.append(parent + [k])
+                iter_dot(v, parent=parent + [k], result=result)
 
         return result
 
-    return ['.'.join(x) for x in iter_dot(data)]
+    return [".".join(x) for x in iter_dot(data)]

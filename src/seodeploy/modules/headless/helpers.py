@@ -184,27 +184,45 @@ def format_results(data):
         "performance": {
             "nodes": dot_get("metrics.performanceMetrics.Nodes", data),
             "resources": dot_get("metrics.performanceMetrics.Resources", data),
-            "layout_duration": dot_get("metrics.performanceMetrics.LayoutDuration", data),
+            "layout_duration": dot_get(
+                "metrics.performanceMetrics.LayoutDuration", data
+            ),
             "recalc_style_duration": dot_get(
                 "metrics.performanceMetrics.RecalcStyleDuration", data
             ),
-            "script_duration": dot_get("metrics.performanceMetrics.ScriptDuration", data),
-            "v8_compile_duration": dot_get("metrics.performanceMetrics.V8CompileDuration", data),
+            "script_duration": dot_get(
+                "metrics.performanceMetrics.ScriptDuration", data
+            ),
+            "v8_compile_duration": dot_get(
+                "metrics.performanceMetrics.V8CompileDuration", data
+            ),
             "task_duration": dot_get("metrics.performanceMetrics.TaskDuration", data),
-            "task_other_duration": dot_get("metrics.performanceMetrics.TaskOtherDuration", data),
+            "task_other_duration": dot_get(
+                "metrics.performanceMetrics.TaskOtherDuration", data
+            ),
             "thread_time": dot_get("metrics.performanceMetrics.ThreadTime", data),
-            "jd_heap_used_size": dot_get("metrics.performanceMetrics.JSHeapUsedSize", data),
-            "js_heap_total_size": dot_get("metrics.performanceMetrics.JSHeapTotalSize", data),
+            "jd_heap_used_size": dot_get(
+                "metrics.performanceMetrics.JSHeapUsedSize", data
+            ),
+            "js_heap_total_size": dot_get(
+                "metrics.performanceMetrics.JSHeapTotalSize", data
+            ),
             "time_to_first_byte": dot_get("metrics.calculated.timeToFirstByte", data),
             "first_paint": dot_get("metrics.calculated.firstPaint", data),
-            "first_contentful_paint": dot_get("metrics.calculated.firstContentfulPaint", data),
+            "first_contentful_paint": dot_get(
+                "metrics.calculated.firstContentfulPaint", data
+            ),
             "largest_contentful_paint": dot_get(
                 "metrics.calculated.largestContentfulPaint", data
             ),
-            "time_to_interactive": dot_get("metrics.calculated.timeToInteractive", data),
+            "time_to_interactive": dot_get(
+                "metrics.calculated.timeToInteractive", data
+            ),
             "dom_content_loaded": dot_get("metrics.calculated.domContentLoaded", data),
             "dom_complete": dot_get("metrics.calculated.domComplete", data),
-            "cumulative_layout_shift": dot_get("metrics.calculated.cumulativeLayoutShift", data),
+            "cumulative_layout_shift": dot_get(
+                "metrics.calculated.cumulativeLayoutShift", data
+            ),
         },
         "coverage": {
             "summary": {

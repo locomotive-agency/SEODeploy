@@ -50,7 +50,6 @@ class ModuleBase:
         self.exclusions = exclusions
         self.config = config or Config()
 
-
     def run_diffs(self, page_data):
         """Run diffs across dictionary of path, stage, and prod data.
 
@@ -67,8 +66,6 @@ class ModuleBase:
             self.mappings = to_dot(self.exclusions)
 
             diffmodule = CompareDiffs()
-
-
 
             # Iterate paths
             for path, path_data in page_data.items():
