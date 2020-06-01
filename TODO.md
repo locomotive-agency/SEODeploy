@@ -8,7 +8,8 @@
 5. [x] Finalize Sampling.  Sitemap and ContentKing.
 6. [x] Namespace Config module data
 7. [ ] Testing
-8. [ ] Develop Headless Module using Pypeteer.
-9. [ ] Integration with Screaming Frog?
+8. [X] Develop Headless Module using Pypeteer.
 10. [ ] Create PyPI library.
 11. [ ] Add timeout to ContentKing checking to keep from running infinitely long.
+
+ 

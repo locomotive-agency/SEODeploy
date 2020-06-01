@@ -29,6 +29,7 @@ from functools import reduce
 
 from .config import Config
 from .comparison import CompareDiffs
+from .helpers import to_dot, dot_get
 from .logging import get_logger
 
 from .exceptions import ModuleNotImplemented, IncorrectConfigException
@@ -49,6 +50,7 @@ class ModuleBase:
         self.exclusions = exclusions
         self.config = config or Config()
 
+
     def run_diffs(self, page_data):
         """Run diffs across dictionary of path, stage, and prod data.
 
@@ -59,11 +61,14 @@ class ModuleBase:
                    }
         """
 
-        if self.mappings and self.modulename and self.exclusions:
+        if self.modulename and self.exclusions:
 
             self.errors = []
+            self.mappings = to_dot(self.exclusions)
 
             diffmodule = CompareDiffs()
+
+
 
             # Iterate paths
             for path, path_data in page_data.items():
@@ -78,7 +83,6 @@ class ModuleBase:
                         try:
                             self.iter_mappings(path, diffmodule, mapping, path_data)
                         except IncorrectConfigException as e:
-                            # TODO: Placeholder to dump page_data here for easy reload.
                             self.errors.append({"path": path, "error": str(e)})
                             break
 
@@ -86,22 +90,15 @@ class ModuleBase:
 
         raise NotImplementedError("This module cannot be called directly.")
 
-    def iter_mappings(self, path, diffmodule, mapping, path_data):
+    def _iter_mappings(self, path, diffmodule, mapping, path_data):
         """Iterates mappings to execute comparisions."""
 
-        def get(dot_not, data):
-            try:
-                return reduce(dict.get, dot_not.split("."), data)
-            except TypeError:
-                return None
+        item = mapping
+        exc = dot_get(item, self.exclusions)
+        d1 = dot_get(item, path_data["prod"])
+        d2 = dot_get(item, path_data["stage"])
 
-        item = mapping["item"]
-        loc = mapping["loc"]
-        exc = get(loc, self.exclusions)
-        d1 = get(loc, path_data["prod"])
-        d2 = get(loc, path_data["stage"])
-
-        if exc is not None and d1 and d2 and item:
+        if exc is not None and d1 and d2:
 
             if isinstance(exc, bool):
                 if not exc:
@@ -109,8 +106,6 @@ class ModuleBase:
             elif isinstance(exc, float):
                 diffmodule.compare(path, item, d1, d2, tolerance=exc)
             else:
-                # TODO: It would be nice to save the page_data here so that it can be reloaded
-                #       after the issue is fixed.
                 raise IncorrectConfigException(
                     "Config ignore values must be `bool` or `float`"
                 )

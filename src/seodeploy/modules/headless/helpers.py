@@ -25,6 +25,7 @@
 from functools import reduce
 from urllib.parse import quote_plus
 
+from seodeploy.lib.helpers import dot_get
 
 # User Agent for requests TODO: Should probably move this to YAML config file.
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"  # pylint: disable=line-too-long
@@ -167,61 +168,59 @@ NETWORK_PRESETS = {
 
 
 def format_results(data):
-    def get(dot_not):
-        return reduce(dict.get, dot_not.split("."), data)
 
     return {
         "content": {
-            "canonical": get("canonical"),
-            "robots": get("robots"),
-            "title": get("title"),
-            "meta_description": get("description"),
-            "h1": get("h1"),
-            "h2": get("h2"),
-            "links": get("links"),
-            "images": get("images"),
-            "schema": get("schema"),
+            "canonical": dot_get("canonical", data),
+            "robots": dot_get("robots", data),
+            "title": dot_get("title", data),
+            "meta_description": dot_get("description", data),
+            "h1": dot_get("h1", data),
+            "h2": dot_get("h2", data),
+            "links": dot_get("links", data),
+            "images": dot_get("images", data),
+            "schema": dot_get("schema", data),
         },
         "performance": {
-            "nodes": get("metrics.performanceMetrics.Nodes"),
-            "resources": get("metrics.performanceMetrics.Resources"),
-            "layout_duration": get("metrics.performanceMetrics.LayoutDuration"),
-            "recalc_style_duration": get(
-                "metrics.performanceMetrics.RecalcStyleDuration"
+            "nodes": dot_get("metrics.performanceMetrics.Nodes", data),
+            "resources": dot_get("metrics.performanceMetrics.Resources", data),
+            "layout_duration": dot_get("metrics.performanceMetrics.LayoutDuration", data),
+            "recalc_style_duration": dot_get(
+                "metrics.performanceMetrics.RecalcStyleDuration", data
             ),
-            "script_duration": get("metrics.performanceMetrics.ScriptDuration"),
-            "v8_compile_duration": get("metrics.performanceMetrics.V8CompileDuration"),
-            "task_duration": get("metrics.performanceMetrics.TaskDuration"),
-            "task_other_duration": get("metrics.performanceMetrics.TaskOtherDuration"),
-            "thread_time": get("metrics.performanceMetrics.ThreadTime"),
-            "jd_heap_used_size": get("metrics.performanceMetrics.JSHeapUsedSize"),
-            "js_heap_total_size": get("metrics.performanceMetrics.JSHeapTotalSize"),
-            "time_to_first_byte": get("metrics.calculated.timeToFirstByte"),
-            "first_paint": get("metrics.calculated.firstPaint"),
-            "first_contentful_paint": get("metrics.calculated.firstContentfulPaint"),
-            "largest_contentful_paint": get(
-                "metrics.calculated.largestContentfulPaint"
+            "script_duration": dot_get("metrics.performanceMetrics.ScriptDuration", data),
+            "v8_compile_duration": dot_get("metrics.performanceMetrics.V8CompileDuration", data),
+            "task_duration": dot_get("metrics.performanceMetrics.TaskDuration", data),
+            "task_other_duration": dot_get("metrics.performanceMetrics.TaskOtherDuration", data),
+            "thread_time": dot_get("metrics.performanceMetrics.ThreadTime", data),
+            "jd_heap_used_size": dot_get("metrics.performanceMetrics.JSHeapUsedSize", data),
+            "js_heap_total_size": dot_get("metrics.performanceMetrics.JSHeapTotalSize", data),
+            "time_to_first_byte": dot_get("metrics.calculated.timeToFirstByte", data),
+            "first_paint": dot_get("metrics.calculated.firstPaint", data),
+            "first_contentful_paint": dot_get("metrics.calculated.firstContentfulPaint", data),
+            "largest_contentful_paint": dot_get(
+                "metrics.calculated.largestContentfulPaint", data
             ),
-            "time_to_interactive": get("metrics.calculated.timeToInteractive"),
-            "dom_content_loaded": get("metrics.calculated.domContentLoaded"),
-            "dom_complete": get("metrics.calculated.domComplete"),
-            "cumulative_layout_shift": get("metrics.calculated.cumulativeLayoutShift"),
+            "time_to_interactive": dot_get("metrics.calculated.timeToInteractive", data),
+            "dom_content_loaded": dot_get("metrics.calculated.domContentLoaded", data),
+            "dom_complete": dot_get("metrics.calculated.domComplete", data),
+            "cumulative_layout_shift": dot_get("metrics.calculated.cumulativeLayoutShift", data),
         },
         "coverage": {
             "summary": {
-                "total_unused": get("coverage.summary.totalUnused"),
-                "total_bytes": get("coverage.summary.totalBytes"),
-                "unused_pc": get("coverage.summary.totalUnusedPc"),
+                "total_unused": dot_get("coverage.summary.totalUnused", data),
+                "total_bytes": dot_get("coverage.summary.totalBytes", data),
+                "unused_pc": dot_get("coverage.summary.totalUnusedPc", data),
             },
             "css": {
-                "total_unused": get("coverage.css.summary.totalUnused"),
-                "total_bytes": get("coverage.css.summary.totalBytes"),
-                "unused_pc": get("coverage.css.summary.totalUnusedPc"),
+                "total_unused": dot_get("coverage.css.summary.totalUnused", data),
+                "total_bytes": dot_get("coverage.css.summary.totalBytes", data),
+                "unused_pc": dot_get("coverage.css.summary.totalUnusedPc", data),
             },
             "js": {
-                "total_unused": get("coverage.js.summary.totalUnused"),
-                "total_bytes": get("coverage.js.summary.totalBytes"),
-                "unused_pc": get("coverage.js.summary.totalUnusedPc"),
+                "total_unused": dot_get("coverage.js.summary.totalUnused", data),
+                "total_bytes": dot_get("coverage.js.summary.totalBytes", data),
+                "unused_pc": dot_get("coverage.js.summary.totalUnusedPc", data),
             },
         },
     }

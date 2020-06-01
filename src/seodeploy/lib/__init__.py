@@ -62,12 +62,13 @@ class SEOTesting:
 
             module = self.module_config.active_modules[active_module].SEOTestingModule()
 
-            passing, messages = module.run(self.samples)
+            errors = module.run(self.samples)
 
-            self.update_messages(messages)
-            self.update_passing(passing)
+            self.update_messages(module.messages)
+            self.update_passing(module.passing)
 
             self.summary.update({"{} passing: ".format(module.modulename): passing})
+            self.summary.update({"{} errors: ".format(module.modulename): len(errors)})
 
         self.get_messages().to_csv("output.csv", index=False)
 

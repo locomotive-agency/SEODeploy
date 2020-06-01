@@ -41,26 +41,6 @@ class SEOTestingModule(ModuleBase):
 
         self.time_zone = pytz.timezone(self.config.contentking.TIMEZONE)
 
-        # item: item name.
-        # loc: dot dictionary location of exclusions dict, and page_data dict
-        self.mappings = [
-            {"item": "canonical", "loc": "content.canonical"},
-            {"item": "title", "loc": "content.title"},
-            {"item": "meta_description", "loc": "content.meta_description"},
-            {"item": "h1", "loc": "content.h1"},
-            {"item": "h2", "loc": "content.h2"},
-            {"item": "meta_robots", "loc": "content.meta_robots"},
-            {"item": "open_graph_description", "loc": "content.open_graph_description"},
-            {"item": "open_graph_image", "loc": "content.open_graph_image"},
-            {"item": "open_graph_title", "loc": "content.open_graph_title"},
-            {"item": "open_graph_type", "loc": "content.open_graph_type"},
-            {"item": "open_graph_url", "loc": "content.open_graph_url"},
-            {"item": "twitter_card", "loc": "content.twitter_card"},
-            {"item": "twitter_site", "loc": "content.twitter_site"},
-            {"item": "google_analytics", "loc": "content.google_analytics"},
-            {"item": "issues", "loc": "issues"},
-            {"item": "schema", "loc": "schema"},
-        ]
 
     def run(self, sample_paths):
 
