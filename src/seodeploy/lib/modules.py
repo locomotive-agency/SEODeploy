@@ -25,7 +25,6 @@
 import os
 import sys
 import importlib
-from functools import reduce
 
 from .config import Config
 from .comparison import CompareDiffs
@@ -78,7 +77,7 @@ class ModuleBase:
                 else:
                     for mapping in self.mappings:
                         try:
-                            self.iter_mappings(path, diffmodule, mapping, path_data)
+                            self._iter_mappings(path, diffmodule, mapping, path_data)
                         except IncorrectConfigException as e:
                             self.errors.append({"path": path, "error": str(e)})
                             break
@@ -95,20 +94,28 @@ class ModuleBase:
         d1 = dot_get(item, path_data["prod"])
         d2 = dot_get(item, path_data["stage"])
 
-        if exc is not None and d1 and d2:
+        if exc is not None and d1 is not None and d2 is not None:
 
             if isinstance(exc, bool):
                 if not exc:
                     diffmodule.compare(path, item, d1, d2, tolerance=None)
+                else:
+                    _LOG.info("Ignoring issue: {}".format(item))
             elif isinstance(exc, float):
                 diffmodule.compare(path, item, d1, d2, tolerance=exc)
             else:
-                raise IncorrectConfigException(
-                    "Config ignore values must be `bool` or `float`"
+                error = "Config ignore values must be `bool` or `float`. Item {}".format(
+                    item
                 )
+                _LOG.error(error)
+                raise IncorrectConfigException(error)
 
         else:
-            raise IncorrectConfigException("Config mapping data is not correct.")
+            error = "Config mapping data is not correct. Path: {} Item: {}".format(
+                path, item
+            )
+            _LOG.error(error)
+            raise IncorrectConfigException(error)
 
     def prepare_messages(self, diffs):
         """ Prepares Diff data as consistent messages.
@@ -129,13 +136,11 @@ class ModuleBase:
             for item_diff in item_diffs:
 
                 # make sure all values are strings.
-                item_diff = {k: str(v) for k, v in item_diff.items()}.update(
-                    {"module": self.modulename, "path": path}
-                )
+                item_diff = {k: str(v) for k, v in item_diff.items()}
+                # Add module and path
+                item_diff.update({"module": self.modulename, "path": path})
 
                 messages.append(item_diff)
-
-        self.messages = messages
 
         return messages
 

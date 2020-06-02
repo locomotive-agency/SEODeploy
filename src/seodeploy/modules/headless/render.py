@@ -48,7 +48,7 @@ class HeadlessChrome:
 
         self.browser = None
         self.page = None
-        self.coverage = {}
+        self.coverage = None
         self.client = None
         self.config = config or Config(module="headless")
         self.network = self.config.headless.network_preset or "Regular3G"
@@ -83,11 +83,6 @@ class HeadlessChrome:
                 _LOG.error(error)
                 result["error"] = error
                 break
-
-            except Exception as e:  # noqa: broad-except
-                error = "An unknown render exception has occured: " + str(e)
-                _LOG.error(error)
-                result["error"] = error
 
         else:
             error = "Max tries exhausted for: " + url
@@ -127,6 +122,7 @@ class HeadlessChrome:
         await self.page.evaluateOnNewDocument(DOCUMENT_SCRIPTS)
 
         self.client = await self.page.target.createCDPSession()
+        self.coverage = {}
 
         # Limit network to cosistent slow.
         await self.client.send(

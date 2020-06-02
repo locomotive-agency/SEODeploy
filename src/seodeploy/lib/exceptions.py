@@ -47,7 +47,7 @@ class TypesMismatched(Exception):
     pass  # noqa
 
 
-class IncorectConfigException(Exception):
+class IncorrectConfigException(Exception):
     """An exception for a missing or invalid URL."""
 
     pass  # noqa

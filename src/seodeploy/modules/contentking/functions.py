@@ -32,7 +32,12 @@ import requests
 from tqdm.auto import tqdm
 
 from seodeploy.lib.logging import get_logger
-from seodeploy.lib.helpers import group_batcher, mp_list_map, list_to_dict
+from seodeploy.lib.helpers import (
+    group_batcher,
+    mp_list_map,
+    list_to_dict,
+    process_page_data,
+)
 from .exceptions import ContentKingAPIError
 
 _LOG = get_logger(__name__)
@@ -220,11 +225,11 @@ def _notify_change(url, config):
     return None
 
 
-def ping_prod_paths(paths, config):
+def ping_prod_paths(sample_paths, config):
     """Converts all production paths to URLs and pings ContentKing"""
 
     results = {}
-    for path in paths:
+    for path in sample_paths:
         url = urljoin(config.contentking.PROD_HOST, path)
         result = _notify_change(url, config)
 
@@ -236,11 +241,11 @@ def ping_prod_paths(paths, config):
     return results
 
 
-def ping_stage_paths(paths, config):
+def ping_stage_paths(sample_paths, config):
     """Converts all staging paths to URLs and pings ContentKing"""
 
     results = {}
-    for path in paths:
+    for path in sample_paths:
         url = urljoin(config.contentking.STAGE_HOST, path)
         result = _notify_change(url, config)
 
@@ -317,6 +322,70 @@ def run_path_pings(sample_paths, config):
     return True
 
 
+def parse_url_data(url_data, fmt):
+    """Parses the custom data from ContentKing URL data to to supplied dict fmt."""
+
+    CONTENT_KING_ISSUES = ("analytics/analytics_missing",)
+    "analytics/visual_analytics_missing",
+    "h1/duplicate",
+    "h1/incorrect_length",
+    "h1/missing",
+    "h1/too_many",
+    "canonical_link/incorrectly_canonicalized",
+    "canonical_link/missing",
+    "canonical_link/points_to_unindexable",
+    "canonical_link/too_many",
+    "images/alt_attribute",
+    "images/title_attribute",
+    "links/broken",
+    "links/redirected",
+    "links/to_canonicalized",
+    "meta_description/duplicate",
+    "meta_description/incorrect_length",
+    "meta_description/missing",
+    "meta_description/too_many",
+    "title/duplicate",
+    "title/incorrect_length",
+    "title/missing",
+    "title/too_many",
+    "open_graph/description_incorrect_length",
+    "open_graph/description_missing",
+    "open_graph/image_missing",
+    "open_graph/title_incorrect_length",
+    "open_graph/title_missing",
+    "open_graph/url_missing",
+    "twitter_cards/description_incorrect_length",
+    "twitter_cards/description_missing",
+    "twitter_cards/image_missing",
+    "twitter_cards/site_missing",
+    "twitter_cards/title_incorrect_length",
+    "twitter_cards/title_missing",
+    "twitter_cards/type_invalid",
+    "twitter_cards/type_missing",
+    "xml_sitemap/incorrectly_missing",
+    "xml_sitemap/incorrectly_present"
+
+    # Content
+    fmt["content"] = {}
+    for item in url_data["content"]:
+        i_type = item["type"]
+        i_content = item["content"]
+        if i_type in content:
+            fmt["content"][i_type].append(i_content)
+        else:
+            fmt["content"][i_type] = [i_content]
+
+    # Issues
+    found_issues = [i["name"] for i in url_data["open_issues"]]
+
+    fmt["issues"] = {
+        i: "issue" if i in found_issues else "" for i in CONTENT_KING_ISSUES
+    }
+
+    # Schema
+    fmt["schema"] = url_data["schema_org"]
+
+
 def _check_results(paths, config=None, data=None):
 
     """Loads path data from ContentKing and returns cleaned data report.
@@ -327,25 +396,41 @@ def _check_results(paths, config=None, data=None):
 
     unchecked = paths.copy()
     results = []
+    first_path = None
+    first_path_check_count = 0
+    first_path_check_count_limit = 5
 
     while unchecked:
 
         # Grab the first
         path = unchecked.pop(0)
 
+        # Kill if first path not successful after X tries.
+        if not first_path:
+            first_path = path
+
+        if first_path == path:
+            first_path_check_count += 1
+            if first_path_check_count > first_path_check_count_limit:
+                raise ContentKingAPIError(
+                    "Max attempts reached.  Host may not be active in ContentKing."
+                )
+        # End max hits kill.
+
         url = urljoin(data["host"], path)
+
+        # Output format.
+        fmt = {
+            "path": path,
+            "issues": [],
+            "content": [],
+            "schema": [],
+            "error": None,
+        }
 
         try:
 
             url_data = load_report("url", config, id=data["site_id"], url=url)
-
-            fmt = {
-                "path": path,
-                "issues": [],
-                "content": [],
-                "schema": [],
-                "error": None,
-            }
 
             if url_data and data["time_col"] in url_data:
                 last_check = datetime.fromisoformat(
@@ -355,14 +440,7 @@ def _check_results(paths, config=None, data=None):
 
                 if time_delta < 0:
 
-                    # Has been crawled prior to start of process.
-                    fmt["content"] = [
-                        {"element": i["type"], "content": i["content"]}
-                        for i in url_data["content"]
-                    ]
-                    fmt["issues"] = [i["name"] for i in url_data["open_issues"]]
-                    fmt["schema"] = url_data["schema_org"]
-                    results.append(fmt)
+                    results.append(parse_url_data(url_data, fmt))
 
                 else:
                     # We have a good response, but the URL has not been crawled yet.
@@ -378,36 +456,6 @@ def _check_results(paths, config=None, data=None):
             results.append(fmt)
 
     return results
-
-
-def _process_results(sample_paths, prod_result, stage_result):
-
-    """Reviews the returned results for errors. Build single
-       result dictionary in the format:
-
-       {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
-       ...
-       }
-
-
-    """
-
-    result = {}
-
-    prod_data = list_to_dict(prod_result, "path")
-    stage_data = list_to_dict(stage_result, "path")
-
-    for path in sample_paths:
-        error = (
-            prod_data[path]["error"] or stage_data[path]["error"]
-        )  # TODO: This is not correct.
-        result[path] = {
-            "prod": prod_data[path]["page_data"],
-            "stage": stage_data[path]["page_data"],
-            "error": error,
-        }
-
-    return result
 
 
 def run_check_results(sample_paths, start_time, time_zone, config):
@@ -459,10 +507,20 @@ def run_check_results(sample_paths, start_time, time_zone, config):
             mp_list_map(batch, _check_results, config=config, data=stage_data)
         )
 
-        # TODO: Can adjust this as necessary, pull out to config, or remove.
         time.sleep(config.contentking.BATCH_WAIT)
 
     # Review for Errors and process into dictionary
-    page_data = _process_results(sample_paths, prod_result, stage_result)
+    page_data = process_page_data(sample_paths, prod_result, stage_result)
+
+    return page_data
+
+
+def run_contentking(sample_paths, start_time, time_zone, config):
+
+    # Runs the sample paths against ContentKing API to ask for recrawling.
+    run_path_pings(sample_paths, config)
+
+    # Checks results via multi-threading
+    page_data = run_check_results(sample_paths, start_time, time_zone, config)
 
     return page_data

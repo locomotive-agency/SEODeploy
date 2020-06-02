@@ -26,7 +26,12 @@ from urllib.parse import urljoin
 from tqdm import tqdm
 
 from seodeploy.lib.logging import get_logger
-from seodeploy.lib.helpers import group_batcher, mp_list_map, list_to_dict  # noqa
+from seodeploy.lib.helpers import (
+    group_batcher,
+    mp_list_map,
+    list_to_dict,
+    process_page_data,
+)  # noqa
 
 from .render import HeadlessChrome  # noqa
 from .exceptions import HeadlessException  # noqa
@@ -60,36 +65,6 @@ def _render_paths(paths, config=None, host=None):
     return results
 
 
-def _process_results(sample_paths, prod_result, stage_result):
-
-    """Reviews the returned results for errors. Build single
-       result dictionary in the format:
-
-       {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
-       ...
-       }
-
-
-    """
-
-    result = {}
-
-    prod_data = list_to_dict(prod_result, "path")
-    stage_data = list_to_dict(stage_result, "path")
-
-    for path in sample_paths:
-        error = (
-            prod_data[path]["error"] or stage_data[path]["error"]
-        )  # TODO: This is not correct.
-        result[path] = {
-            "prod": prod_data[path]["page_data"],
-            "stage": stage_data[path]["page_data"],
-            "error": error,
-        }
-
-    return result
-
-
 def run_render(sample_paths, config):
 
     """Monitors paths that were pinged for updated timestamp. Compares allowed differences.
@@ -119,7 +94,17 @@ def run_render(sample_paths, config):
             )
         )
 
+    print("Batch Render Results =================")
+    import json
+
+    print("Prod:")
+    print(json.dumps(prod_result, indent=2))
+    print()
+    print("Stage:")
+    print(json.dumps(stage_result, indent=2))
+    print()
+
     # Review for Errors and process into dictionary:
-    page_data = _process_results(sample_paths, prod_result, stage_result)
+    page_data = process_page_data(sample_paths, prod_result, stage_result)
 
     return page_data

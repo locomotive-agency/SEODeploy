@@ -11,5 +11,6 @@
 8. [X] Develop Headless Module using Pypeteer.
 10. [ ] Create PyPI library.
 11. [ ] Add timeout to ContentKing checking to keep from running infinitely long.
+11. [ ] Reduce lists of str, int, float to element if len = 1 in comparision.  Shows change instead of add/remove.
 
- 
+https://cjolowicz.github.io/posts/hypermodern-python-03-linting/

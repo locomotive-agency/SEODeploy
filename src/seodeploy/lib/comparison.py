@@ -62,20 +62,37 @@ class CompareDiffs:
             self.diffs = [{'path': <str>, 'diffs': [list]}, ...]
 
         """
-        if not isinstance(d1, type(d1)):
+        if not isinstance(d1, type(d2)):
             raise TypesMismatched(
                 "`d1` and `d2` must be the same type. Currently: {} and {}".format(
                     type(d1), type(d2)
                 )
             )
 
+        # TODO: Need to better handle type checking.  There are cases where a list may be sent, but it isn't
+        # a list of dicts.
+
         if isinstance(d1, dict):
             diffs = self.compare_objects(d1, d2, item=item, tolerance=tolerance)
         elif isinstance(d1, (list, set)):
-            diffs = self.compare_lists_of_objects(
-                self, d1, d2, item=item, tolerance=tolerance
-            )
+            try:
+                diffs = self.compare_objects(
+                    set(d1), set(d2), item=item, tolerance=tolerance
+                )
+            # Unhashable dict found.
+            except TypeError:
+                diffs = self.compare_lists_of_objects(
+                    d1, d2, item=item, tolerance=tolerance
+                )
+        elif isinstance(d1, (float, str, int)):
+            diffs = self.compare_objects(d1, d2, item=item, tolerance=tolerance)
         else:
+            print("Error ======================")
+            print("Item:", item)
+            print("Path:", path)
+            print("D1:", d1)
+            print("D2:", d2)
+            print()
             raise NotImplementedError(
                 "Only data of types `list`, `set`, or `dict` are supported."
             )
@@ -104,10 +121,12 @@ class CompareDiffs:
         if isinstance(d1, list) and isinstance(d2, list):
             otype = "set"
             d1, d2 = set(d1), set(d2)
-        elif isinstance(d1, set) and isinstance(d1, set):
+        elif isinstance(d1, set) and isinstance(d2, set):
             otype = "set"
-        elif isinstance(d1, dict) and isinstance(d1, dict):
+        elif isinstance(d1, dict) and isinstance(d2, dict):
             otype = "dict"
+        elif isinstance(d1, (float, str, int)) and isinstance(d2, (float, str, int)):
+            otype = "other"
         else:
             raise AttributeError(
                 "Unsupported object types provided.  Supports `list`, `set`, or `dict`"
@@ -133,20 +152,21 @@ class CompareDiffs:
                     if isinstance(location, list)
                     else location
                 )
-                item = item or location[0] if isinstance(location, list) else location
                 results.append(
                     {
                         "type": ctype,
                         "item": item,
                         "element": element,
-                        "before": details[0],
-                        "after": details[1],
+                        "production": details[0],
+                        "staging": details[1],
                     }
                 )
             else:
                 for detail in details:
 
-                    content = detail[1]
+                    content = (
+                        list(detail[1]) if isinstance(detail[1], set) else detail[1]
+                    )
 
                     if otype == "dict" and new:
                         element = (
@@ -154,8 +174,12 @@ class CompareDiffs:
                             if isinstance(detail[0], list)
                             else detail[0]
                         )
-                        item = item or detail[0]
-                        content = detail[1][0]
+                        content = (
+                            list(detail[1][0])
+                            if isinstance(detail[1][0], set)
+                            else detail[1][0]
+                        )
+
                     elif otype == "dict":
                         elements = [
                             ".".join([str(i) for i in location])
@@ -168,12 +192,8 @@ class CompareDiffs:
                             else str(detail[0])
                         ]
                         element = ".".join(elements)
-                        item = item or elements[0]
-                        content = detail[1]
                     else:
-                        item = "".join(detail[1])
                         element = None
-                        content = None
 
                     results.append(
                         {

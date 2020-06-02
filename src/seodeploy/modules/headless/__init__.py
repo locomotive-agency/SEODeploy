@@ -23,6 +23,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import os
+import json
 
 from seodeploy.lib.modules import ModuleBase
 from seodeploy.lib.config import Config
@@ -45,25 +46,7 @@ class SEOTestingModule(ModuleBase):
 
         self.modulename = "headless"
         self.config = config or Config(module=self.modulename)
-        self.exclusions = config.headless.ignore
-
-        # item: item name.
-        # loc: dot dictionary location of exclusions dict, and page_data dict
-        self.mappings = [
-            {"item": "canonical", "loc": "content.canonical"},
-            {"item": "robots", "loc": "content.robots"},
-            {"item": "title", "loc": "content.title"},
-            {"item": "meta_description", "loc": "content.meta_description"},
-            {"item": "h1", "loc": "content.h1"},
-            {"item": "h2", "loc": "content.h2"},
-            {"item": "links", "loc": "content.links"},
-            {"item": "images", "loc": "content.images"},
-            {"item": "schema", "loc": "content.schema"},
-            {"item": "performance", "loc": "performance"},
-            {"item": "coverage-summary", "loc": "coverage.summary"},
-            {"item": "coverage-css", "loc": "coverage.css"},
-            {"item": "coverage-js", "loc": "coverage.js"},
-        ]
+        self.exclusions = self.config.headless.ignore
 
     def run(self, sample_paths):
 
@@ -77,4 +60,4 @@ class SEOTestingModule(ModuleBase):
 
         self.passing = len(self.messages) == 0
 
-        return self.errors
+        return self.passing, self.messages, self.errors

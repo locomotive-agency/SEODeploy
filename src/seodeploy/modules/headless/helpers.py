@@ -22,7 +22,6 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from functools import reduce
 from urllib.parse import quote_plus
 
 from seodeploy.lib.helpers import dot_get
@@ -32,6 +31,7 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 
 
 # Various extractions to run on Chrome.
+"""
 EXTRACTIONS = {
     "title": "() => [...document.querySelectorAll('title')].map( el => {return {'element':xpath(el), 'content': el.textContent};})",  # pylint: disable=line-too-long
     "description": "() => [...document.querySelectorAll('meta[name=description]')].map( el => {return {'element':xpath(el), 'content': el.content};})",  # pylint: disable=line-too-long
@@ -42,6 +42,20 @@ EXTRACTIONS = {
     "canonical": "() => [...document.querySelectorAll('link[rel=canonical]')].map( el => {return {'element':xpath(el), 'content': el.href};})",  # pylint: disable=line-too-long
     "robots": "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return {'element':xpath(el), 'content': el.content};})",  # pylint: disable=line-too-long
     "schema": "() => [...document.querySelectorAll('script[type=\"application/ld+json\"]')].map( el => {return {'element':xpath(el), 'content': JSON.parse(el.textContent)};})",  # pylint: disable=line-too-long
+}
+"""
+
+# Various extractions to run on Chrome.
+EXTRACTIONS = {
+    "title": "() => [...document.querySelectorAll('title')].map( el => {return el.textContent;})",  # pylint: disable=line-too-long
+    "description": "() => [...document.querySelectorAll('meta[name=description]')].map( el => {return el.content;})",  # pylint: disable=line-too-long
+    "h1": "() => [...document.querySelectorAll('h1')].map( el => {return el.textContent;})",  # pylint: disable=line-too-long
+    "h2": "() => [...document.querySelectorAll('h2')].map( el => {return el.textContent;})",  # pylint: disable=line-too-long
+    "links": "() => [...document.querySelectorAll('a')].map( el => {return el.href;})",  # pylint: disable=line-too-long
+    "images": "() => [...document.querySelectorAll('img')].map( el => {return el.src;})",  # pylint: disable=line-too-long
+    "canonical": "() => [...document.querySelectorAll('link[rel=canonical]')].map( el => {return el.href;})",  # pylint: disable=line-too-long
+    "robots": "() => [...document.querySelectorAll('meta[name=robots]')].map( el => {return el.content;})",  # pylint: disable=line-too-long
+    "schema": "() => [...document.querySelectorAll('script[type=\"application/ld+json\"]')].map( el => {return JSON.parse(el.textContent);})",  # pylint: disable=line-too-long
 }
 
 # Helper Scripts to include in document on page launch.
@@ -245,21 +259,13 @@ def format_results(data):
 
 
 def parse_numerical_dict(data, r=2):
-    result = {}
-    for k, v in data.items():
-        if isinstance(v, str):
-            v = float(v) if "." in v else int(v)
-
-        if isinstance(v, float):
-            result[k] = round(v, r)
-        else:
-            result[k] = int(v)
-
-    return result
+    """Converts dict with numerical values to consistent `r` rounded float values"""
+    return {k: round(float(v), r) for k, v in data.items()}
 
 
 # Performance Timing Functions
 def parse_performance_timing(p_timing):
+    """Changes performance timing results to deltas"""
     ns = p_timing["navigationStart"]
     return {k: v - ns if v else 0 for k, v in p_timing.items()}
 
@@ -277,7 +283,7 @@ def parse_ranges(ranges):
 
 # Coverage Functions
 def parse_coverage_objects(coverage):
-
+    """Helper function for parse_coverage to calulate separate asset coverage"""
     total_unused = 0
     total_bytes = 0
     results = []
@@ -310,15 +316,15 @@ def parse_coverage_objects(coverage):
     return {
         "results": results,
         "summary": {
-            "totalUnused": total_unused,
-            "totalBytes": total_bytes,
-            "totalUnusedPc": total_unused_pct,
+            "totalUnused": float(total_unused),
+            "totalBytes": float(total_bytes),
+            "totalUnusedPc": float(total_unused_pct),
         },
     }
 
 
 def parse_coverage(coverage_js, coverage_css):
-
+    """Organizes to dict Chrome coverage report"""
     parsed_js_coverage = parse_coverage_objects(coverage_js)
     parsed_css_coverage = parse_coverage_objects(coverage_css)
 
@@ -335,9 +341,9 @@ def parse_coverage(coverage_js, coverage_css):
 
     return {
         "summary": {
-            "totalBytes": total_unused,
-            "totalUnused": total_bytes,
-            "totalUnusedPc": total_unused_pct,
+            "totalBytes": float(total_unused),
+            "totalUnused": float(total_bytes),
+            "totalUnusedPc": float(total_unused_pct),
         },
         "css": parsed_css_coverage,
         "js": parsed_js_coverage,

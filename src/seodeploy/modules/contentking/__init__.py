@@ -28,7 +28,7 @@ import pytz
 
 from seodeploy.lib.modules import ModuleBase
 from seodeploy.lib.config import Config
-from .functions import run_path_pings, run_check_results, load_report
+from .functions import run_path_pings, run_contentking, load_report
 
 
 class SEOTestingModule(ModuleBase):
@@ -45,11 +45,7 @@ class SEOTestingModule(ModuleBase):
 
         start_time = datetime.now().astimezone(self.time_zone)
 
-        # Runs the sample paths against COntentKing API to ask for recrawling.
-        run_path_pings(sample_paths, self.config)
-
-        # Checks results via multi-threading
-        page_data = run_check_results(
+        page_data = run_contentking(
             sample_paths, start_time, self.time_zone, self.config
         )
 
@@ -57,9 +53,9 @@ class SEOTestingModule(ModuleBase):
 
         self.messages = self.prepare_messages(diffs)
 
-        self.passing = len(messages) == 0
+        self.passing = len(self.messages) == 0
 
-        return self.errors
+        return self.passing, self.messages, self.errors
 
     def get_samples(self, site_id, limit):
 

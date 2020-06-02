@@ -40,9 +40,9 @@ class Config:
 
     def __init__(self, module=None, mdirs=None, cfiles=None):
         self.mdirs = (
-            mdirs + ["seotesting/modules", ".modules"]
+            mdirs + ["./src/seodeploy/modules", "./seodeploy/modules", "./modules"]
             if mdirs
-            else ["seotesting/modules", ".modules"]
+            else ["./src/seodeploy/modules", "./seodeploy/modules", "./modules"]
         )
         self.cfiles = (
             cfiles + ["seotesting_config.yaml"]
@@ -69,7 +69,7 @@ class Config:
                 )
                 break
             except FileNotFoundError:
-                pass
+                print("Nothing found in", mdir)
 
     def _load_configs(self):
         for cfile in self.cfiles:
@@ -77,8 +77,6 @@ class Config:
                 parser = ParseIt(config_location=cfile, config_type_priority=["yaml"])
                 config = parser.read_all_configuration_variables()
 
-                # TODO: Need to namespace config settings at some point as this currently
-                # can lead to collisions
                 if self.module:
                     if self.module in self.modules:
                         modules = config.pop("modules_activated")

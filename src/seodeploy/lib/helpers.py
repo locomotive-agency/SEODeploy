@@ -98,13 +98,13 @@ def list_to_dict(lst, key):
 def dot_set(data):
     """Transforms a dictionary to be indexable by dot notation"""
     return (
-        SimpleNamespace(**{k: dot_not(v) for k, v in data.items()})
+        SimpleNamespace(**{k: dot_set(v) for k, v in data.items()})
         if isinstance(data, dict)
         else data
     )
 
 
-def dot_get(dot, data):
+def dot_get(dot_not, data):
     """Transforms a dictionary to be indexable by dot notation"""
     try:
         return reduce(dict.get, dot_not.split("."), data)
@@ -115,13 +115,43 @@ def dot_get(dot, data):
 def to_dot(data):
     """Returns a list of dot notations for non-dict values in a dict"""
 
-    def iter_dot(data, parent=[], result=[]):
+    def iter_dot(data, parent, result):
         if isinstance(data, dict):
             for k, v in data.items():
                 if not isinstance(v, dict):
                     result.append(parent + [k])
-                iter_dot(v, parent=parent + [k], result=result)
+                iter_dot(v, parent + [k], result)
 
         return result
 
-    return [".".join(x) for x in iter_dot(data)]
+    return [".".join(x) for x in iter_dot(data, [], [])]
+
+
+def process_page_data(sample_paths, prod_result, stage_result):
+
+    """Reviews the returned results for errors. Build single
+       result dictionary in the format:
+
+       {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
+       ...
+       }
+
+
+    """
+
+    result = {}
+
+    prod_data = list_to_dict(prod_result, "path")
+    stage_data = list_to_dict(stage_result, "path")
+
+    for path in sample_paths:
+        error = (
+            prod_data[path]["error"] or stage_data[path]["error"]
+        )  # TODO: This is not correct.
+        result[path] = {
+            "prod": prod_data[path]["page_data"],
+            "stage": stage_data[path]["page_data"],
+            "error": error,
+        }
+
+    return result
