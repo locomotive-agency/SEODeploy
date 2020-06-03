@@ -44,6 +44,8 @@ _LOG = get_logger(__name__)
 
 
 class HeadlessChrome:
+    """Class which handles rendering and extraction using Chrome Browser and CDP"""
+
     def __init__(self, config=None):
 
         self.browser = None
@@ -51,18 +53,21 @@ class HeadlessChrome:
         self.coverage = None
         self.client = None
         self.config = config or Config(module="headless")
-        self.network = self.config.headless.network_preset or "Regular3G"
+        self.network = self.config.headless.NETWORK_PRESET or "Regular3G"
 
         asyncio.set_event_loop(asyncio.new_event_loop())
         asyncio.get_event_loop().run_until_complete(self.build_browser())
 
     async def build_browser(self):
+        """Publicly accessible build browser function."""
+
         # browser = await launch()
         browser = await launch(args=["--no-sandbox"], headless=True)
 
         self.browser = await browser.createIncognitoBrowserContext()
 
     def render(self, url):
+        """Publicly accessible render function."""
 
         result = {"page_data": None, "error": None}
 
@@ -92,6 +97,7 @@ class HeadlessChrome:
         return result
 
     async def _render(self, url):
+        """Main render function. Builds page and executes extraction."""
 
         if not url:
             raise URLMissingException("A URL is required to render.")
@@ -114,6 +120,7 @@ class HeadlessChrome:
         return dom
 
     async def _build_page(self, url):
+        """Main method to build page, setup reports, and navigate to URL"""
 
         self.page = await self.browser.newPage()
         await self.page.setBypassCSP(True)  # Ignore content security issues.
@@ -135,6 +142,9 @@ class HeadlessChrome:
         await self.page.coverage.startJSCoverage()
         await self.page.coverage.startCSSCoverage()
 
+        # Authenticate if Staging and user/pass defined.
+        await self._check_auth(url)
+
         await self.page.goto(url, waitUntil="networkidle2", timeout=60000)
 
         self.coverage["JSCoverage"] = await self.page.coverage.stopJSCoverage()
@@ -144,11 +154,25 @@ class HeadlessChrome:
         await self.page.waitFor(1000)
 
     async def _close_page(self):
+        """Close page and relevant class data after page load"""
+
         await self.page.close()
         self.page = None
         self.coverage = None
 
+    async def _check_auth(self, url):
+        """Authenticate if Staging and user/pass defined."""
+
+        username = self.config.headless.STAGE_AUTH_USER
+        password = self.config.headless.STAGE_AUTH_PASS
+        stage_host = self.config.headless.STAGE_HOST
+
+        if username and password and stage_host in url:
+            await self.page.authenticate({"username": username, "password": password})
+
     async def _extract_content(self):
+        """Extracts content from the page.  Since this destroys the DOM, it should be run last."""
+
         await self.page.evaluate(
             "document.querySelectorAll('script, iframe, style, noscript, link').forEach(function(el){el.remove()})",
             force_expr=True,
@@ -157,6 +181,7 @@ class HeadlessChrome:
         return " ".join(content.split()).strip().lower()
 
     async def _extract_performance_metrics(self):
+        """Pull timing and calculated metrics from rendered page"""
 
         metrics = {}
 
@@ -185,6 +210,8 @@ class HeadlessChrome:
         return metrics
 
     async def _calculated_metrics(self, metrics):
+        """Extract and caculate important performance metrics"""
+
         result = {}
         expressions = {
             "timeToFirstByte": (metrics["timing"]["responseStart"],),
@@ -206,6 +233,7 @@ class HeadlessChrome:
         return result
 
     def _extract_coverage(self):
+        """Handler function to parse coverage from CDP session"""
         return parse_coverage(self.coverage["JSCoverage"], self.coverage["CSSCoverage"])
 
 

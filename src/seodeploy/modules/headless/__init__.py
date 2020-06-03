@@ -23,7 +23,6 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import os
-import json
 
 from seodeploy.lib.modules import ModuleBase
 from seodeploy.lib.config import Config
@@ -54,10 +53,10 @@ class SEOTestingModule(ModuleBase):
 
         page_data = run_render(sample_paths, self.config)
 
-        diffs = self.run_diffs(page_data)
+        diffs, errors = self.run_diffs(page_data)
 
         self.messages = self.prepare_messages(diffs)
 
         self.passing = len(self.messages) == 0
 
-        return self.passing, self.messages, self.errors
+        return self.passing, self.messages, errors

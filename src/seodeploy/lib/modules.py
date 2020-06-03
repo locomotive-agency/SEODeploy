@@ -41,9 +41,7 @@ class ModuleBase:
 
     def __init__(self, config=None, sample_paths=None, exclusions=None):
         self.messages = None
-        self.errors = None
         self.passing = None
-        self.mappings = None
         self.modulename = None
         self.sample_paths = sample_paths
         self.exclusions = exclusions
@@ -61,8 +59,9 @@ class ModuleBase:
 
         if self.modulename and self.exclusions:
 
-            self.errors = []
-            self.mappings = to_dot(self.exclusions)
+            errors = []
+
+            mappings = to_dot(self.exclusions)
 
             diffmodule = CompareDiffs()
 
@@ -72,17 +71,17 @@ class ModuleBase:
                 error = path_data["error"]
 
                 if error:
-                    self.errors.append({"path": path, "error": error})
+                    errors.append({"path": path, "error": error})
 
                 else:
-                    for mapping in self.mappings:
+                    for mapping in mappings:
                         try:
                             self._iter_mappings(path, diffmodule, mapping, path_data)
                         except IncorrectConfigException as e:
-                            self.errors.append({"path": path, "error": str(e)})
+                            errors.append({"path": path, "error": str(e)})
                             break
 
-            return diffmodule.get_diffs()
+            return diffmodule.get_diffs(), errors
 
         raise NotImplementedError("This module cannot be called directly.")
 
@@ -94,13 +93,29 @@ class ModuleBase:
         d1 = dot_get(item, path_data["prod"])
         d2 = dot_get(item, path_data["stage"])
 
-        if exc is not None and d1 is not None and d2 is not None:
+        if d1 is None and d2 is None:
+            # Both are empty, which is correct.
+            _LOG.info("No values found for Path: {} Item: {}".format(path, item))
+
+        elif d1 is None or d2 is None:
+            diffs = [
+                {
+                    "type": "add" if d1 is None else "removed",
+                    "item": item,
+                    "element": None,
+                    "content": None,
+                }
+            ]
+            diffmodule.add_diffs(path, diffs)
+
+        elif exc is not None:
 
             if isinstance(exc, bool):
                 if not exc:
                     diffmodule.compare(path, item, d1, d2, tolerance=None)
                 else:
                     _LOG.info("Ignoring issue: {}".format(item))
+
             elif isinstance(exc, float):
                 diffmodule.compare(path, item, d1, d2, tolerance=exc)
             else:
@@ -111,9 +126,10 @@ class ModuleBase:
                 raise IncorrectConfigException(error)
 
         else:
-            error = "Config mapping data is not correct. Path: {} Item: {}".format(
+            error = "Unknown error with configuration. Here is all we know: Path: {} Item: {}".format(
                 path, item
             )
+
             _LOG.error(error)
             raise IncorrectConfigException(error)
 

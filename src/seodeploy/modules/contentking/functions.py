@@ -35,7 +35,6 @@ from seodeploy.lib.logging import get_logger
 from seodeploy.lib.helpers import (
     group_batcher,
     mp_list_map,
-    list_to_dict,
     process_page_data,
 )
 from .exceptions import ContentKingAPIError
@@ -103,6 +102,15 @@ def load_report(report, config, **data):
         for i in range(tries):
 
             try:
+
+                options = {
+                    "url": api_url,
+                    "params": query_string,
+                    "headers": headers,
+                    "timeout": config.contentking.API_TIMEOUT,
+                    "verify": False,
+                }
+
                 response = requests.get(
                     api_url,
                     params=query_string,
@@ -132,6 +140,7 @@ def load_report(report, config, **data):
             # If it is an unknown error, let's break and raise exception.
             except Exception as err:  # noqa
                 _LOG.error("Unspecified ContentKing Error:" + str(err))
+                _LOG.error("API Request Options:" + json.dumps(options, indent=2))
                 raise ContentKingAPIError(str(err))
 
         if response and response.status_code == 200:
@@ -322,68 +331,94 @@ def run_path_pings(sample_paths, config):
     return True
 
 
-def parse_url_data(url_data, fmt):
-    """Parses the custom data from ContentKing URL data to to supplied dict fmt."""
+def parse_url_data(url_data):
+    """Parses the custom data from ContentKing URL data to formatted dict."""
 
-    CONTENT_KING_ISSUES = ("analytics/analytics_missing",)
-    "analytics/visual_analytics_missing",
-    "h1/duplicate",
-    "h1/incorrect_length",
-    "h1/missing",
-    "h1/too_many",
-    "canonical_link/incorrectly_canonicalized",
-    "canonical_link/missing",
-    "canonical_link/points_to_unindexable",
-    "canonical_link/too_many",
-    "images/alt_attribute",
-    "images/title_attribute",
-    "links/broken",
-    "links/redirected",
-    "links/to_canonicalized",
-    "meta_description/duplicate",
-    "meta_description/incorrect_length",
-    "meta_description/missing",
-    "meta_description/too_many",
-    "title/duplicate",
-    "title/incorrect_length",
-    "title/missing",
-    "title/too_many",
-    "open_graph/description_incorrect_length",
-    "open_graph/description_missing",
-    "open_graph/image_missing",
-    "open_graph/title_incorrect_length",
-    "open_graph/title_missing",
-    "open_graph/url_missing",
-    "twitter_cards/description_incorrect_length",
-    "twitter_cards/description_missing",
-    "twitter_cards/image_missing",
-    "twitter_cards/site_missing",
-    "twitter_cards/title_incorrect_length",
-    "twitter_cards/title_missing",
-    "twitter_cards/type_invalid",
-    "twitter_cards/type_missing",
-    "xml_sitemap/incorrectly_missing",
-    "xml_sitemap/incorrectly_present"
+    content_king_issues = [
+        "analytics/analytics_missing",
+        "analytics/visual_analytics_missing",
+        "h1/duplicate",
+        "h1/incorrect_length",
+        "h1/missing",
+        "h1/too_many",
+        "canonical_link/incorrectly_canonicalized",
+        "canonical_link/missing",
+        "canonical_link/points_to_unindexable",
+        "canonical_link/too_many",
+        "images/alt_attribute",
+        "images/title_attribute",
+        "links/broken",
+        "links/redirected",
+        "links/to_canonicalized",
+        "meta_description/duplicate",
+        "meta_description/incorrect_length",
+        "meta_description/missing",
+        "meta_description/too_many",
+        "title/duplicate",
+        "title/incorrect_length",
+        "title/missing",
+        "title/too_many",
+        "open_graph/description_incorrect_length",
+        "open_graph/description_missing",
+        "open_graph/image_missing",
+        "open_graph/title_incorrect_length",
+        "open_graph/title_missing",
+        "open_graph/url_missing",
+        "twitter_cards/description_incorrect_length",
+        "twitter_cards/description_missing",
+        "twitter_cards/image_missing",
+        "twitter_cards/site_missing",
+        "twitter_cards/title_incorrect_length",
+        "twitter_cards/title_missing",
+        "twitter_cards/type_invalid",
+        "twitter_cards/type_missing",
+        "xml_sitemap/incorrectly_missing",
+        "xml_sitemap/incorrectly_present",
+    ]
+
+    result = {}
 
     # Content
-    fmt["content"] = {}
+    result["content"] = {}
     for item in url_data["content"]:
         i_type = item["type"]
         i_content = item["content"]
-        if i_type in content:
-            fmt["content"][i_type].append(i_content)
+        if i_type in result["content"]:
+            result["content"][i_type].append(i_content)
         else:
-            fmt["content"][i_type] = [i_content]
+            result["content"][i_type] = [i_content]
 
     # Issues
     found_issues = [i["name"] for i in url_data["open_issues"]]
 
-    fmt["issues"] = {
-        i: "issue" if i in found_issues else "" for i in CONTENT_KING_ISSUES
+    result["issues"] = {
+        i: "found" if i in found_issues else "not found" for i in content_king_issues
     }
 
     # Schema
-    fmt["schema"] = url_data["schema_org"]
+    result["schema"] = url_data["schema_org"]
+
+    return result
+
+
+class BreakCounter:
+    def __init__(self, max_attempts=5):
+        self.item = None
+        self.reset(max_attempts)
+
+    def reset(self, max_attempts=5):
+        self.max_attempts = max_attempts
+        self.attempts = 0
+        self.item = None
+
+    def __call__(self, item):
+        self.item = self.item or item
+        if self.item == item:
+            self.attempts += 1
+        if self.attempts > self.max_attempts:
+            raise Exception(
+                "Max attempts reached.  Host may not be active in ContentKing."
+            )
 
 
 def _check_results(paths, config=None, data=None):
@@ -396,37 +431,13 @@ def _check_results(paths, config=None, data=None):
 
     unchecked = paths.copy()
     results = []
-    first_path = None
-    first_path_check_count = 0
-    first_path_check_count_limit = 5
+    break_counter = BreakCounter()
 
     while unchecked:
 
         # Grab the first
         path = unchecked.pop(0)
-
-        # Kill if first path not successful after X tries.
-        if not first_path:
-            first_path = path
-
-        if first_path == path:
-            first_path_check_count += 1
-            if first_path_check_count > first_path_check_count_limit:
-                raise ContentKingAPIError(
-                    "Max attempts reached.  Host may not be active in ContentKing."
-                )
-        # End max hits kill.
-
         url = urljoin(data["host"], path)
-
-        # Output format.
-        fmt = {
-            "path": path,
-            "issues": [],
-            "content": [],
-            "schema": [],
-            "error": None,
-        }
 
         try:
 
@@ -440,20 +451,30 @@ def _check_results(paths, config=None, data=None):
 
                 if time_delta < 0:
 
-                    results.append(parse_url_data(url_data, fmt))
+                    result = {
+                        "path": path,
+                        "page_data": parse_url_data(url_data),
+                        "error": None,
+                    }
+
+                    results.append(result)
 
                 else:
-                    # We have a good response, but the URL has not been crawled yet.
-                    # Add to the back of the line.
+                    # This blows up the process if too many fails.
+                    break_counter(path)
                     unchecked.append(path)
 
             else:
-                fmt["error"] = "Invalid response from API URL report."
-                results.append(fmt)
+                error = "Invalid response from API URL report."
+                _LOG.error(error)
+                result = {"path": path, "page_data": None, "error": error}
+                results.append(result)
 
         except Exception as e:  # noqa
-            fmt["error"] = "Unkown Error: " + str(e)
-            results.append(fmt)
+            error = "Unknown Error: " + str(e)
+            _LOG.error(error)
+            result = {"path": path, "page_data": None, "error": error}
+            results.append(result)
 
     return results
 

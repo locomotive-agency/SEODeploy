@@ -23,7 +23,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import logging
-from logging import DEBUG, Formatter, INFO, getLogger
+from logging import DEBUG, INFO, ERROR, Formatter, getLogger  # noqa: unused-import
 
 from .config import Config
 
@@ -40,7 +40,7 @@ FILE_HANDLER.setLevel(DEBUG)
 
 # console output
 CONSOLE_HANDLER = logging.StreamHandler()
-CONSOLE_HANDLER.setLevel(INFO)
+CONSOLE_HANDLER.setLevel(ERROR)
 CONSOLE_HANDLER.setFormatter(Formatter("%(message)s"))
 
 

@@ -145,9 +145,7 @@ def process_page_data(sample_paths, prod_result, stage_result):
     stage_data = list_to_dict(stage_result, "path")
 
     for path in sample_paths:
-        error = (
-            prod_data[path]["error"] or stage_data[path]["error"]
-        )  # TODO: This is not correct.
+        error = prod_data[path]["error"] or stage_data[path]["error"]
         result[path] = {
             "prod": prod_data[path]["page_data"],
             "stage": stage_data[path]["page_data"],

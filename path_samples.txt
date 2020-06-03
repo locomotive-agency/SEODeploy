@@ -1,5 +1,0 @@
-/home.html
-/contact-us.html
-/about/community.html
-/about/community/grant-requests.html
-/about/community/environment.html

@@ -69,9 +69,6 @@ class CompareDiffs:
                 )
             )
 
-        # TODO: Need to better handle type checking.  There are cases where a list may be sent, but it isn't
-        # a list of dicts.
-
         if isinstance(d1, dict):
             diffs = self.compare_objects(d1, d2, item=item, tolerance=tolerance)
         elif isinstance(d1, (list, set)):
@@ -87,12 +84,6 @@ class CompareDiffs:
         elif isinstance(d1, (float, str, int)):
             diffs = self.compare_objects(d1, d2, item=item, tolerance=tolerance)
         else:
-            print("Error ======================")
-            print("Item:", item)
-            print("Path:", path)
-            print("D1:", d1)
-            print("D2:", d2)
-            print()
             raise NotImplementedError(
                 "Only data of types `list`, `set`, or `dict` are supported."
             )

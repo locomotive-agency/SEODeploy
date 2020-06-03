@@ -47,7 +47,7 @@ dodgy:
     run: true
 
 pyroma:
-  run: true
+  run: false
 
 pyflakes:
     run: true

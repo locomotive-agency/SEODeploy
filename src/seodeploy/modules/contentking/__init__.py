@@ -28,7 +28,7 @@ import pytz
 
 from seodeploy.lib.modules import ModuleBase
 from seodeploy.lib.config import Config
-from .functions import run_path_pings, run_contentking, load_report
+from .functions import run_contentking, load_report
 
 
 class SEOTestingModule(ModuleBase):
@@ -37,7 +37,7 @@ class SEOTestingModule(ModuleBase):
         super(SEOTestingModule, self).__init__(config, samples)
         self.modulename = "contentking"
         self.config = config or Config(module=self.modulename)
-        self.exclusions = config.contentking.ignore
+        self.exclusions = self.config.contentking.ignore
 
         self.time_zone = pytz.timezone(self.config.contentking.TIMEZONE)
 
@@ -49,13 +49,14 @@ class SEOTestingModule(ModuleBase):
             sample_paths, start_time, self.time_zone, self.config
         )
 
-        diffs = self.run_diffs(page_data)
+        # self.errors updated here.
+        diffs, errors = self.run_diffs(page_data)
 
         self.messages = self.prepare_messages(diffs)
 
         self.passing = len(self.messages) == 0
 
-        return self.passing, self.messages, self.errors
+        return self.passing, self.messages, errors
 
     def get_samples(self, site_id, limit):
 

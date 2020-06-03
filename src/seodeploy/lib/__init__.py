@@ -58,19 +58,30 @@ class SEOTesting:
         self.modules = self.module_config.module_names
         self.summary.update({"modules": ",".join(self.modules)})
 
+        print()
+        print("SEODeploy: Brought to you by LOCOMOTIVE®")
+        print("Loaded...")
+        print()
+
         for active_module in self.module_config.active_modules:
 
             module = self.module_config.active_modules[active_module].SEOTestingModule()
 
-            errors = module.run(self.samples)
+            print("Running Module:", module.modulename)
+            passing, messages, errors = module.run(self.samples)
 
-            self.update_messages(module.messages)
-            self.update_passing(module.passing)
+            self._update_messages(messages)
+            self._update_passing(passing)
 
             self.summary.update(
                 {"{} passing: ".format(module.modulename): module.passing}
             )
             self.summary.update({"{} errors: ".format(module.modulename): len(errors)})
+
+            if errors:
+                _LOG.error("Run Errors:" + json.dumps(errors, indent=2))
+
+            print()
 
         self.get_messages().to_csv("output.csv", index=False)
 
@@ -78,10 +89,10 @@ class SEOTesting:
 
         return self.passing
 
-    def update_messages(self, messages):
+    def _update_messages(self, messages):
         self.messages.extend(messages)
 
-    def update_passing(self, passing):
+    def _update_passing(self, passing):
         self.passing = False if not passing and self.passing else self.passing
 
     def get_messages(self):

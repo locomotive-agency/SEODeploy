@@ -1,61 +1,12 @@
-Messages
-========
-
-etc\setup.py
-  Line: None
-    pyroma: PYR01 / Your package does not have name data!
-    pyroma: PYR02 / Your package does not have version data!
-    pyroma: PYR03 / The version number should be a string.
-    pyroma: PYR04 / The package's version number does not comply with PEP-386 or PEP-440.
-    pyroma: PYR05 / The package had no description!
-    pyroma: PYR06 / The package's long_description is quite short.
-    pyroma: PYR07 / Your package does not have classifiers data.
-    pyroma: PYR08 / You should specify what Python versions you support.
-    pyroma: PYR09 / Your package does not have keywords data.
-    pyroma: PYR10 / Your package does not have author data.
-    pyroma: PYR11 / Your package does not have author_email data.
-    pyroma: PYR12 / Your package should have a 'url' field with a link to the project home page, or a 'project_urls' field, with a dictionary of links, or both.
-    pyroma: PYRUNKNOWN / Your package does neither have a license field nor any license classifiers.
-    pyroma: PYRUNKNOWN / Specifying a development status in the classifiers gives users a hint of how stable your software is.
-
-src\seodeploy\lib\config.py
-  Line: 80
-    pylint: fixme / TODO: Need to namespace config settings at some point as this currently (col 2)
-
-src\seodeploy\lib\modules.py
-  Line: 80
-    pylint: fixme / TODO: Placeholder to dump page_data here for easy reload. (col 2)
-  Line: 111
-    pylint: fixme / TODO: It would be nice to save the page_data here so that it can be reloaded (col 2)
-
-src\seodeploy\modules\contentking\functions.py
-  Line: 246
-    pylint: too-many-branches / Too many branches (24/12)
-  Line: 475
-    pylint: fixme / TODO: Probably need to fail if there are errors. (col 2)
-    pylint: fixme / TODO: Probably need to fail if there are errors. (col 2)
-  Line: 540
-    pylint: fixme / TODO: Can adjust this as necessary, pull out to config, or remove. (col 2)
-    pylint: fixme / TODO: Can adjust this as necessary, pull out to config, or remove. (col 2)
-
-src\seodeploy\modules\headless\render.py
-  Line: 25
-    pylint: unused-import / Unused import os
-  Line: 206
-    pylint: unnecessary-comprehension / Unnecessary use of a comprehension
-    pylint: unnecessary-comprehension / Unnecessary use of a comprehension
-
-
-
 Check Information
 =================
-         Started: 2020-05-30 21:00:42.554270
-        Finished: 2020-05-30 21:01:00.450380
-      Time Taken: 17.90 seconds
+         Started: 2020-06-03 08:15:05.523381
+        Finished: 2020-06-03 08:15:20.488649
+      Time Taken: 14.97 seconds
        Formatter: grouped
         Profiles: .prospector.yaml, full_pep8, doc_warnings, no_test_warnings, strictness_veryhigh, no_member_warnings
       Strictness: from profile
   Libraries Used: 
-       Tools Run: dodgy, mccabe, pep8, profile-validator, pyflakes, pylint, pyroma
-  Messages Found: 25
+       Tools Run: dodgy, mccabe, pep8, profile-validator, pyflakes, pylint
+  Messages Found: 0
 

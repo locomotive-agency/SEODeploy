@@ -29,9 +29,8 @@ from seodeploy.lib.logging import get_logger
 from seodeploy.lib.helpers import (
     group_batcher,
     mp_list_map,
-    list_to_dict,
     process_page_data,
-)  # noqa
+)
 
 from .render import HeadlessChrome  # noqa
 from .exceptions import HeadlessException  # noqa
@@ -93,16 +92,6 @@ def run_render(sample_paths, config):
                 batch, _render_paths, config=config, host=config.headless.STAGE_HOST
             )
         )
-
-    print("Batch Render Results =================")
-    import json
-
-    print("Prod:")
-    print(json.dumps(prod_result, indent=2))
-    print()
-    print("Stage:")
-    print(json.dumps(stage_result, indent=2))
-    print()
 
     # Review for Errors and process into dictionary:
     page_data = process_page_data(sample_paths, prod_result, stage_result)
