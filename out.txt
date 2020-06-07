@@ -1,0 +1,24 @@
+integer
+[{'type': 'change', 'item': 'integer', 'element': '', 'production': 1, 'staging': 2}]
+
+float
+[{'type': 'change', 'item': 'float', 'element': '', 'production': 1.1, 'staging': 2.2}]
+
+text
+[{'type': 'change', 'item': 'text', 'element': '', 'production': 'this', 'staging': 'that'}]
+
+list
+[{'type': 'add', 'item': 'list', 'element': '', 'production': '', 'staging': 4}, {'type': 'remove', 'item': 'list', 'element': '', 'production': 3, 'staging': ''}]
+
+dict_num
+[{'type': 'change', 'item': 'dict_num', 'element': 'a', 'production': 1, 'staging': 3}, {'type': 'change', 'item': 'dict_num', 'element': 'b', 'production': 2, 'staging': 4}]
+
+dict_text
+[{'type': 'change', 'item': 'dict_text', 'element': 'content', 'production': 'a', 'staging': 'b'}]
+
+dict_list_num
+[{'type': 'change', 'item': 'dict_list_num', 'element': '0.a', 'production': 1, 'staging': 3}, {'type': 'change', 'item': 'dict_list_num', 'element': '0.b', 'production': 2, 'staging': 4}]
+
+dict_list_text
+[{'type': 'change', 'item': 'dict_list_text', 'element': '0.content', 'production': 'a', 'staging': 'b'}]
+

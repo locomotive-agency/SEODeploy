@@ -69,25 +69,7 @@ class CompareDiffs:
                 )
             )
 
-        if isinstance(d1, dict):
-            diffs = self.compare_objects(d1, d2, item=item, tolerance=tolerance)
-        elif isinstance(d1, (list, set)):
-            try:
-                diffs = self.compare_objects(
-                    set(d1), set(d2), item=item, tolerance=tolerance
-                )
-            # Unhashable dict found.
-            except TypeError:
-                diffs = self.compare_lists_of_objects(
-                    d1, d2, item=item, tolerance=tolerance
-                )
-        elif isinstance(d1, (float, str, int)):
-            diffs = self.compare_objects(d1, d2, item=item, tolerance=tolerance)
-        else:
-            raise NotImplementedError(
-                "Only data of types `list`, `set`, or `dict` are supported."
-            )
-
+        diffs = self.compare_objects(d1, d2, item=item, tolerance=tolerance)
         self.add_diffs(path, diffs)
 
     def add_diffs(self, path, diffs):
@@ -96,6 +78,7 @@ class CompareDiffs:
     def get_diffs(self):
         return self.diffs
 
+    # TODO: Deprecated.
     def compare_lists_of_objects(
         self, l1, l2, element="element", content="content", item=None, tolerance=None
     ):
@@ -109,19 +92,18 @@ class CompareDiffs:
 
         tolerance = tolerance or 0
 
-        if isinstance(d1, list) and isinstance(d2, list):
-            otype = "set"
-            d1, d2 = set(d1), set(d2)
-        elif isinstance(d1, set) and isinstance(d2, set):
-            otype = "set"
+        if isinstance(d1, (list, set)) and isinstance(d2, (list, set)):
+            otype = "iter"
+            try:
+                d1, d2 = set(d1), set(d2)
+            except TypeError:
+                pass
         elif isinstance(d1, dict) and isinstance(d2, dict):
             otype = "dict"
         elif isinstance(d1, (float, str, int)) and isinstance(d2, (float, str, int)):
             otype = "other"
         else:
-            raise AttributeError(
-                "Unsupported object types provided.  Supports `list`, `set`, or `dict`"
-            )
+            raise AttributeError("Unsupported object types provided for `d1` and `d2`")
 
         diffs = differ(d1, d2, tolerance=tolerance)
 
@@ -156,7 +138,9 @@ class CompareDiffs:
                 for detail in details:
 
                     content = (
-                        list(detail[1]) if isinstance(detail[1], set) else detail[1]
+                        list(detail[1])[0]
+                        if isinstance(detail[1], (set, list))
+                        else detail[1]
                     )
 
                     if otype == "dict" and new:
@@ -184,14 +168,15 @@ class CompareDiffs:
                         ]
                         element = ".".join(elements)
                     else:
-                        element = None
+                        element = ""
 
                     results.append(
                         {
                             "type": ctype,
                             "item": item,
                             "element": element,
-                            "content": content,
+                            "production": content if ctype == "remove" else "",
+                            "staging": content if ctype == "add" else "",
                         }
                     )
 
