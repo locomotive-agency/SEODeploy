@@ -31,7 +31,20 @@ pyppeteer = "^0.2.2"
 pytest = "^5.4.2"
 prospector = {extras = ["with_pyroma"], version = "^1.2.0"}
 black = "^19.10b0"
+coverage = {extras = ["toml"], version = "^5.1"}
+pytest-cov = "^2.9.0"
+pytest-mock = "^3.1.1"
 
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["seodeploy"]
+
+[tool.coverage.report]
+show_missing = true
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+

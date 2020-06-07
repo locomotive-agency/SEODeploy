@@ -43,7 +43,7 @@ _LOG = get_logger(__name__)
 @click.group()
 @click.version_option(version=__version__)
 def cli():
-    """SEODeploy CLI Module."""
+    """SEODeploy: Flexible and Modular Python Library for Automating SEO Testing in Deployment Pipelines"""
 
 
 # Create Samples CLI.
@@ -73,19 +73,7 @@ def cli():
     help="Filename for the outputted txt file. Overrides filename set in seotesting_config.yaml.",
 )
 def sample(site_id, sitemap_url, limit=None, samples_filename=None):
-    """Creates a file of sample paths to use in testing.
-
-    Parameters
-    ----------
-    site_id : str
-        The ID of the project in Content King (Eg. 4-17147226)
-    sitemap_url : str
-        The url of an XML sitemap or sitemap index file.
-    limit: int
-        Limits the output to this many total paths. Overrides limit set in seotesting_config.yaml.
-    samples_filename: str
-        Filename for the outputted txt file. Overrides filename set in seotesting_config.yaml
-    """
+    """Creates sample_paths.txt File."""
 
     # Error Cheching
     if not site_id and not sitemap_url:
@@ -121,14 +109,7 @@ def sample(site_id, sitemap_url, limit=None, samples_filename=None):
     help="Filename for the samples file. Overrides filename set in seotesting_config.yaml.",
 )
 def execute(samples_filename=None):
-    """Runs a difftest of staging vs production based on
-       `seotesting_config.yaml` settings and sample URLs.
-
-    Parameters
-    ----------
-    samples_filename: str
-        Filename for the outputted txt file. Overrides filename set in config.py.
-    """
+    """Difftest Staging and Production URLs."""
 
     # Set samples_filename.
     samples_filename = samples_filename or CONFIG.SAMPLES_FILENAME

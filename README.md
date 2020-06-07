@@ -98,3 +98,4 @@ $ pip install setup.py
 * https://github.com/jenkins-docs/simple-python-pyinstaller-app/tree/master/jenkins
 * https://github.com/PyCQA/prospector
 * https://github.com/ShipChain/hydra
+* https://cjolowicz.github.io/posts/hypermodern-python-03-linting/
