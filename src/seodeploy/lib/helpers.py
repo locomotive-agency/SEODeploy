@@ -25,6 +25,8 @@
 from urllib.parse import urlsplit
 from types import SimpleNamespace
 from functools import reduce
+import json
+import re
 
 import multiprocessing as mp
 import numpy as np
@@ -128,7 +130,7 @@ def to_dot(data):
     return [".".join(x) for x in iter_dot(data, [], [])]
 
 
-def process_page_data(sample_paths, prod_result, stage_result):
+def process_page_data(sample_paths, prod_result, stage_result, module_config):
 
     """Reviews the returned results for errors. Build single
        result dictionary in the format:
@@ -147,10 +149,25 @@ def process_page_data(sample_paths, prod_result, stage_result):
 
     for path in sample_paths:
         error = prod_data[path]["error"] or stage_data[path]["error"]
+
+        stg_page_data = maybe_replace_staging(stage_data[path]["page_data"], module_config)
+        prod_page_data = prod_data[path]["page_data"]
+
         result[path] = {
-            "prod": prod_data[path]["page_data"],
-            "stage": stage_data[path]["page_data"],
+            "prod": prod_page_data,
+            "stage": stg_page_data,
             "error": error,
         }
 
     return result
+
+
+def maybe_replace_staging(page_data, module_config):
+    """Replace host in JSON data if configured"""
+
+    if module_config.relace_staging_host:
+        json_data = json.dumps(page_data)
+        json_data = re.sub(re.escape(module_config.stage_host), module_config.prod_host, json_data)
+        return json.loads(json_data)
+
+    return page_data

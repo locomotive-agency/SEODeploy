@@ -23,6 +23,8 @@ modules_activated:
 
     user_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36
 
+    relace_staging_host: True
+
     ignore:
       content:
           canonical: False
@@ -91,6 +93,8 @@ modules_activated:
     stage_host: https://stg.locomotive.agency/
     stage_site_id: 5-5671782
 
+    relace_staging_host: True
+    
     ignore:
 
       issues:

@@ -94,6 +94,6 @@ def run_render(sample_paths, config):
         )
 
     # Review for Errors and process into dictionary:
-    page_data = process_page_data(sample_paths, prod_result, stage_result)
+    page_data = process_page_data(sample_paths, prod_result, stage_result, config.headless)
 
     return page_data

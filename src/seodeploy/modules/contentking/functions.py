@@ -392,7 +392,7 @@ def parse_url_data(url_data):
     found_issues = [i["name"] for i in url_data["open_issues"]]
 
     result["issues"] = {
-        i: "found" if i in found_issues else "not found" for i in content_king_issues
+        i: "issue found" if i in found_issues else "issue not found" for i in content_king_issues
     }
 
     # Schema
@@ -531,7 +531,7 @@ def run_check_results(sample_paths, start_time, time_zone, config):
         time.sleep(config.contentking.BATCH_WAIT)
 
     # Review for Errors and process into dictionary
-    page_data = process_page_data(sample_paths, prod_result, stage_result)
+    page_data = process_page_data(sample_paths, prod_result, stage_result, config.contentking)
 
     return page_data
 
