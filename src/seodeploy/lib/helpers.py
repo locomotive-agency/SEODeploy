@@ -37,17 +37,17 @@ CONFIG = Config()
 # Interable grouping function
 def group_batcher(iterator, result, count, fill=0):
 
-    """Pings ContentKing with Paths across both staging and production websites.
+    """Given and iterator, returns batched results based on count.
 
     Parameters
     ----------
-    iterator: list or tuple
+    iterator: <list> or <tuple>
         Iterable object
     result: type
-        How the results should be returned
-    count: int
-        How many in each Group
-    fill: str, int, float, or None
+        The `type` of the results to be returned.
+    count: <int>
+        How many in each Group.
+    fill: <str>, <int>, <float>, or <None>
         Fill overflow with this value. If None, no fill is performed.
     """
 
@@ -63,8 +63,8 @@ def group_batcher(iterator, result, count, fill=0):
 # Multiprocessing functions
 def _map(args):
     """Mapping helper function for mp_list_map"""
-    lst, fnc, args = args
-    return fnc(list(lst), **args)
+    lst, fnc, kwargs = args
+    return fnc(list(lst), **kwargs)
 
 
 def mp_list_map(lst, fnc, **args):
@@ -72,13 +72,14 @@ def mp_list_map(lst, fnc, **args):
     threads = CONFIG.MAX_THREADS
 
     if threads > 1:
+        print('Running on {} threads.'.format(str(threads)))
         pool = mp.Pool(processes=threads)
         result = pool.map(_map, [(l, fnc, args) for l in np.array_split(lst, threads)])
         pool.close()
 
         return list(np.concatenate(result))
 
-    return fnc(lst, **args)
+    return _map((lst, fnc, args))
 
 
 def url_to_path(url):
@@ -141,8 +142,8 @@ def process_page_data(sample_paths, prod_result, stage_result):
 
     result = {}
 
-    prod_data = list_to_dict(prod_result, "path")
-    stage_data = list_to_dict(stage_result, "path")
+    prod_data = list_to_dict(prod_result.copy(), "path")
+    stage_data = list_to_dict(stage_result.copy(), "path")
 
     for path in sample_paths:
         error = prod_data[path]["error"] or stage_data[path]["error"]

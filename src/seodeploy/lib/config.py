@@ -65,6 +65,7 @@ class Config:
                         module
                         for module in os.listdir(mdir)
                         if os.path.isdir(os.path.join(mdir, module))
+                        and not module.startswith('__')
                     ]
                 )
                 break

@@ -138,7 +138,7 @@ EXAMPLES = {
 }
 
 
-def test_add_diffs(diff):
+def test_comparison_add_diffs(diff):
     path = "/path/"
     diffs = [
         {
@@ -166,7 +166,7 @@ def test_add_diffs(diff):
     ]
 
 
-def test_compare(diff):
+def test_comparison_compare(diff):
     path = "/path/"
     for k, v in EXAMPLES.items():
         item = k
@@ -176,7 +176,7 @@ def test_compare(diff):
         assert diff.diffs[-1] == result
 
 
-def test_l2d(diff):
+def test_comparison_l2d(diff):
     l1, l2 = EXAMPLES["dict_list_text"]["items"]
     d1, d2 = diff._l2d(l1, l2, "element", "content")
     assert (d1, d2) == ({"a": ["a"]}, {"a": ["b"]})
