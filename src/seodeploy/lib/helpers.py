@@ -165,7 +165,7 @@ def process_page_data(sample_paths, prod_result, stage_result, module_config):
 def maybe_replace_staging(page_data, module_config):
     """Replace host in JSON data if configured"""
 
-    if module_config.relace_staging_host:
+    if module_config.replace_staging_host:
         json_data = json.dumps(page_data)
         json_data = re.sub(re.escape(module_config.stage_host), module_config.prod_host, json_data)
         return json.loads(json_data)
