@@ -26,7 +26,6 @@ import os
 import math
 import random
 
-
 import gzip
 import requests
 from bs4 import BeautifulSoup

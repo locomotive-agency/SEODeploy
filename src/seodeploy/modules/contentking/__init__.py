@@ -32,18 +32,19 @@ from .functions import run_contentking, load_report
 
 
 class SEOTestingModule(ModuleBase):
-    def __init__(self, config=None, samples=None):
+    def __init__(self, config=None, sample_paths=None):
 
-        super(SEOTestingModule, self).__init__(config, samples)
+        super(SEOTestingModule, self).__init__(config, sample_paths)
         self.modulename = "contentking"
         self.config = config or Config(module=self.modulename)
         self.exclusions = self.config.contentking.ignore
 
         self.time_zone = pytz.timezone(self.config.contentking.TIMEZONE)
 
-    def run(self, sample_paths):
+    def run(self, sample_paths=None):
 
         start_time = datetime.now().astimezone(self.time_zone)
+        self.sample_paths = sample_paths or self.sample_paths
 
         page_data = run_contentking(
             sample_paths, start_time, self.time_zone, self.config

@@ -22,40 +22,37 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Test Cases for Config Module"""
+"""Test Cases for Headless > Init Module"""
 
 from unittest.mock import Mock
 import pytest
+from pytest_mock import MockFixture
 
-from seodeploy.lib import config
-from seodeploy.lib.exceptions import ModuleNotImplemented
+from seodeploy.modules.headless import SEOTestingModule
+
 
 
 @pytest.fixture
-def config_class():
-    """Returns a Wallet instance with a zero balance"""
-
-    def _config(**kwargs):
-        return config.Config(**kwargs)
-
-    return _config
-
-
-def test_config(config_class):
-    cfiles = ["tests/files/seotesting_config.yaml"]
-    config = config_class(module=None, mdirs=None, cfiles=cfiles)
-    assert config.seotesting_name == "SEODeploy-Test"
-    assert config.modules == ["contentking", "example_module", "headless"]
+def mock_run_render(mocker):
+    mock = mocker.patch("seodeploy.modules.headless.run_render")
+    mock.return_value = {
+        "/path1/": {"prod": {'content': {'canonical':'test1'}}, "stage": {'content': {'canonical':'test1'}}, "error": None},
+        "/path2/": {"prod": {'content': {'canonical':'test2'}}, "stage": {'content': {'canonical':'test3'}}, "error": None},
+        "/path3/": {"prod": None, "stage": None, "error": "error3"},
+    }
+    return mock
 
 
-def test_config_module(config_class):
-    cfiles = ["tests/files/seotesting_config.yaml"]
-    config = config_class(module="headless", mdirs=None, cfiles=cfiles)
-    assert config.headless.pyppeteer_chromium_revision == 769582
-    assert config.modules == ["contentking", "example_module", "headless"]
 
+def test_headless_module(mock_run_render):
 
-def test_config_wrong_module(config_class):
-    cfiles = ["tests/files/seotesting_config.yaml"]
-    with pytest.raises(ModuleNotImplemented):
-        config = config_class(module="doesnt_exist", mdirs=None, cfiles=cfiles)
+    headless = SEOTestingModule()
+    headless.exclusions = {'content': {'canonical': False}}
+    sample_paths = ['/path1/', '/path2/', '/path3/']
+
+    passing, messages, errors = headless.run(sample_paths)
+
+    assert mock_run_render.called
+    assert errors == [{'error': 'error3', 'path': '/path3/'}]
+    assert messages == [{'type': 'change', 'item': 'content.canonical', 'element': '', 'production': 'test2', 'staging': 'test3', 'module': 'headless', 'path': '/path2/'}]
+    assert passing == False

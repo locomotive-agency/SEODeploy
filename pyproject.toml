@@ -36,15 +36,18 @@ pytest-cov = "^2.9.0"
 pytest-mock = "^3.1.1"
 
 [tool.coverage.paths]
-source = ["src", "*/site-packages"]
+source = ["src"]
 
 [tool.coverage.run]
 branch = true
 source = ["seodeploy"]
+omit = ["src/seodeploy/__main__.py", "*/modules/example_module/*",
+        "src/seodeploy/lib/__init__.py", "src/seodeploy/main.py"]
 
 [tool.coverage.report]
 show_missing = true
+skip_covered = true
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-
