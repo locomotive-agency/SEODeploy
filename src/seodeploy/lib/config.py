@@ -30,15 +30,22 @@ from seodeploy.lib.exceptions import ModuleNotImplemented
 
 class Config:
 
-    """ Class for loading configuration data from Yaml settings file and module information.
-
-    Class Parameters:
-        module: <str> Name of module to add config data as attribute.
-        mdirs: <list> Override directory to look for modules in.
-        cfiles: <list> Override name of config file.
-    """
+    """ Class for loading configuration data from Yaml settings file and module information."""
 
     def __init__(self, module=None, mdirs=None, cfiles=None):
+        """Initialize Config Class.
+
+        Parameters
+        ----------
+        module: str
+            Name of module to add config data as attribute.
+        mdirs: list
+            Override directory to look for modules in.
+        cfiles: list
+            Override name of config file.
+
+        """
+
         self.mdirs = (
             mdirs + ["./src/seodeploy/modules", "./seodeploy/modules", "./modules"]
             if mdirs
@@ -57,6 +64,8 @@ class Config:
         self.build()
 
     def _load_modules(self):
+        """Load modules attribute."""
+
         self.modules = []
         for mdir in self.mdirs:
             try:
@@ -73,6 +82,8 @@ class Config:
                 print("Nothing found in", mdir)
 
     def _load_configs(self):
+        """Load main configs and module configs."""
+
         for cfile in self.cfiles:
             try:
                 parser = ParseIt(config_location=cfile, config_type_priority=["yaml"])
@@ -100,11 +111,14 @@ class Config:
                 pass
 
     def build(self):
+        """Build config."""
         self._load_modules()
         self._load_configs()
 
     def __setattr__(self, name, value):
+        """Setter function for config vales."""
         super().__setattr__(name.lower(), value)
 
     def __getattribute__(self, name):
+        """getter function for config vales."""
         return super().__getattribute__(name.lower())

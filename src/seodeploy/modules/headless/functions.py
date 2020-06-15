@@ -26,11 +26,7 @@ from urllib.parse import urljoin
 from tqdm import tqdm
 
 from seodeploy.lib.logging import get_logger
-from seodeploy.lib.helpers import (
-    group_batcher,
-    mp_list_map,
-    process_page_data,
-)
+from seodeploy.lib.helpers import group_batcher, mp_list_map, process_page_data
 
 from seodeploy.modules.headless.render import HeadlessChrome  # noqa
 from seodeploy.modules.headless.exceptions import HeadlessException  # noqa
@@ -39,8 +35,21 @@ _LOG = get_logger(__name__)
 
 
 def _render_paths(paths, config=None, host=None):
+    """Render paths in Google Chrome.
 
-    """Renders paths in Google Chrome and returns extracted <dict>.
+    Parameters
+    ----------
+    paths: list
+        List of paths to check.
+    config: class
+        Configuration class.
+    host: str
+        Host to use in URLs.
+
+    Returns
+    -------
+    list
+        List of page data.
 
     """
 
@@ -65,13 +74,20 @@ def _render_paths(paths, config=None, host=None):
 
 
 def run_render(sample_paths, config):
-
-    """Monitors paths that were pinged for updated timestamp. Compares allowed differences.
+    """Main function that kicks off Headless Processing.
 
     Parameters
     ----------
-    sample_paths: <list> List of paths to check.
-    config: <class> Configuration class
+    sample_paths: list
+        List of paths to check.
+    config: class
+        Configuration class
+
+    Returns
+    -------
+    dict
+        Page Data dict.
+
     """
 
     batches = group_batcher(sample_paths, list, config.headless.BATCH_SIZE, fill=None)

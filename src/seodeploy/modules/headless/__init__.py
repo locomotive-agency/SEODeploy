@@ -22,6 +22,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""Headless Module for SEODeploy."""
+
 import os
 
 from seodeploy.lib.modules import ModuleBase
@@ -37,9 +39,10 @@ from seodeploy.modules.headless.functions import run_render  # noqa
 
 
 class SEOTestingModule(ModuleBase):
-    """SEO Testing Module: Headless Module"""
+    """SEODeploy Module: Headless Module."""
 
     def __init__(self, config=None, sample_paths=None):
+        """"Initialize SEOTestingModule Class."""
 
         super(SEOTestingModule, self).__init__(config, sample_paths)
         self.modulename = "headless"
@@ -47,6 +50,7 @@ class SEOTestingModule(ModuleBase):
         self.exclusions = self.config.headless.ignore
 
     def run(self, sample_paths=None):
+        """Run the Headless Module."""
 
         self.sample_paths = sample_paths or self.sample_paths
 

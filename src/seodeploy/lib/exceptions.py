@@ -22,22 +22,24 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""Exceptions for main SEODeploy Module."""
+
 
 class IncorrectParameters(Exception):
-    """Base class for exceptions in this module."""
+    """IncorrectParameters class for exceptions in this module."""
 
 
 class ModuleNotImplemented(Exception):
-    """Base class for exceptions in this module."""
+    """ModuleNotImplemented class for exceptions in this module."""
 
 
 class StrategyNotImplemented(Exception):
-    """Base class for exceptions in this module."""
+    """StrategyNotImplemented class for exceptions in this module."""
 
 
 class TypesMismatched(Exception):
-    """Base class for exceptions in this module."""
+    """TypesMismatched class for exceptions in this module."""
 
 
 class IncorrectConfigException(Exception):
-    """An exception for a missing or invalid URL."""
+    """IncorrectConfigException class for exceptions in this module."""

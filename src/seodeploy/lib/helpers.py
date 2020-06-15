@@ -22,6 +22,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""Helper functions for SEODeploy module."""
+
 from urllib.parse import urlsplit
 from types import SimpleNamespace
 from functools import reduce
@@ -43,14 +45,18 @@ def group_batcher(iterator, result, count, fill=0):
 
     Parameters
     ----------
-    iterator: <list> or <tuple>
+    iterator: list or tuple
         Iterable object
     result: type
         The `type` of the results to be returned.
     count: <int>
         How many in each Group.
-    fill: <str>, <int>, <float>, or <None>
+    fill: str, int, float, or None
         Fill overflow with this value. If None, no fill is performed.
+
+    Returns
+    -------
+    Generator
     """
 
     itr = iter(iterator)
@@ -64,13 +70,13 @@ def group_batcher(iterator, result, count, fill=0):
 
 # Multiprocessing functions
 def _map(args):
-    """Mapping helper function for mp_list_map"""
+    """Mapping helper function for mp_list_map."""
     lst, fnc, kwargs = args
     return fnc(list(lst), **kwargs)
 
 
 def mp_list_map(lst, fnc, **args):
-    """Applies a function to a list by multiprocessing"""
+    """Applies a function to a list by multiprocessing."""
     threads = CONFIG.MAX_THREADS
 
     if threads > 1:
@@ -85,13 +91,13 @@ def mp_list_map(lst, fnc, **args):
 
 
 def url_to_path(url):
-    """Cleans a URL to only the path"""
+    """Cleans a URL to only the path."""
     parts = urlsplit(url)
     return parts.path if not parts.query else parts.path + "?" + parts.query
 
 
 def list_to_dict(lst, key):
-    """Given a list of dicts, returns a dict where remaining values refereced by key"""
+    """Given a list of dicts, returns a dict where remaining values refereced by key."""
     result = {}
     for i in lst:
         result[i.pop(key)] = i
@@ -99,7 +105,7 @@ def list_to_dict(lst, key):
 
 
 def dot_set(data):
-    """Transforms a dictionary to be indexable by dot notation"""
+    """Transforms a dictionary to be indexable by dot notation."""
     return (
         SimpleNamespace(**{k: dot_set(v) for k, v in data.items()})
         if isinstance(data, dict)
@@ -108,7 +114,7 @@ def dot_set(data):
 
 
 def dot_get(dot_not, data):
-    """Transforms a dictionary to be indexable by dot notation"""
+    """Transforms a dictionary to be indexable by dot notation."""
     try:
         return reduce(dict.get, dot_not.split("."), data)
     except TypeError:
@@ -116,7 +122,7 @@ def dot_get(dot_not, data):
 
 
 def to_dot(data):
-    """Returns a list of dot notations for non-dict values in a dict"""
+    """Returns a list of dot notations for non-dict values in a dict."""
 
     def iter_dot(data, parent, result):
         if isinstance(data, dict):
@@ -132,14 +138,26 @@ def to_dot(data):
 
 def process_page_data(sample_paths, prod_result, stage_result, module_config):
 
-    """Reviews the returned results for errors. Build single
-       result dictionary in the format:
+    """Reviews the returned results for errors and formats result.
 
-       {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
-       ...
-       }
+    Parameters
+    ----------
+    sample_paths: list
+        List of Paths.
+    prod_results: list
+        List of prod data dictionaries.
+    stage_result: list
+        List of stage data dictionaries.
+    module_config: Config
+        Module config.
 
-
+    Returns
+    -------
+    dict
+        Dictionary in format:
+        {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
+        ...
+        }
     """
 
     result = {}
@@ -155,17 +173,13 @@ def process_page_data(sample_paths, prod_result, stage_result, module_config):
         )
         prod_page_data = prod_data[path]["page_data"]
 
-        result[path] = {
-            "prod": prod_page_data,
-            "stage": stg_page_data,
-            "error": error,
-        }
+        result[path] = {"prod": prod_page_data, "stage": stg_page_data, "error": error}
 
     return result
 
 
 def maybe_replace_staging(page_data, module_config):
-    """Replace host in JSON data if configured"""
+    """Replace host in JSON data if configured."""
 
     if module_config.replace_staging_host:
         json_data = json.dumps(page_data)

@@ -22,6 +22,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""SEODeploy: CLI."""
 
 import json
 import click
@@ -43,7 +44,7 @@ _LOG = get_logger(__name__)
 @click.group()
 @click.version_option(version=__version__)
 def cli():
-    """SEODeploy: Flexible and Modular Python Library for Automating SEO Testing in Deployment Pipelines"""
+    """SEODeploy: Flexible and Modular Python Library for Automating SEO Testing in Deployment Pipelines."""
 
 
 # Create Samples CLI.
@@ -73,7 +74,7 @@ def cli():
     help="Filename for the outputted txt file. Overrides filename set in seotesting_config.yaml.",
 )
 def sample(site_id, sitemap_url, limit=None, samples_filename=None):
-    """Creates sample_paths.txt File."""
+    """Create sample_paths.txt File."""
 
     # Error Cheching
     if not site_id and not sitemap_url:

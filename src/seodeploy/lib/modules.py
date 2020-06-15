@@ -37,9 +37,21 @@ _LOG = get_logger(__name__)
 
 
 class ModuleBase:
-    """Base Module class."""
+
+    """Base Module Class."""
 
     def __init__(self, config=None, sample_paths=None, exclusions=None):
+        """Initialize ModuleBase Class.
+
+        Parameters
+        ----------
+        config: Config class
+            Config class for module.
+        sample_paths: list
+            List of paths.
+        exclusions: dict
+            Dictionary of key value pairs for excluding comparisions.
+        """
         self.messages = None
         self.passing = None
         self.modulename = None
@@ -52,9 +64,16 @@ class ModuleBase:
 
         Parameters
         -----------------
-        page_data: {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
+        page_data: dict
+            In format: {'<path>':{'prod': <prod url data>, 'stage': <stage url data>, 'error': error},
                    ...
                    }
+
+        Returns
+        -------
+        tuple
+            diffs, errors
+
         """
 
         if self.modulename and self.exclusions:
@@ -136,11 +155,16 @@ class ModuleBase:
     def prepare_messages(self, diffs):
         """ Prepares Diff data as consistent messages.
 
-        Data should be in format of
-            [{'path': <str>, 'diffs': <list>}, ...]
+        Parameters
+        ----------
+        diffs: list
+            In format: [{'path': <str>, 'diffs': <list>}, ...].
 
-        Output in format:
-            [{'module': <str>, 'path': <str>, 'diffs': [list]}, ...]
+        Returns
+        -------
+        list
+            In format: [{'module': <str>, 'path': <str>, 'diffs': [list]}, ...].
+
         """
         messages = []
 
@@ -168,7 +192,16 @@ class ModuleConfig:
     """Builds modules and contains module information."""
 
     def __init__(self, config=None, mdirs=None):
+        """Initialize ModuleConfig Class.
 
+        Parameters
+        ----------
+        config: Config class
+            Config class for module.
+        mdirs: list
+            List of module directory locations.
+
+        """
         self.config = config or Config()
         self.mdirs = mdirs + ["modules"] if mdirs else ["modules"]
         self.data = self._get_module_data()
@@ -181,7 +214,7 @@ class ModuleConfig:
         self._build_modules()
 
     def _build_modules(self):
-
+        """Builds active modules."""
         sys.path.append(self.module_path)
 
         for k, v in self.data.items():
@@ -189,13 +222,13 @@ class ModuleConfig:
                 self.active_modules[k] = importlib.import_module(k)
 
     def _is_confugured(self, module):
-
+        """Checks to see if module is configured."""
         if hasattr(self.config, "modules_activated"):
             return module in list(self.config.modules_activated.keys())
         return False
 
     def _get_module_data(self):
-
+        """Formats and returns module data."""
         for mdir in self.mdirs:
 
             mdir = os.path.join(os.path.dirname(__file__), "..", mdir)
@@ -225,8 +258,10 @@ class ModuleConfig:
 
     @staticmethod
     def _get_module_names(data):
+        """Returns list of module names if configured."""
         return [k for k, v in data.items() if v["is_config"]]
 
     @staticmethod
     def _get_module_paths(data):
+        """Returns list of module locations if configured."""
         return [v["path"] for k, v in data.items() if v["is_config"]]

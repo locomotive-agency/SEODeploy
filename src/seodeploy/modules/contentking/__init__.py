@@ -22,6 +22,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""ContentKing Module for SEODeploy."""
+
 from datetime import datetime
 
 import pytz
@@ -33,7 +35,10 @@ from seodeploy.modules.contentking.exceptions import ContentSamplingError
 
 
 class SEOTestingModule(ModuleBase):
+    """SEODeploy Module: ContentKing Module."""
+
     def __init__(self, config=None, sample_paths=None):
+        """Initialize SEOTestingModule Class."""
 
         super(SEOTestingModule, self).__init__(config, sample_paths)
         self.modulename = "contentking"
@@ -43,6 +48,7 @@ class SEOTestingModule(ModuleBase):
         self.time_zone = pytz.timezone(self.config.contentking.TIMEZONE)
 
     def run(self, sample_paths=None):
+        """Run the ContentKing Module."""
 
         start_time = datetime.now().astimezone(self.time_zone)
         self.sample_paths = sample_paths or self.sample_paths
@@ -59,6 +65,7 @@ class SEOTestingModule(ModuleBase):
         return self.messages, errors
 
     def get_samples(self, site_id, limit):
+        """Gets samples from ContentKing API."""
 
         report = "pages"
         pages = load_report(

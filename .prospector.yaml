@@ -2,7 +2,7 @@ output-format: grouped
 
 strictness: veryhigh
 doc-warnings: true
-test-warnings: true
+test-warnings: false
 
 max-line-length: 120
 
@@ -41,6 +41,9 @@ pep8:
 
 pep257:
   run: false
+  disable:
+      - D202
+      - D203
 
 dodgy:
     run: true

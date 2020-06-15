@@ -22,6 +22,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""SEODeploy: SEOTesting Class."""
+
 import json
 from datetime import datetime
 import pandas as pd
@@ -34,8 +36,12 @@ _LOG = get_logger(__name__)
 
 
 class SEOTesting:
+
+    """ SEOTesting Class: Base Class for SEODeploy."""
+
     def __init__(self, config=None):
-        """ SEOTesting Class: Base Class for SEODeploy"""
+        """Initialize SEOTesting Class"""
+
         self.config = config or Config()
         self.messages = []
         self.module_config = ModuleConfig(self.config)
@@ -46,6 +52,7 @@ class SEOTesting:
         self.passing = True
 
     def execute(self, sample_paths=None):
+        """Execute modules against argument, sample_paths."""
 
         self.summary = {"started": str(datetime.now())}
 
@@ -93,15 +100,19 @@ class SEOTesting:
         return self.passing
 
     def _update_messages(self, messages):
+        """Update messages property."""
         self.messages.extend(messages)
 
     def _update_passing(self, passing):
+        """Update passing property."""
         self.passing = False if not passing and self.passing else self.passing
 
     def get_messages(self):
+        """Return messages as Pandas DataFrame."""
         return pd.DataFrame(self.messages)
 
     def print_summary(self):
+        """Print summarty to stdout"""
         print("Run CSV saved to:", "output.csv")
         print()
         print("Run Summary")

@@ -40,7 +40,23 @@ _LOG = get_logger(__name__)
 
 # CALCULATE THE SAMPLE SIZE
 def get_sample_size(population_size, confidence_level, confidence_interval):
+    """ Returns the approaprate sample size for a population.
 
+    Parameters
+    ----------
+    population_size: int
+        Size of population.
+    confidence_level: float
+        Confidence Level.
+    confidence_interval: float
+        Confidence Interval.
+
+    Returns
+    -------
+    int
+        Sample Size
+
+    """
     Z = 0.0  # noqa
     p = 0.5  # noqa
     e = confidence_interval / 100.0  # noqa
@@ -75,7 +91,21 @@ def get_sample_size(population_size, confidence_level, confidence_interval):
 
 
 def read_sitemap_urls(sitemap_url, limit=None):
+    """ Grabs recursive URLs from a sitemap or sitemap index.
 
+    Parameters
+    ----------
+    sitemap_url: str
+        URL of the sitemap (XML).
+    limit: int
+        Restict to this many results.
+
+    Returns
+    -------
+    list
+        All found URLs
+
+    """
     all_urls = []
 
     headers = {
@@ -112,6 +142,25 @@ def read_sitemap_urls(sitemap_url, limit=None):
 
 
 def get_sample_paths(config, site_id=None, sitemap_url=None, limit=None, filename=None):
+    """ Returns sample paths from either a saved file or via sitemap or Contentking.
+
+    Parameters
+    ----------
+    site_id: str
+        ID of ContentKing Site.
+    sitemap_url: str
+        Sitemap URL.
+    limit: int
+        Restict to this many results.
+    filename: str
+        Name of the file containing existing paths.
+
+    Returns
+    -------
+    list
+        All sample paths.
+
+    """
 
     limit = limit or config.URL_LIMIT
     filename = filename or config.SAMPLES_FILENAME

@@ -24,12 +24,12 @@
 
 
 class HeadlessException(Exception):
-    """Base class for exceptions in this module."""
+    """HeadlessException class for exceptions in this module."""
 
 
 class URLMissingException(Exception):
-    """An exception for a missing or invalid URL."""
+    """URLMissingException class for exceptions in this module."""
 
 
 class IncorrectConfigException(Exception):
-    """An exception for a missing or invalid URL."""
+    """IncorrectConfigException class for exceptions in this module."""

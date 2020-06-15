@@ -22,6 +22,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""ContentKing Functions for SEODeploy Module."""
 
 from urllib.parse import urljoin
 from datetime import datetime
@@ -32,11 +33,7 @@ import requests
 from tqdm.auto import tqdm
 
 from seodeploy.lib.logging import get_logger
-from seodeploy.lib.helpers import (
-    group_batcher,
-    mp_list_map,
-    process_page_data,
-)
+from seodeploy.lib.helpers import group_batcher, mp_list_map, process_page_data
 from seodeploy.modules.contentking.exceptions import ContentKingAPIError
 
 _LOG = get_logger(__name__)
@@ -149,7 +146,7 @@ def load_report(report, config, **data):
         return None
 
     def get_paged_report(report, config, data):
-        """Function for handling paged reports from ContentKing API"""
+        """Function for handling paged reports from ContentKing API."""
 
         page = 1
         per_page = data.get("per_page", 100)
@@ -182,7 +179,7 @@ def load_report(report, config, **data):
 
 
 def _notify_change(url, config):
-    """Pings ContentKing CMS API about URL changes"""
+    """Pings ContentKing CMS API about URL changes."""
 
     api_url = urljoin(config.contentking.ENDPOINT, "check_url")
 
@@ -235,7 +232,7 @@ def _notify_change(url, config):
 
 
 def ping_prod_paths(sample_paths, config):
-    """Converts all production paths to URLs and pings ContentKing"""
+    """Converts all production paths to URLs and pings ContentKing."""
 
     results = {}
     for path in sample_paths:
@@ -251,7 +248,7 @@ def ping_prod_paths(sample_paths, config):
 
 
 def ping_stage_paths(sample_paths, config):
-    """Converts all staging paths to URLs and pings ContentKing"""
+    """Converts all staging paths to URLs and pings ContentKing."""
 
     results = {}
     for path in sample_paths:
@@ -267,12 +264,12 @@ def ping_stage_paths(sample_paths, config):
 
 
 def has_ping_errors(name, sample_paths, ping_results):
-    """Checks ping results for errors"""
+    """Checks ping results for errors."""
 
     sent_total = len(sample_paths)
 
     sent_percent = round(
-        (len([k for k, v in ping_results.items() if v == "ok"]) / sent_total) * 100, 2,
+        (len([k for k, v in ping_results.items() if v == "ok"]) / sent_total) * 100, 2
     )
     _LOG.info("{}% of {} URLs successfully sent.".format(sent_percent, name))
 
@@ -292,10 +289,15 @@ def run_path_pings(sample_paths, config):
 
     Parameters
     ----------
-    sample_paths: <list>
+    sample_paths: list
         List of paths to check.
-    config: <class>
+    config: class
         Module configuration class.
+
+    Returns
+    -------
+    bool
+
     """
 
     # Ping Content King for Production and Staging URLs
@@ -403,6 +405,9 @@ def parse_url_data(url_data):
 
 
 class BreakCounter:
+
+    """Simple safety valve class to stopp checking dead sites."""
+
     def __init__(self, max_attempts=5):
         self.item = None
         self.reset(max_attempts)
@@ -423,10 +428,23 @@ class BreakCounter:
 
 
 def _check_results(paths, config=None, data=None):
-
     """Loads path data from ContentKing and returns cleaned data report.
 
        Checks to see if the latest crawl timestamp is more recent than when this process started.
+
+    Parameters
+    ----------
+    paths: list
+        List of paths to check.
+    config: class
+        Configuration class.
+    data: dict
+        Meta data containing host information.
+
+    Returns
+    -------
+    list
+        List of page data.
 
     """
 
@@ -481,19 +499,19 @@ def _check_results(paths, config=None, data=None):
 
 
 def run_check_results(sample_paths, start_time, time_zone, config):
-
     """Monitors paths that were pinged for updated timestamp. Compares allowed differences.
 
     Parameters
     ----------
-    sample_paths: <list>
+    sample_paths: list
         List of paths to check.
-    start_time: <datetime>
+    start_time: datetime
         When the difftest was started.
-    time_zone: <pytz.timezone>
+    time_zone: pytz.timezone
         Default timezone to keep times the same.
-    config: <class>
+    config: class
         Module configuration class.
+
     """
 
     batches = group_batcher(
@@ -540,6 +558,25 @@ def run_check_results(sample_paths, start_time, time_zone, config):
 
 
 def run_contentking(sample_paths, start_time, time_zone, config):
+    """Main function that kicks off ContentKing Processing.
+
+    Parameters
+    ----------
+    sample_paths: list
+        List of paths to check.
+    start_time: datetime
+        When the difftest was started.
+    time_zone: pytz.timezone
+        Default timezone to keep times the same.
+    config: class
+        Module configuration class.
+
+    Returns
+    -------
+    dict
+        Page Data dict.
+
+    """
 
     # Runs the sample paths against ContentKing API to ask for recrawling.
     run_path_pings(sample_paths, config)

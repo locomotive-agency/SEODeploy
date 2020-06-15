@@ -22,6 +22,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""Comparison Module containing CompareDiffs."""
 
 from dictdiffer import diff as differ
 
@@ -32,34 +33,32 @@ _LOG = get_logger(__name__)
 
 
 class CompareDiffs:
-    """Comparison module for comparing various data types."""
+    """Comparison class for comparing various data types."""
 
     def __init__(self):
+        """Initialize CompareDiffs Class."""
         self.diffs = []
 
     def compare(self, path, item, d1, d2, tolerance=None):
+        """ Compare differences in data for two given objects (d1,d2).
 
-        """ Compares differces in data for two given objects (d1,d2).
+        Parameters
+        ----------
+        path: str
+            The path compared.
+        item: str
+            Name for the item compared.
+        d1: list or dict
+            Items to compare (PROD).
+        d2: list or dict
+            Items to compare (STAGE).
+        tolerance: float
+            For dictonaries with numeric values only, the percentage
+            to be considered a diff.
 
-            Parameters:
-            -------------
-            path: <str> the path compared.
-            item: <str> Name for the item compared.
-            d1: <list> or <dict> of items to compare (PROD)
-            d2: <list> or <dict> of items to compare (STAGE)
-
-            Optional
-            -------------
-            item: <str> Override the item name for each diff.
-            tolerance: <float> For dictonaries with numeric values only, the percentage
-                       to be considered a diff.
-            element: <str> The key in a list of objects to group by. Default: element
-            content: <str> The content in a list of objects to treat as the element's
-                     content. Default: content
-
-            Output
-            -------------
-            self.diffs = [{'path': <str>, 'diffs': [list]}, ...]
+        Returns
+        -------
+        None
 
         """
         if not isinstance(d1, type(d2)):
@@ -73,12 +72,15 @@ class CompareDiffs:
         self.add_diffs(path, diffs)
 
     def add_diffs(self, path, diffs):
+        """Update diffs property with new diffs."""
         self.diffs.append({"path": path, "diffs": diffs})
 
     def get_diffs(self):
+        """Return collected diffs."""
         return self.diffs
 
     def compare_objects(self, d1, d2, item=None, tolerance=None):
+        """Compares d1 and d1 and returns formatted diffs."""
 
         tolerance = tolerance or 0
 
@@ -101,6 +103,7 @@ class CompareDiffs:
 
     @staticmethod
     def format_diffs(diffs, otype, item):
+        """Formats diffs into add, remove, change data."""
 
         results = []
 
@@ -176,12 +179,21 @@ class CompareDiffs:
     def _l2d(l1, l2, key_attr, content_attr):
         """Turns a list of dicts into a dict based on given key attribute and content attribute.
 
-            Parameters:
-            ---------------------------
-                l1: <list> first list of dicts.
-                l2: <list> second list of dicts.
-                key_attr: <str> dict key to be used as key for new dict.
-                content_attr: <str> or <list> dict key(s) to be used as value for new dict.
+        Parameters
+        ----------
+        l1: list
+            First list of dicts.
+        l2: list
+            Second list of dicts.
+        key_attr: str
+            Dict key to be used as key for new dict.
+        content_attr: str or list
+            Dict key(s) to be used as value for new dict.
+
+        Returns
+        -------
+        tuple
+            d1, d2
         """
         d1, d2 = {}, {}
 
@@ -215,7 +227,7 @@ class CompareDiffs:
             ]
         else:
             raise NotImplementedError(
-                "`content_attr` can only be of type `str` or `list`"
+                "`content_attr` can only be of type `str` or `list`."
             )
 
         return d1, d2
