@@ -24,10 +24,8 @@
 
 """Test Cases for ContentKing > Init Module"""
 
-from unittest.mock import Mock
-import pytest
 import json
-from pytest_mock import MockFixture
+import pytest
 
 from seodeploy.modules.contentking import SEOTestingModule
 from seodeploy.modules.contentking.exceptions import ContentSamplingError
@@ -106,14 +104,14 @@ def test_contentking_get_pages_bad_report(mock_load_report):
     site_id = "5-5671785"
     limit = 5
 
-    mock_load_report.return_value = []
+    mock_load_report.return_value = []  # noqa
 
     # no Results
     with pytest.raises(ContentSamplingError):
-        all_urls = contentking.get_samples(site_id, limit)
+        contentking.get_samples(site_id, limit)
 
-    mock_load_report.return_value = ["None", None, False]
+    mock_load_report.return_value = ["None", None, False]  # noqa
 
     # Bad results
     with pytest.raises(ContentSamplingError):
-        all_urls = contentking.get_samples(site_id, limit)
+        contentking.get_samples(site_id, limit)

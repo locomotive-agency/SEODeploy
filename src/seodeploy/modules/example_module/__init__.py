@@ -25,7 +25,7 @@
 
 from seodeploy.lib.modules import ModuleBase
 from seodeploy.lib.config import Config
-from .functions import sample_function  # noqa
+from seodeploy.modules.example_module.functions import sample_function  # noqa
 
 
 class SEOTestingModule(ModuleBase):

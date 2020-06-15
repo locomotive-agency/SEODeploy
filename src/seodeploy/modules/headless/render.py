@@ -30,14 +30,19 @@ from pyppeteer import launch
 from seodeploy.lib.logging import get_logger
 from seodeploy.lib.config import Config
 
-from .exceptions import URLMissingException
-from .helpers import (
+from seodeploy.modules.headless.exceptions import URLMissingException
+from seodeploy.modules.headless.helpers import (
     format_results,
     parse_numerical_dict,
     parse_performance_timing,
     parse_coverage,
 )
-from .helpers import USER_AGENT, NETWORK_PRESETS, DOCUMENT_SCRIPTS, EXTRACTIONS
+from seodeploy.modules.headless.helpers import (
+    USER_AGENT,
+    NETWORK_PRESETS,
+    DOCUMENT_SCRIPTS,
+    EXTRACTIONS,
+)
 
 
 _LOG = get_logger(__name__)

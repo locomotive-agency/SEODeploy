@@ -26,12 +26,12 @@ import os
 import sys
 import importlib
 
-from .config import Config
-from .comparison import CompareDiffs
-from .helpers import to_dot, dot_get
-from .logging import get_logger
+from seodeploy.lib.config import Config
+from seodeploy.lib.comparison import CompareDiffs
+from seodeploy.lib.helpers import to_dot, dot_get
+from seodeploy.lib.logging import get_logger
 
-from .exceptions import ModuleNotImplemented, IncorrectConfigException
+from seodeploy.lib.exceptions import ModuleNotImplemented, IncorrectConfigException
 
 _LOG = get_logger(__name__)
 

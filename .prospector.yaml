@@ -2,7 +2,7 @@ output-format: grouped
 
 strictness: veryhigh
 doc-warnings: true
-test-warnings: false
+test-warnings: true
 
 max-line-length: 120
 
@@ -15,16 +15,15 @@ ignore-paths:
   - docs
   - jenkins
   - etc
-  - tests
 
 pylint:
   disable:
-    - wildcard-import
     - star-args
     - missing-docstring
     - too-many-arguments
     - invalid-name
     - too-few-public-methods
+    - too-many-branches
 
   enable:
     - fixme

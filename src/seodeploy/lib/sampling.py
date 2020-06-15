@@ -31,8 +31,8 @@ import requests
 from bs4 import BeautifulSoup
 
 from seodeploy.modules.contentking import SEOTestingModule
-from .logging import get_logger
-from .helpers import url_to_path
+from seodeploy.lib.logging import get_logger
+from seodeploy.lib.helpers import url_to_path
 
 
 _LOG = get_logger(__name__)

@@ -29,10 +29,10 @@ import click
 from seodeploy.lib import SEOTesting
 from seodeploy import __version__
 
-from .logging import get_logger
-from .exceptions import IncorrectParameters
-from .sampling import get_sample_paths
-from .config import Config
+from seodeploy.lib.logging import get_logger
+from seodeploy.lib.exceptions import IncorrectParameters
+from seodeploy.lib.sampling import get_sample_paths
+from seodeploy.lib.config import Config
 
 CONFIG = Config()
 

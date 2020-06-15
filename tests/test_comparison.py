@@ -24,7 +24,6 @@
 
 """Test Cases for Comparison Module"""
 
-from unittest.mock import Mock
 import pytest
 
 from seodeploy.lib import comparison
@@ -32,7 +31,6 @@ from seodeploy.lib import comparison
 
 @pytest.fixture
 def diff():
-    """Returns a Wallet instance with a zero balance"""
     return comparison.CompareDiffs()
 
 
@@ -73,8 +71,6 @@ EXAMPLES = {
             }
         ],
     },
-    # TODO: Assert AttributeError check.
-    #'none': {'items': (None, None), 'result': []},
     "list": {
         "items": ([1, 2, 3], [1, 2, 4]),
         "result": [

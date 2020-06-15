@@ -48,7 +48,7 @@ def mock_run_render(mocker):
     return mock
 
 
-def test_headless_module(mock_run_render):
+def test_headless_module(mock_run_render):  # noqa
 
     headless = SEOTestingModule()
     headless.exclusions = {"content": {"canonical": False}}

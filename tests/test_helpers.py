@@ -1,6 +1,5 @@
 """Test Cases for Config Module"""
 
-from unittest.mock import Mock
 import pytest
 
 from seodeploy.lib import helpers

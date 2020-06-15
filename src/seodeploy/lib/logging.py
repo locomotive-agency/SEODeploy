@@ -25,7 +25,7 @@
 import logging
 from logging import DEBUG, INFO, ERROR, Formatter, getLogger  # noqa: unused-import
 
-from .config import Config
+from seodeploy.lib.config import Config
 
 CONFIG = Config()
 
