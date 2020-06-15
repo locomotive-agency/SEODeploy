@@ -34,6 +34,7 @@ black = "^19.10b0"
 coverage = {extras = ["toml"], version = "^5.1"}
 pytest-cov = "^2.9.0"
 pytest-mock = "^3.1.1"
+mkdocs = "^1.1.2"
 
 [tool.coverage.paths]
 source = ["src"]

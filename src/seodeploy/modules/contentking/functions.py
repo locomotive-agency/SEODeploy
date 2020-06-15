@@ -47,7 +47,7 @@ def load_report(report, config, **data):
 
         Reporting API Details: https://www.contentkingapp.com/support/reporting-api/
 
-        Implemeneted Reports:
+        Implemented Reports:
             * websites
             * alerts
             * issues
@@ -511,6 +511,11 @@ def run_check_results(sample_paths, start_time, time_zone, config):
         Default timezone to keep times the same.
     config: class
         Module configuration class.
+
+    Returns
+    -------
+    dict
+        Page Data dict.
 
     """
 

@@ -128,7 +128,6 @@ DOCUMENT_SCRIPTS = """() => {
 """  # noqa
 
 # Regular3G is a good way to remove variance by downgrading all loads to consistently slow.
-
 NETWORK_PRESETS = {
     "GPRS": {
         "offline": False,
@@ -259,18 +258,19 @@ def format_results(data):
 
 
 def parse_numerical_dict(data, r=2):
-    """Converts dict with numerical values to consistent `r` rounded float values"""
+    """Converts dict with numerical values to consistent `r` rounded float values."""
     return {k: round(float(v), r) for k, v in data.items()}
 
 
 # Performance Timing Functions
 def parse_performance_timing(p_timing):
-    """Changes performance timing results to deltas"""
+    """Changes performance timing results to deltas."""
     ns = p_timing["navigationStart"]
     return {k: v - ns if v else 0 for k, v in p_timing.items()}
 
 
 def parse_ranges(ranges):
+    """Helper function to parse coverage data ranges."""
     total_length = 0
 
     for single_range in ranges:
@@ -283,7 +283,7 @@ def parse_ranges(ranges):
 
 # Coverage Functions
 def parse_coverage_objects(coverage):
-    """Helper function for parse_coverage to calulate separate asset coverage"""
+    """Helper function for parse_coverage to calulate separate asset coverage."""
     total_unused = 0
     total_bytes = 0
     results = []
@@ -324,7 +324,7 @@ def parse_coverage_objects(coverage):
 
 
 def parse_coverage(coverage_js, coverage_css):
-    """Organizes to dict Chrome coverage report"""
+    """Organizes to dict Chrome coverage report."""
     parsed_js_coverage = parse_coverage_objects(coverage_js)
     parsed_css_coverage = parse_coverage_objects(coverage_css)
 
