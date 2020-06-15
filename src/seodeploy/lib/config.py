@@ -25,7 +25,7 @@
 import os
 
 from parse_it import ParseIt
-from .exceptions import ModuleNotImplemented
+from seodeploy.lib.exceptions import ModuleNotImplemented
 
 
 class Config:
@@ -65,7 +65,7 @@ class Config:
                         module
                         for module in os.listdir(mdir)
                         if os.path.isdir(os.path.join(mdir, module))
-                        and not module.startswith('__')
+                        and not module.startswith("__")
                     ]
                 )
                 break

@@ -27,11 +27,11 @@ def multi(x, by=0):
 def test_helpers_mp_list_map():
     iterable = [i for i in range(10)]
     # TODO: Throws error with Mutli-Processing in Pytest Coverage: See Issue: https://github.com/pytest-dev/pytest-cov/issues/250
-    #helpers.CONFIG.MAX_THREADS = 3
-    #result_multi = helpers.mp_list_map(iterable, multi, by=10)
+    # helpers.CONFIG.MAX_THREADS = 3
+    # result_multi = helpers.mp_list_map(iterable, multi, by=10)
     helpers.CONFIG.MAX_THREADS = 1
     result_single = helpers.mp_list_map(iterable, multi, by=10)
-    #assert result_multi == [i * 10 for i in iterable]
+    # assert result_multi == [i * 10 for i in iterable]
     assert result_single == [i * 10 for i in iterable]
 
 
@@ -62,7 +62,7 @@ def test_helpers_dotnot(dotdata):
 
 def test_helpers_process_page_data():
 
-    config = Config(module='headless')
+    config = Config(module="headless")
 
     data1 = [
         {"path": "/path1/", "page_data": ["data1"], "error": None},

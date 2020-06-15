@@ -78,16 +78,6 @@ class CompareDiffs:
     def get_diffs(self):
         return self.diffs
 
-    # TODO: Deprecated.
-    def compare_lists_of_objects(
-        self, l1, l2, element="element", content="content", item=None, tolerance=None
-    ):
-
-        # Changes list to dict based on given key_attr and content_attr values.
-        d1, d2 = self._l2d(l1, l2, element, content)
-
-        return self.compare_objects(d1, d2, item=item, tolerance=tolerance)
-
     def compare_objects(self, d1, d2, item=None, tolerance=None):
 
         tolerance = tolerance or 0

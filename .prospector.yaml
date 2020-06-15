@@ -15,7 +15,7 @@ ignore-paths:
   - docs
   - jenkins
   - etc
-  - etc\setup.py
+  - tests
 
 pylint:
   disable:

@@ -30,22 +30,32 @@ import json
 from pytest_mock import MockFixture
 
 from seodeploy.modules.contentking import SEOTestingModule
+from seodeploy.modules.contentking.exceptions import ContentSamplingError
 
 
 @pytest.fixture
 def mock_run_contentking(mocker):
     mock = mocker.patch("seodeploy.modules.contentking.run_contentking")
     mock.return_value = {
-        "/path1/": {"prod": {'content': {'canonical':'test1'}}, "stage": {'content': {'canonical':'test1'}}, "error": None},
-        "/path2/": {"prod": {'content': {'canonical':'test2'}}, "stage": {'content': {'canonical':'test3'}}, "error": None},
+        "/path1/": {
+            "prod": {"content": {"canonical": "test1"}},
+            "stage": {"content": {"canonical": "test1"}},
+            "error": None,
+        },
+        "/path2/": {
+            "prod": {"content": {"canonical": "test2"}},
+            "stage": {"content": {"canonical": "test3"}},
+            "error": None,
+        },
         "/path3/": {"prod": None, "stage": None, "error": "error3"},
     }
     return mock
 
+
 @pytest.fixture
 def mock_load_report(mocker):
     mock = mocker.patch("seodeploy.modules.contentking.load_report")
-    with open('../../files/sample_contentking_pages.json', 'r') as rf:
+    with open("tests/files/sample_contentking_pages.json", "r") as rf:
         data = json.load(rf)
     mock.return_value = data
     return mock
@@ -54,15 +64,24 @@ def mock_load_report(mocker):
 def test_contentking_module(mock_run_contentking):
 
     contentking = SEOTestingModule()
-    headless.exclusions = {'content': {'canonical': False}}
-    sample_paths = ['/path1/', '/path2/', '/path3/']
+    contentking.exclusions = {"content": {"canonical": False}}
+    sample_paths = ["/path1/", "/path2/", "/path3/"]
 
-    passing, messages, errors = contentking.run(sample_paths)
+    messages, errors = contentking.run(sample_paths)
 
-    assert mock_run_render.called
-    assert errors == [{'error': 'error3', 'path': '/path3/'}]
-    assert messages == [{'type': 'change', 'item': 'content.canonical', 'element': '', 'production': 'test2', 'staging': 'test3', 'module': 'headless', 'path': '/path2/'}]
-    assert passing == False
+    assert mock_run_contentking.called
+    assert errors == [{"error": "error3", "path": "/path3/"}]
+    assert messages == [
+        {
+            "type": "change",
+            "item": "content.canonical",
+            "element": "",
+            "production": "test2",
+            "staging": "test3",
+            "module": "contentking",
+            "path": "/path2/",
+        }
+    ]
 
 
 def test_contentking_get_pages(mock_load_report):
@@ -71,7 +90,30 @@ def test_contentking_get_pages(mock_load_report):
 
     site_id = "5-5671785"
     limit = 2
-    all_urls = contentking.get_samples(self, site_id, limit)
+    all_urls = contentking.get_samples(site_id, limit)
 
     assert mock_load_report.called
-    assert len(allurls) == 5
+    assert len(all_urls) == 2
+
+    limit = None
+    all_urls = contentking.get_samples(site_id, limit)
+    assert len(all_urls) == 150
+
+
+def test_contentking_get_pages_bad_report(mock_load_report):
+
+    contentking = SEOTestingModule()
+    site_id = "5-5671785"
+    limit = 5
+
+    mock_load_report.return_value = []
+
+    # no Results
+    with pytest.raises(ContentSamplingError):
+        all_urls = contentking.get_samples(site_id, limit)
+
+    mock_load_report.return_value = ["None", None, False]
+
+    # Bad results
+    with pytest.raises(ContentSamplingError):
+        all_urls = contentking.get_samples(site_id, limit)

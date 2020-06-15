@@ -121,10 +121,12 @@ def execute(samples_filename=None):
             + "or set `samples_filename` in `seotesting_config.yaml`."
         )
 
+    sample_paths = get_sample_paths(CONFIG, filename=samples_filename)
+
     # Main function
     seotesting = SEOTesting(CONFIG)
 
-    passing = seotesting.execute(samples_filename=samples_filename)
+    passing = seotesting.execute(sample_paths=sample_paths)
 
     return 1 if passing else 0
 

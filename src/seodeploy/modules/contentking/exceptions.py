@@ -33,3 +33,9 @@ class ContentKingAPIError(Exception):
     """Base class for exceptions in this module."""
 
     pass  # noqa
+
+
+class ContentSamplingError(Exception):
+    """Base class for exceptions in this module."""
+
+    pass  # noqa

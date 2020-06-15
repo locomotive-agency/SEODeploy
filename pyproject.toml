@@ -48,6 +48,10 @@ omit = ["src/seodeploy/__main__.py", "*/modules/example_module/*",
 show_missing = true
 skip_covered = true
 
+[tool.black]
+target-version = ['py37']
+include = '\.pyi?$'
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"

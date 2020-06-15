@@ -24,35 +24,48 @@
 
 """Test Cases for Headless > Init Module"""
 
-from unittest.mock import Mock
 import pytest
-from pytest_mock import MockFixture
 
 from seodeploy.modules.headless import SEOTestingModule
-
 
 
 @pytest.fixture
 def mock_run_render(mocker):
     mock = mocker.patch("seodeploy.modules.headless.run_render")
     mock.return_value = {
-        "/path1/": {"prod": {'content': {'canonical':'test1'}}, "stage": {'content': {'canonical':'test1'}}, "error": None},
-        "/path2/": {"prod": {'content': {'canonical':'test2'}}, "stage": {'content': {'canonical':'test3'}}, "error": None},
+        "/path1/": {
+            "prod": {"content": {"canonical": "test1"}},
+            "stage": {"content": {"canonical": "test1"}},
+            "error": None,
+        },
+        "/path2/": {
+            "prod": {"content": {"canonical": "test2"}},
+            "stage": {"content": {"canonical": "test3"}},
+            "error": None,
+        },
         "/path3/": {"prod": None, "stage": None, "error": "error3"},
     }
     return mock
 
 
-
 def test_headless_module(mock_run_render):
 
     headless = SEOTestingModule()
-    headless.exclusions = {'content': {'canonical': False}}
-    sample_paths = ['/path1/', '/path2/', '/path3/']
+    headless.exclusions = {"content": {"canonical": False}}
+    sample_paths = ["/path1/", "/path2/", "/path3/"]
 
-    passing, messages, errors = headless.run(sample_paths)
+    messages, errors = headless.run(sample_paths)
 
     assert mock_run_render.called
-    assert errors == [{'error': 'error3', 'path': '/path3/'}]
-    assert messages == [{'type': 'change', 'item': 'content.canonical', 'element': '', 'production': 'test2', 'staging': 'test3', 'module': 'headless', 'path': '/path2/'}]
-    assert passing == False
+    assert errors == [{"error": "error3", "path": "/path3/"}]
+    assert messages == [
+        {
+            "type": "change",
+            "item": "content.canonical",
+            "element": "",
+            "production": "test2",
+            "staging": "test3",
+            "module": "headless",
+            "path": "/path2/",
+        }
+    ]

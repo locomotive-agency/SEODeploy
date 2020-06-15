@@ -32,8 +32,8 @@ from seodeploy.lib.helpers import (
     process_page_data,
 )
 
-from .render import HeadlessChrome  # noqa
-from .exceptions import HeadlessException  # noqa
+from seodeploy.modules.headless.render import HeadlessChrome  # noqa
+from seodeploy.modules.headless.exceptions import HeadlessException  # noqa
 
 _LOG = get_logger(__name__)
 
@@ -94,6 +94,8 @@ def run_render(sample_paths, config):
         )
 
     # Review for Errors and process into dictionary:
-    page_data = process_page_data(sample_paths, prod_result, stage_result, config.headless)
+    page_data = process_page_data(
+        sample_paths, prod_result, stage_result, config.headless
+    )
 
     return page_data

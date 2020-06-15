@@ -56,7 +56,4 @@ class SEOTestingModule(ModuleBase):
 
         self.messages = self.prepare_messages(diffs)
 
-        # TODO: Move this to ModuleBase
-        self.passing = len(self.messages) == 0
-
-        return self.passing, self.messages, errors
+        return self.messages, errors

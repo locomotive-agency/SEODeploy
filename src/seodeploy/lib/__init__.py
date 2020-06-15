@@ -27,7 +27,6 @@ from datetime import datetime
 import pandas as pd
 
 from seodeploy.lib.modules import ModuleConfig
-from seodeploy.lib.sampling import get_sample_paths
 from seodeploy.lib.logging import get_logger
 from seodeploy.lib.config import Config
 
@@ -41,18 +40,19 @@ class SEOTesting:
         self.messages = []
         self.module_config = ModuleConfig(self.config)
 
-        self.samples = None
+        self.sample_paths = None
         self.modules = None
         self.summary = None
         self.passing = True
 
-    def execute(self, samples_filename=None):
+    def execute(self, sample_paths=None):
 
         self.summary = {"started": str(datetime.now())}
 
         # Get Sample Paths
-        self.samples = get_sample_paths(self.config, filename=samples_filename)
-        self.summary.update({"samples": len(self.samples)})
+        self.sample_paths = sample_paths or self.sample_paths
+
+        self.summary.update({"samples": len(self.sample_paths)})
 
         # get Modules
         self.modules = self.module_config.module_names
@@ -68,7 +68,10 @@ class SEOTesting:
             module = self.module_config.active_modules[active_module].SEOTestingModule()
 
             print("Running Module:", module.modulename)
-            passing, messages, errors = module.run(self.samples)
+            messages, errors = module.run(self.sample_paths)
+
+            passing = len(self.messages) == 0
+            module.passing = passing
 
             self._update_messages(messages)
             self._update_passing(passing)

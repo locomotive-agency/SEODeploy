@@ -31,7 +31,7 @@ import re
 import multiprocessing as mp
 import numpy as np
 
-from .config import Config
+from seodeploy.lib.config import Config
 
 CONFIG = Config()
 
@@ -74,7 +74,7 @@ def mp_list_map(lst, fnc, **args):
     threads = CONFIG.MAX_THREADS
 
     if threads > 1:
-        print('Running on {} threads.'.format(str(threads)))
+        print("Running on {} threads.".format(str(threads)))
         pool = mp.Pool(processes=threads)
         result = pool.map(_map, [(l, fnc, args) for l in np.array_split(lst, threads)])
         pool.close()
@@ -150,7 +150,9 @@ def process_page_data(sample_paths, prod_result, stage_result, module_config):
     for path in sample_paths:
         error = prod_data[path]["error"] or stage_data[path]["error"]
 
-        stg_page_data = maybe_replace_staging(stage_data[path]["page_data"], module_config)
+        stg_page_data = maybe_replace_staging(
+            stage_data[path]["page_data"], module_config
+        )
         prod_page_data = prod_data[path]["page_data"]
 
         result[path] = {
@@ -167,7 +169,9 @@ def maybe_replace_staging(page_data, module_config):
 
     if module_config.replace_staging_host:
         json_data = json.dumps(page_data)
-        json_data = re.sub(re.escape(module_config.stage_host), module_config.prod_host, json_data)
+        json_data = re.sub(
+            re.escape(module_config.stage_host), module_config.prod_host, json_data
+        )
         return json.loads(json_data)
 
     return page_data

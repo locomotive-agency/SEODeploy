@@ -28,7 +28,8 @@ import pytz
 
 from seodeploy.lib.modules import ModuleBase
 from seodeploy.lib.config import Config
-from .functions import run_contentking, load_report
+from seodeploy.modules.contentking.functions import run_contentking, load_report
+from seodeploy.modules.contentking.exceptions import ContentSamplingError
 
 
 class SEOTestingModule(ModuleBase):
@@ -55,9 +56,7 @@ class SEOTestingModule(ModuleBase):
 
         self.messages = self.prepare_messages(diffs)
 
-        self.passing = len(self.messages) == 0
-
-        return self.passing, self.messages, errors
+        return self.messages, errors
 
     def get_samples(self, site_id, limit):
 
@@ -70,13 +69,17 @@ class SEOTestingModule(ModuleBase):
         for page in pages:
 
             if page:
-                urls = [url["url"] for url in page if url["is_indexable"]]
-                all_urls.extend(urls)
-            else:
-                break
+                try:
+                    urls = [url["url"] for url in page if url["is_indexable"]]
+                    all_urls.extend(urls)
+                except TypeError:
+                    pass
 
             if limit and len(all_urls) >= limit:
                 all_urls = all_urls[:limit]
                 break
+
+        if len(all_urls) == 0:
+            raise ContentSamplingError("No valid URLs returned.")
 
         return all_urls

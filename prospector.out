@@ -6,7 +6,6 @@ Check Information
        Formatter: grouped
         Profiles: .prospector.yaml, full_pep8, doc_warnings, no_test_warnings, strictness_veryhigh, no_member_warnings
       Strictness: from profile
-  Libraries Used: 
+  Libraries Used:
        Tools Run: dodgy, mccabe, pep8, profile-validator, pyflakes, pylint
   Messages Found: 0
-
