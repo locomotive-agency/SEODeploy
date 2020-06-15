@@ -49,7 +49,7 @@ def group_batcher(iterator, result, count, fill=0):
         Iterable object
     result: type
         The `type` of the results to be returned.
-    count: <int>
+    count: int
         How many in each Group.
     fill: str, int, float, or None
         Fill overflow with this value. If None, no fill is performed.
