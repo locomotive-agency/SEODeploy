@@ -78,7 +78,6 @@ def sample(site_id, sitemap_url, limit=None, samples_filename=None):
     # Error Cheching
     if not site_id and not sitemap_url:
         err = "Either `site_id` or `sitemap_url`are required to run sampling."
-        _LOG.error(err)
         raise IncorrectParameters(err)
 
     # Main function

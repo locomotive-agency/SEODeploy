@@ -24,12 +24,90 @@
 
 """Test Cases for CLI Module"""
 
-from unittest.mock import Mock
 import pytest
 
-from seodeploy.lib import config
-from seodeploy.lib.exceptions import ModuleNotImplemented
+from click.testing import CliRunner
 
-from seodeploy.modules import headless
+from seodeploy.lib.cli import cli, CONFIG
+from seodeploy.lib.cli import IncorrectParameters
 
-module = headless.SEOTestingModule()
+
+@pytest.fixture
+def runner():
+    """Fixture for invoking command-line interfaces."""
+    return CliRunner()
+
+
+@pytest.fixture
+def mock_get_sample_paths(mocker):
+    mock = mocker.patch("seodeploy.lib.cli.get_sample_paths")
+    mock.return_value = ["/path1/", "/path2/", "/path3/"]
+    return mock
+
+
+class SEOTest:
+    def __init__(self, config):
+        self.config = config
+
+    def execute(sample_paths=None):
+        if sample_paths:
+            return 0
+        else:
+            return 1
+
+
+@pytest.fixture
+def mock_seotesting(mocker):
+    mock = mocker.patch("seodeploy.lib.cli.SEOTesting")
+    mock.return_value = SEOTest
+    return mock
+
+
+def test_sample(runner, mock_get_sample_paths):
+
+    with pytest.raises(IncorrectParameters):
+        result = runner.invoke(cli, ["sample"], catch_exceptions=False)
+
+    result = runner.invoke(cli, ["sample", "--site_id", "5-111111"])
+    assert mock_get_sample_paths.called
+    assert result.exit_code == 0
+
+    result = runner.invoke(
+        cli, ["sample", "--site_id", "5-111111", "--samples_filename", "filename.txt"]
+    )
+    assert result.exit_code == 0
+
+    result = runner.invoke(
+        cli, ["sample", "--sitemap_url", "https://domain.com/sitemap_index.xml"]
+    )
+    assert result.exit_code == 0
+
+    result = runner.invoke(
+        cli,
+        [
+            "sample",
+            "--sitemap_url",
+            "https://domain.com/sitemap_index.xml",
+            "--limit",
+            "10",
+        ],
+    )
+    assert result.exit_code == 0
+
+
+def test_execute(runner, mock_get_sample_paths, mock_seotesting):
+
+    with pytest.raises(IncorrectParameters):
+        CONFIG.SAMPLES_FILENAME = None
+        result = runner.invoke(cli, ["execute"], catch_exceptions=False)
+
+    result = runner.invoke(cli, ["execute", "--samples_filename", "samples.txt"])
+    assert mock_get_sample_paths.called
+    assert mock_seotesting.called
+    assert result.exit_code == 0
+
+    mock_get_sample_paths.return_value = None
+    result = runner.invoke(cli, ["sample", "--samples_filename", "samples.txt"])
+    assert mock_get_sample_paths.called
+    assert mock_seotesting.called
+    assert result.exit_code == 1
