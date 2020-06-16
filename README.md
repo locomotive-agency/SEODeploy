@@ -25,8 +25,9 @@ This library attempts to provide a flexible format to allow developers to incorp
 
 See the [docs](https://locomotive-agency.github.io/SEODeploy/) folder for more information.
 
-This library should be considered Alpha software and not used as a dependable solution.  Expect bugs.
-
+!!! warning
+    This library should be considered beta software and not used as a dependable
+    solution without thorough testing.  Expect bugs.
 
 ## Inspiration for some parts taken from:
 * https://github.com/AlejandroGonzalR/jenkins-vue/tree/master/jenkins/scripts
