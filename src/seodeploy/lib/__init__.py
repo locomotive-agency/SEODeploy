@@ -74,18 +74,19 @@ class SEOTesting:
 
             module = self.module_config.active_modules[active_module].SEOTestingModule()
 
-            print("Running Module:", module.modulename)
+            print("Running Module: {}".format(module.modulename))
+            _LOG.info("Running Module: {}".format(module.modulename))
             messages, errors = module.run(self.sample_paths)
 
-            passing = len(self.messages) == 0
-            module.passing = passing
+            print("Number of Messages: {}".format(len(messages)))
+            _LOG.info("Number of Messages: {}".format(len(messages)))
+
+            passing = len(messages) == 0
 
             self._update_messages(messages)
             self._update_passing(passing)
 
-            self.summary.update(
-                {"{} passing: ".format(module.modulename): module.passing}
-            )
+            self.summary.update({"{} passing: ".format(module.modulename): passing})
             self.summary.update({"{} errors: ".format(module.modulename): len(errors)})
 
             if errors:

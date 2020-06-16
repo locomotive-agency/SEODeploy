@@ -148,4 +148,5 @@ static
 # SEODeploy
 seodeploy.log
 seotesting_config_private.yaml
+seotesting_config_demo.yaml
 seotesting_config.bak
