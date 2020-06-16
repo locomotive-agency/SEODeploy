@@ -23,7 +23,7 @@ This library attempts to provide a flexible format to allow developers to incorp
 4. **Flexible**: The library contains code that is meant to be reconfigured and repurposed for individual needs.  We have tried to make classes and functions as flexible as possible, towards this end.
 5. **Logging**: Error, Info, Warning notifications are logged to `seotesting.log` via included functionality.
 
-See the [docs](/docs/index.md) folder for more information.
+See the [docs](https://locomotive-agency.github.io/SEODeploy/) folder for more information.
 
 This library should be considered Alpha software and not used as a dependable solution.  Expect bugs.
 
