@@ -4,7 +4,7 @@
 
 # SEODeploy: Flexible and Modular Python Library for Automating SEO Testing in Deployment Pipelines.
 
-![SEOTesting](https://raw.githubusercontent.com/jroakes/SEODeploy/master/docs/images/overview.png "SEO Testing Overview")
+![SEOTesting](/docs/images/overview.png "SEO Testing Overview")
 
 
 Works with:
