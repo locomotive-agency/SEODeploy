@@ -1,0 +1,719 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="SEODeploy - Flexible and Modular Python Library for Automating SEO Testing in Deployment Pipelines.">
+      
+      
+      
+        <meta name="author" content="JR Oakes">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.3.0">
+    
+    
+      
+        <title>ContentKing - SEODeploy</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6e35a1a6.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#seodeploy-guide-for-the-contentking-module" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../.." title="SEODeploy" class="md-header-nav__button md-logo" aria-label="SEODeploy">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            SEODeploy
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              ContentKing
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/jroakes/SEODeploy/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SEODeploy
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SEODeploy" class="md-nav__button md-logo" aria-label="SEODeploy">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    SEODeploy
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/jroakes/SEODeploy/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SEODeploy
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../about/" title="About" class="md-nav__link">
+      About
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Modules
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
+      </span>
+    </label>
+    <nav class="md-nav" aria-label="Modules" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        </span>
+        Modules
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        ContentKing
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9h14V7H3v2m0 4h14v-2H3v2m0 4h14v-2H3v2m16 0h2v-2h-2v2m0-10v2h2V7h-2m0 6h2v-2h-2v2z"/></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="ContentKing" class="md-nav__link md-nav__link--active">
+      ContentKing
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#about-contentking" class="md-nav__link">
+    About ContentKing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-a-site" class="md-nav__link">
+    Adding a Site
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-sites" class="md-nav__link">
+    Configuring Sites
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-your-api-keys" class="md-nav__link">
+    Getting your API Keys
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-contentking-module" class="md-nav__link">
+    Configuring ContentKing Module
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring ContentKing Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurable-items" class="md-nav__link">
+    Configurable Items
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../headless/" title="Headless" class="md-nav__link">
+      Headless
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../creating/" title="Create Your Own" class="md-nav__link">
+      Create Your Own
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#about-contentking" class="md-nav__link">
+    About ContentKing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-a-site" class="md-nav__link">
+    Adding a Site
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-sites" class="md-nav__link">
+    Configuring Sites
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-your-api-keys" class="md-nav__link">
+    Getting your API Keys
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-contentking-module" class="md-nav__link">
+    Configuring ContentKing Module
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring ContentKing Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurable-items" class="md-nav__link">
+    Configurable Items
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    Running
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/jroakes/SEODeploy/edit/master/docs/modules/contentking.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  
+                
+                
+                <h1 id="seodeploy-guide-for-the-contentking-module">SEODeploy: Guide for the ContentKing Module.</h1>
+<h2 id="about-contentking">About ContentKing</h2>
+<p>ContentKing keeps track of your website 24/7 so that you can catch unexpected SEO changes and issues before search engines and visitors do.</p>
+<p><img alt="ContentKing" src="../../images/contentking.png" title="ContentKing App" /></p>
+<h2 id="usage">Usage</h2>
+<p>To use the ContentKing Module, you need to have your production and staging websites active in the ContentKing App.</p>
+<h3 id="adding-a-site">Adding a Site</h3>
+<ol>
+<li>Go to your <a href="https://app.contentkingapp.com/account/websites?view=list">Account page</a> and click Add Website.</li>
+<li>Enter your domain and select the page capacity.</li>
+<li>Click Add Website.</li>
+<li>Set up Google Analytics and Google Search Console integrations for production, if desired. Click Save.</li>
+<li>Set up alerts and reports for production, if desired.  Click Save.</li>
+</ol>
+<h3 id="configuring-sites">Configuring Sites</h3>
+<ol>
+<li>Go to your <a href="https://app.contentkingapp.com/account/websites?view=list">Account page</a> and search for website.</li>
+<li>If your staging site is behind Authentication, click on <code>Monitoring</code> and edit <code>Authentication</code> under <code>Advanced Settings</code>.</li>
+<li>If your staging or production site requires cookies, click on <code>Monitoring</code> and edit <code>Cookies</code> under <code>Advanced Settings</code>.</li>
+<li>Set up any path exclusions for your websites by clicking n the <code>Set up URL Exclusion List</code>.  It will ask if you want to import from your robots.txt file.</li>
+<li>If you want to only check sample pages on staging, add <code>/</code> as a URL pattern exclusion.</li>
+</ol>
+<p>Once configured, ContentKing will automatically monitor all added site pages, up to the number specified in page capacity or not excluded in URL exclusions.</p>
+<h3 id="getting-your-api-keys">Getting your API Keys</h3>
+<p>You need to be on the Pro plan for ContentKing to activate the Reporting API.  The Reporting API is required for this tool to check status of URLs.</p>
+<ol>
+<li>Go to <a href="https://app.contentkingapp.com/account/settings/integration_tokens">Account Settings</a>.</li>
+<li>Copy your <code>CMS API</code> and <code>Reporting API</code> integration tokens. Create if needed.</li>
+<li>Add the <code>CMS API</code> token to <code>modules_activated.contentking.cms_api_key</code> in <code>seotesting_config.yaml</code>.</li>
+<li>Add the <code>Reporting API</code> token to <code>modules_activated.contentking.report_api_key</code> in <code>seotesting_config.yaml</code>.</li>
+<li>Save your <code>seotesting_config.yaml</code> file.</li>
+</ol>
+<h3 id="configuring-contentking-module">Configuring ContentKing Module</h3>
+<p>To activate the ContentKing Module, the following YAML code block should be nested under <code>modules_activated</code> in your <code>seotesting_config.yaml</code> file.</p>
+<pre><code>contentking:
+  cms_api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  report_api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+  endpoint: https://api.contentkingapp.com/v1/
+
+  api_timeout: 20
+  per_page: 300
+  timezone: Europe/Amsterdam
+  batch_size: 10
+  batch_wait: 10
+  time_col: unstable_last_checked_at
+
+  prod_host: https://locomotive.agency
+  prod_site_id: 5-5671785
+  stage_host: https://stg.locomotive.agency/
+  stage_site_id: 5-5671782
+
+  replace_staging_host: True
+
+  ignore:
+
+    issues:
+        analytics/analytics_missing: False
+        analytics/visual_analytics_missing: False
+        h1/duplicate: False
+        h1/incorrect_length: False
+        h1/missing: False
+        h1/too_many: False
+        canonical_link/incorrectly_canonicalized: False
+        canonical_link/missing: False
+        canonical_link/points_to_unindexable: False
+        canonical_link/too_many: False
+        images/alt_attribute: False
+        images/title_attribute: False
+        links/broken: False
+        links/redirected: False
+        links/to_canonicalized: False
+        meta_description/duplicate: False
+        meta_description/incorrect_length: False
+        meta_description/missing: False
+        meta_description/too_many: False
+        title/duplicate: False
+        title/incorrect_length: False
+        title/missing: False
+        title/too_many: False
+        open_graph/description_incorrect_length: False
+        open_graph/description_missing: False
+        open_graph/image_missing: False
+        open_graph/title_incorrect_length: False
+        open_graph/title_missing: False
+        open_graph/url_missing: False
+        twitter_cards/description_incorrect_length: False
+        twitter_cards/description_missing: False
+        twitter_cards/image_missing: False
+        twitter_cards/site_missing: False
+        twitter_cards/title_incorrect_length: False
+        twitter_cards/title_missing: False
+        twitter_cards/type_invalid: False
+        twitter_cards/type_missing: False
+        xml_sitemap/incorrectly_missing: False
+        xml_sitemap/incorrectly_present: False
+
+    content:
+        canonical: False
+        title: False
+        meta_description: False
+        h1: False
+        h2: False
+        meta_robots: False
+        open_graph_description: False
+        open_graph_image: False
+        open_graph_title: False
+        open_graph_type: False
+        open_graph_url: False
+        twitter_card: False
+        twitter_site: False
+        google_analytics: False
+
+    schema: False
+</code></pre>
+
+<h4 id="configurable-items">Configurable Items</h4>
+<p><strong>API Settings:</strong></p>
+<p>These are settings for configuring how the tool connects to ContentKing and which hosts it crawls.</p>
+<ul>
+<li><strong>cms_api_key</strong>: (str) CMS API Key from ContentKing</li>
+<li>
+<p><strong>report_api_key</strong>: (str) Reporting API Key from ContentKing</p>
+</li>
+<li>
+<p><strong>api_timeout</strong>: (int) Number of seconds to wait for ContentKing API to respond.</p>
+</li>
+<li><strong>batch_size</strong>: (int) Number of pages to check in each batch.</li>
+<li>
+<p><strong>batch_wait</strong>: (int) Number of seconds wait between each batch.</p>
+</li>
+<li>
+<p><strong>prod_host</strong>: (str) URL of production host (eg. https://locomotive.agency)</p>
+</li>
+<li><strong>prod_site_id</strong>: (str) ContentKing ID for host (note: Get from website URL in ContentKing &rarr; https://app.contentkingapp.com/account/websites/<strong>7-453638</strong>?view=list)</li>
+<li><strong>stage_host</strong>: (str) URL of staging host (eg. https://stg.locomotive.agency)</li>
+<li>
+<p><strong>stage_site_id</strong>: (str) ContentKing ID for host (note: Get from website URL in ContentKing &rarr; https://app.contentkingapp.com/account/websites/<strong>4-17924878</strong>?view=list)</p>
+</li>
+<li>
+<p><strong>replace_staging_host</strong>: (bool) Whether to search/replace staging host with production host, in staging HTML.</p>
+</li>
+</ul>
+<p><strong>Comparison Settings</strong>:</p>
+<p>These are settings that affect what is compared between your production and staging URLs.</p>
+<ul>
+<li><strong>issues</strong>: Issues are SEO Issues that ContentKing finds on each URL. Set <code>True</code> or <code>False</code></li>
+<li><strong>content</strong>: Content is extracted content, like H1s, H2s, and SEO Meta data for each URL.  Set <code>True</code> or <code>False</code></li>
+<li><strong>schema</strong>: Schema is extracted JSON+LD schema from each page. The tool recursively compares schema for changes.</li>
+</ul>
+<h3 id="running">Running</h3>
+<p>Once configured, the ContentKing module will run against all sample paths on Staging and Production, comparing items not excluded in the <code>Comparison Settings</code> above.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../../about/" title="About" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                About
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../headless/" title="Headless" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Headless
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.d710d30a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a14cc5fd.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.7a2ea5ba.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
