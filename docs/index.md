@@ -13,7 +13,7 @@ This library attempts to provide a flexible format to allow developers to incorp
 5. **Logging**: Error, Info, Warning notifications are logged to `seotesting.log` via included functionality.
 
 
-See [TODO](todo.md) for what is currently in process.
+See [TODO](docs/todo.md) for what is currently in process.
 
 Get started by downloading the repo at: [https://github.com/locomotive-agency/SEODeploy](https://github.com/locomotive-agency/SEODeploy)
 
