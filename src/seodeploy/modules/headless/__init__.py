@@ -39,6 +39,7 @@ from seodeploy.modules.headless.functions import run_render  # noqa
 
 
 class SEOTestingModule(ModuleBase):
+
     """SEODeploy Module: Headless Module."""
 
     def __init__(self, config=None, sample_paths=None):

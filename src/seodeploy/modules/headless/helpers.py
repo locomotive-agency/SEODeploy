@@ -26,7 +26,7 @@ from urllib.parse import quote_plus
 
 from seodeploy.lib.helpers import dot_get
 
-# User Agent for requests TODO: Should probably move this to YAML config file.
+# Default User Agent for requests.  If not set in YAML.
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"  # pylint: disable=line-too-long
 
 

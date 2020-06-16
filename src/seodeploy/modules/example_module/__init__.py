@@ -22,26 +22,35 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+"""Example Module for SEODeploy."""
 
 from seodeploy.lib.modules import ModuleBase
 from seodeploy.lib.config import Config
-from seodeploy.modules.example_module.functions import sample_function  # noqa
+from seodeploy.modules.example_module.functions import run_example_module  # noqa
 
 
 class SEOTestingModule(ModuleBase):
-    def __init__(self, config=None, samples=None):
 
-        super(SEOTestingModule, self).__init__(config, samples)
-        self.modulename = "example"
+    """SEODeploy Module: Example Module."""
+
+    def __init__(self, config=None, sample_paths=None):
+        """SEODeploy Module: Initialize Example Module."""
+
+        super(SEOTestingModule, self).__init__(config, sample_paths)
+        self.modulename = "example_module"
         self.config = config or Config(module=self.modulename)
+        self.exclusions = self.config.example_module.ignore
 
-    def run(self, sample_paths):
+    def run(self, sample_paths=None):
+        """Run the Example Module."""
 
-        # do stuff
-        print(self.config)
-        print(sample_paths)
+        self.sample_paths = sample_paths or self.sample_paths
 
-        passing = True
-        messages = []
+        # This is any custom function in ./functions.py that you want to create.
+        page_data = run_example_module(self.sample_paths, self.config)
 
-        return passing, messages
+        diffs, errors = self.run_diffs(page_data)
+
+        self.messages = self.prepare_messages(diffs)
+
+        return self.messages, errors

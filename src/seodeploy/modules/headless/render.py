@@ -59,6 +59,7 @@ class HeadlessChrome:
         self.client = None
         self.config = config or Config(module="headless")
         self.network = self.config.headless.NETWORK_PRESET or "Regular3G"
+        self.user_agent = self.config.headless.USER_AGENT or USER_AGENT
 
         asyncio.set_event_loop(asyncio.new_event_loop())
         asyncio.get_event_loop().run_until_complete(self.build_browser())
@@ -129,7 +130,7 @@ class HeadlessChrome:
 
         self.page = await self.browser.newPage()
         await self.page.setBypassCSP(True)  # Ignore content security issues.
-        await self.page.setUserAgent(USER_AGENT)
+        await self.page.setUserAgent(self.user_agent)
         await self.page.setViewport({"width": 360, "height": 640, "isMobile": True})
         await self.page.evaluateOnNewDocument(DOCUMENT_SCRIPTS)
 

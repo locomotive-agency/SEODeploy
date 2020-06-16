@@ -75,19 +75,39 @@ def _map(args):
     return fnc(list(lst), **kwargs)
 
 
-def mp_list_map(lst, fnc, **args):
-    """Applies a function to a list by multiprocessing."""
+def mp_list_map(lst, fnc, **kwargs):
+    """Applies a function to a list by multiprocessing.
+
+    Uses `max_threads` from `seotesting_config.yaml` to determine whether to apply
+    function by multiprocessing.  if max_threads > 1 , then multiprocessing is used.
+
+    Parameters
+    ----------
+    lst: list
+        Iterable object
+    fnc: function
+        A function to map to all list values.
+    kwargs: dict
+        keyword parameters to supply to your function.
+
+    Returns
+    -------
+    list
+        List of data updated by function.
+    """
     threads = CONFIG.MAX_THREADS
 
     if threads > 1:
         print("Running on {} threads.".format(str(threads)))
         pool = mp.Pool(processes=threads)
-        result = pool.map(_map, [(l, fnc, args) for l in np.array_split(lst, threads)])
+        result = pool.map(
+            _map, [(l, fnc, kwargs) for l in np.array_split(lst, threads)]
+        )
         pool.close()
 
         return list(np.concatenate(result))
 
-    return _map((lst, fnc, args))
+    return _map((lst, fnc, kwargs))
 
 
 def url_to_path(url):
@@ -146,8 +166,10 @@ def process_page_data(sample_paths, prod_result, stage_result, module_config):
         List of Paths.
     prod_results: list
         List of prod data dictionaries.
+        Fmt: [{'path': '/', 'page_data':{}, 'error': None}, ...]
     stage_result: list
         List of stage data dictionaries.
+        Fmt: [{'path': '/', 'page_data':{}, 'error': None}, ...]
     module_config: Config
         Module config.
 
