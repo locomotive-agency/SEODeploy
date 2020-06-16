@@ -8,7 +8,6 @@ This library attempts to provide a flexible format to allow developers to incorp
 4. **Flexible**: The library contains code that is meant to be reconfigured and repurposed for individual needs.  We have tried to make classes and functions as flexible as possible, towards this end.
 5. **Logging**: Error, Info, Warning notifications are logged to `seotesting.log` via included functionality.
 
-
 ## Made By
 This opensource project is made possible by [LOCOMOTIVE](https://locomotive.agency/)
 

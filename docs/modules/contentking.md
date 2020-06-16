@@ -1,5 +1,6 @@
 # SEODeploy: Guide for the ContentKing Module.
 
+
 ## About ContentKing
 
 ContentKing keeps track of your website 24/7 so that you can catch unexpected SEO changes and issues before search engines and visitors do.

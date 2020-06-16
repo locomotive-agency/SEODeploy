@@ -4,6 +4,7 @@
 
 For more information, visit [seodeploy.dev](https://seodeploy.dev).
 
+
 ## Quick-start Guide
 This library attempts to provide a flexible format to allow developers to incorporate SEO checks into development workflows.  It follows the following design constructs:
 

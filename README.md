@@ -4,7 +4,7 @@
 
 # SEODeploy: Flexible and Modular Python Library for Automating SEO Testing in Deployment Pipelines.
 
-![SEOTesting](https://raw.githubusercontent.com/jroakes/SEOTesting/master/docs/overview.png "SEO Testing Overview")
+![SEOTesting](https://raw.githubusercontent.com/jroakes/SEODeploy/master/docs/images/overview.png "SEO Testing Overview")
 
 
 Works with:
@@ -23,73 +23,9 @@ This library attempts to provide a flexible format to allow developers to incorp
 4. **Flexible**: The library contains code that is meant to be reconfigured and repurposed for individual needs.  We have tried to make classes and functions as flexible as possible, towards this end.
 5. **Logging**: Error, Info, Warning notifications are logged to `seotesting.log` via included functionality.
 
-See the docs folder for more information. [Coming Soon]
-
-See [TODO](TODO.md) for what is currently in process.
+See the [docs](/docs/index.md) folder for more information.
 
 This library should be considered Alpha software and not used as a dependable solution.  Expect bugs.
-
-
-
-# Developer Instructions
-
-### Install
-```
-Current:
-pip install https://github.com/jroakes/SEODeploy.git
-
-Future:
-pip install seodeploy
-
-```
-
-
-### Configure client and run node
-
-1. Create samples paths file
-
-      Using a ContentKing website:
-
-    `seodeploy sample --siteid 1-12346`
-
-      Using a XML sitemap or sitemap index file:
-
-    `seodeploy sample --sitemap_url https://locomotive.agency/sitemap_index.xml`
-
-      Using a XML sitemap or sitemap index file plus limiting:
-
-    `seodeploy sample --sitemap_url https://locomotive.agency/sitemap_index.xml --limit 100`
-
-2. Compare Staging and Production based on `seotesting_config.yaml` configuration and `sample_paths.txt`.
-
-    `seodeploy execute`
-
-
-
-## General Installation and Development Guidelines
-
-### Installation
-
-```
-$ conda create --name seodeploy
-
-$ pip install https://github.com/jroakes/SEODeploy.git
-```
-
-OR:
-
-```
-$ git clone https://github.com/jroakes/SEODeploy.git
-
-$ cd SEODeploy
-
-$ pip install -r requirements.txt OR poetry install
-
-$ pip install setup.py
-```
-
-
-
 
 
 ## Inspiration for some parts taken from:

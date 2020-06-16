@@ -1,5 +1,6 @@
 # SEODeploy: Guide for the Headless Module.
 
+
 ## About Headless
 
 The Headless module uses Google Chrome in Headless mode to render URLs and extract content, for comparison, from the rendered DOM.  It also allows for the collection of timing and other performance metrics, like coverage data, for tested URLs.

@@ -146,5 +146,6 @@ media
 static
 
 # SEODeploy
-seotesting.log
+seodeploy.log
 seotesting_config_private.yaml
+seotesting_config.bak

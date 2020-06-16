@@ -31,7 +31,7 @@ from seodeploy.modules.example_module.exceptions import ExampleExceptions  # noq
 _LOG = get_logger(__name__)
 
 
-def run_example_module(sample_paths, config):
+def run_example_module(sample_paths, config):  # noqa
     """Sample function for Module.
 
     Parameters
@@ -68,4 +68,4 @@ def run_example_module(sample_paths, config):
     #     sample_paths, prod_result, stage_result, config.example
     # )
 
-    pass
+    pass  # noqa

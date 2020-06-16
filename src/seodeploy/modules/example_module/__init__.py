@@ -47,7 +47,7 @@ class SEOTestingModule(ModuleBase):
         self.sample_paths = sample_paths or self.sample_paths
 
         # This is any custom function in ./functions.py that you want to create.
-        page_data = run_example_module(self.sample_paths, self.config)
+        page_data = run_example_module(self.sample_paths, self.config)  # noqa
 
         diffs, errors = self.run_diffs(page_data)
 

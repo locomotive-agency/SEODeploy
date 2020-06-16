@@ -1,0 +1,33 @@
+============================= test session starts =============================
+platform win32 -- Python 3.7.7, pytest-5.4.2, py-1.8.1, pluggy-0.13.1
+rootdir: D:\AnacondaProjects\seodeploy
+plugins: cov-2.9.0, mock-3.1.1
+collected 18 items
+
+tests\test_cli.py ..                                                     [ 11%]
+tests\test_comparison.py ...                                             [ 27%]
+tests\test_config.py ...                                                 [ 44%]
+tests\test_helpers.py ......                                             [ 77%]
+tests\modules\contentking\test_init.py ...                               [ 94%]
+tests\modules\headless\test_init.py .                                    [100%]
+
+----------- coverage: platform win32, python 3.7.7-final-0 -----------
+Name                                             Stmts   Miss Branch BrPart  Cover   Missing
+--------------------------------------------------------------------------------------------
+src\seodeploy\lib\comparison.py                     66     12     36      6    75%   64->65, 65, 95->98, 98, 139->140, 140-145, 151->152, 152-162, 201->202, 202, 206->217, 217-229
+src\seodeploy\lib\config.py                         43      3     14      2    91%   70->exit, 81-82, 87->exit, 111
+src\seodeploy\lib\helpers.py                        69      8     24      2    87%   100->101, 101-108, 140-141, 206->213, 213
+src\seodeploy\lib\logging.py                        20      0      2      1    95%   69->71
+src\seodeploy\lib\modules.py                       100     41     42      6    54%   79->105, 99-101, 105, 115->117, 117, 119->120, 120-128, 130->148, 132->138, 133->136, 136-153, 188, 205-214, 218-222, 226-228, 232-248, 262, 267
+src\seodeploy\lib\sampling.py                       73     60     30      0    13%   60-90, 109-141, 165-202
+src\seodeploy\modules\contentking\functions.py     202    177     70      0     9%   72-178, 184-231, 237-247, 253-263, 269-283, 304-333, 339-404, 412-413, 416-418, 421-425, 451-498, 522-562, 587-592
+src\seodeploy\modules\headless\functions.py         26     17      6      0    28%   56-73, 93-117
+src\seodeploy\modules\headless\helpers.py           42     30      8      0    24%   185, 262, 268-269, 274-281, 287-316, 328-342
+src\seodeploy\modules\headless\render.py           105     83     16      0    18%   56-65, 71-73, 78-103, 108-126, 131-160, 165-167, 172-177, 182-187, 192-216, 221-239, 243, 247-248
+--------------------------------------------------------------------------------------------
+TOTAL                                              859    431    264     17    46%
+
+8 files skipped due to complete coverage.
+
+
+============================= 18 passed in 3.57s ==============================
