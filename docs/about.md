@@ -1,4 +1,4 @@
-# SEODeploy: About.
+# SEODeploy: About
 
 This library attempts to provide a flexible format to allow developers to incorporate SEO checks into development workflows.  It follows the following design constructs:
 

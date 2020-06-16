@@ -2,22 +2,25 @@
 
 ![SEODeploy](./images/overview.png "SEODeploy Overview")
 
-For more information, visit [seodeploy.dev](https://seodeploy.dev).
-
 
 ## Quick-start Guide
 This library attempts to provide a flexible format to allow developers to incorporate SEO checks into development workflows.  It follows the following design constructs:
 
 1. **Modular**: See the modules folder for examples of drop in testing using the `ModuleBase` class.  Modules dropped in here and configured in `seotesting_config.yaml` are automatically tested against sample URLs.
 2. **Diff Checking**: Developers can specify in the `seotesting_config.yaml`file where they expect to see differences by ignoring checks.  Any other differences, depending on the design of the module, are diff checked across your prod and stage hosts and reported as errors.
-3. **Sampled URLs**: The library supplies a sampling mechanism based on ContentKing URLs or a supplied XML sitemap URL that attempts to extract random samples in a statisticaly signifincant way.  But, developers are free to supply their own paths in the `path_samples.txt` file which are used to diff against production and staging.  One good route would be to supply a path representing each template type.
+3. **Sampled URLs**: The library supplies a sampling mechanism based on ContentKing URLs or a supplied XML sitemap URL that attempts to extract random samples in a statistically significant way.  But, developers are free to supply their own paths in the `path_samples.txt` file which are used to diff against production and staging.  One good route would be to supply a path representing each template type.
 4. **Flexible**: The library contains code that is meant to be reconfigured and repurposed for individual needs.  We have tried to make classes and functions as flexible as possible, towards this end.
 5. **Logging**: Error, Info, Warning notifications are logged to `seotesting.log` via included functionality.
 
 
 See [TODO](todo.md) for what is currently in process.
 
-This library should be considered Alpha software and not used as a dependable solution.  Expect bugs.
+Get started by downloading the repo at: [https://github.com/locomotive-agency/SEODeploy](https://github.com/locomotive-agency/SEODeploy)
+
+!!! warning
+    This library should be considered beta software and not used as a dependable
+    solution without thorough testing.  Expect bugs.
+
 
 ## Modules Available
 * [ContentKing](modules/contentking.md)

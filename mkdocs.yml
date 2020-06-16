@@ -1,5 +1,5 @@
 site_name: SEODeploy
-repo_url: https://github.com/jroakes/SEODeploy
+repo_url: https://github.com/locomotive-agency/SEODeploy
 repo_name: SEODeploy
 site_author: JR Oakes
 site_description: SEODeploy - Flexible and Modular Python Library for Automating SEO Testing in Deployment Pipelines.
@@ -7,6 +7,7 @@ site_description: SEODeploy - Flexible and Modular Python Library for Automating
 nav:
     - Home: index.md
     - About: about.md
+    - Todo: todo.md
     - Modules:
       - ContentKing: modules/contentking.md
       - Headless: modules/headless.md
@@ -19,6 +20,7 @@ theme:
         - python
 
 markdown_extensions:
+    - admonition
     - pymdownx.tasklist:
           custom_checkbox: true
     - pymdownx.smartsymbols
