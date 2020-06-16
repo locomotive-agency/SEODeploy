@@ -3,7 +3,7 @@
 
 ## About ContentKing
 
-ContentKing keeps track of your website 24/7 so that you can catch unexpected SEO changes and issues before search engines and visitors do.
+[ContentKing](https://www.contentkingapp.com/) keeps track of your website 24/7 so that you can catch unexpected SEO changes and issues before search engines and visitors do.
 
 ![ContentKing](../images/contentking.png "ContentKing App")
 
