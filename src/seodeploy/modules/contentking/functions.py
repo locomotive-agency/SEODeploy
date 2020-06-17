@@ -406,7 +406,7 @@ def parse_url_data(url_data):
 
 class BreakCounter:
 
-    """Simple safety valve class to stopp checking dead sites."""
+    """Simple safety valve class to stop checking dead sites."""
 
     def __init__(self, max_attempts=5):
         self.item = None
@@ -421,6 +421,7 @@ class BreakCounter:
         self.item = self.item or item
         if self.item == item:
             self.attempts += 1
+            time.sleep(self.attempts * 5)
         if self.attempts > self.max_attempts:
             raise Exception(
                 "Max attempts reached.  Host may not be active in ContentKing."

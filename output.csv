@@ -1,23 +1,18 @@
 type,item,element,production,staging,module,path
-change,issues.images/title_attribute,,issue found,issue not found,contentking,/
 change,issues.meta_description/incorrect_length,,issue found,issue not found,contentking,/
 add,content.title,,,Home,contentking,/
 remove,content.title,,LOCOMOTIVE® - Enterprise Technical SEO Agency,,contentking,/
 add,content.open_graph_title,,,Home,contentking,/
 remove,content.open_graph_title,,LOCOMOTIVE® - Enterprise Technical SEO Agency,,contentking,/
-change,issues.images/title_attribute,,issue found,issue not found,contentking,/services/
 change,issues.meta_description/missing,,issue found,issue not found,contentking,/services/
 change,issues.title/incorrect_length,,issue found,issue not found,contentking,/services/
 change,issues.h1/duplicate,,issue found,issue not found,contentking,/services/local-seo/
-change,issues.images/title_attribute,,issue found,issue not found,contentking,/services/local-seo/
 change,issues.meta_description/missing,,issue found,issue not found,contentking,/services/local-seo/
 add,content.h2,,,LOCAL SEO,contentking,/services/local-seo/
 remove,content.h2,,LOCAL SEO BENEFITS,,contentking,/services/local-seo/
 add,content.meta_robots,,,"index, follow, noarchive",contentking,/services/local-seo/
 remove,content.meta_robots,,"index, follow",,contentking,/services/local-seo/
-change,schema,0.dateModified,2019-10-25T16:13:30-04:00,2020-06-16T14:33:47-04:00,contentking,/services/local-seo/
 change,issues.h1/duplicate,,issue found,issue not found,contentking,/services/technical-seo/
-change,issues.images/title_attribute,,issue found,issue not found,contentking,/services/technical-seo/
 change,issues.meta_description/missing,,issue found,issue not found,contentking,/services/technical-seo/
 add,content.title,,,technical seo - LOCOMOTIVE Agency,contentking,/services/technical-seo/
 remove,content.title,,Technical SEO - LOCOMOTIVE Agency,,contentking,/services/technical-seo/
@@ -25,13 +20,9 @@ add,content.h2,,,TECHNICAL SEO,contentking,/services/technical-seo/
 remove,content.h2,,TECHNICAL SEO BENEFITS,,contentking,/services/technical-seo/
 add,content.open_graph_title,,,technical seo - LOCOMOTIVE Agency,contentking,/services/technical-seo/
 remove,content.open_graph_title,,Technical SEO - LOCOMOTIVE Agency,,contentking,/services/technical-seo/
-change,schema,0.dateModified,2020-04-22T08:03:56-04:00,2020-06-16T14:28:05-04:00,contentking,/services/technical-seo/
-change,issues.images/title_attribute,,issue found,issue not found,contentking,/technical-seo/website-speed-metrics/
 change,issues.meta_description/missing,,issue found,issue not found,contentking,/technical-seo/website-speed-metrics/
 add,content.open_graph_image,,,https://locomotive.agency/wp-content/uploads/2018/07/first-paint-2-300x147.jpg,contentking,/technical-seo/website-speed-metrics/
 remove,content.open_graph_image,,https://mk0locomotiveagoonti.kinstacdn.com/wp-content/uploads/2018/07/first-paint-2-300x147.jpg,,contentking,/technical-seo/website-speed-metrics/
-change,issues.h1/incorrect_length,,issue found,issue not found,contentking,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
-change,issues.images/title_attribute,,issue found,issue not found,contentking,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
 change,issues.title/incorrect_length,,issue found,issue not found,contentking,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
 add,content.open_graph_image,,,https://locomotive.agency/wp-content/uploads/2017/08/google-cloud-platform-gsc-1024x534.png,contentking,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
 remove,content.open_graph_image,,https://mk0locomotiveagoonti.kinstacdn.com/wp-content/uploads/2017/08/google-cloud-platform-gsc-1024x534.png,,contentking,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
@@ -39,13 +30,12 @@ add,content.title,,,Home,headless,/
 remove,content.title,,LOCOMOTIVE® - Enterprise Technical SEO Agency,,headless,/
 add,content.h1,,,WE ARE A TEAM OF:  SEO Specialists MOVING YOU FORWARD.,headless,/
 remove,content.h1,,WE ARE A TEAM OF: SEO Specialists MOVING YOU FORWARD.,,headless,/
-remove,content.schema,,"{'@context': 'https://schema.org', '@type': 'Corporation', 'name': 'LOCOMOTIVE Agency', 'alternateName': 'LOCOMOTIVE®', 'url': 'https://locomotive.agency/', 'logo': 'https://mk0locomotiveagoonti.kinstacdn.com/wp-content/themes/locomotive/dist/images/locomotive-logo.png', 'sameAs': ['https://twitter.com/locomotiveseo', 'https://www.instagram.com/locomotiveagency/', 'https://www.linkedin.com/company/locomotive-agency/', 'https://www.facebook.com/LocomotiveAgency/', 'https://github.com/locomotive-agency', 'https://www.wikidata.org/wiki/Q87411445']}",,headless,/
-change,performance.first_contentful_paint,,4178.29,2005.84,headless,/
+change,performance.time_to_interactive,,1870.0,4988.0,headless,/
 change,performance.cumulative_layout_shift,,0.78,0.38,headless,/
 add,content.h1,,,"
 			Ready for Service			",headless,/services/
 remove,content.h1,, Ready for Service ,,headless,/services/
-change,performance.time_to_interactive,,1303.0,4973.0,headless,/services/
+change,performance.time_to_interactive,,1318.0,5034.0,headless,/services/
 change,performance.cumulative_layout_shift,,0.53,0.18,headless,/services/
 add,content.robots,,,"index, follow, noarchive",headless,/services/local-seo/
 remove,content.robots,,"index, follow",,headless,/services/local-seo/
@@ -54,9 +44,8 @@ add,content.h1,,,"
 remove,content.h1,, Local SEO ,,headless,/services/local-seo/
 add,content.h2,,,LOCAL SEO,headless,/services/local-seo/
 remove,content.h2,,LOCAL SEO BENEFITS,,headless,/services/local-seo/
-change,content.schema,0.dateModified,2019-10-25T16:13:30-04:00,2020-06-16T14:33:47-04:00,headless,/services/local-seo/
-change,performance.first_contentful_paint,,391.83,1678.36,headless,/services/local-seo/
-change,performance.time_to_interactive,,436.0,4683.0,headless,/services/local-seo/
+change,performance.first_contentful_paint,,345.09,1656.47,headless,/services/local-seo/
+change,performance.time_to_interactive,,382.0,4661.0,headless,/services/local-seo/
 change,performance.cumulative_layout_shift,,0.48,0.02,headless,/services/local-seo/
 add,content.title,,,technical seo - LOCOMOTIVE Agency,headless,/services/technical-seo/
 remove,content.title,,Technical SEO - LOCOMOTIVE Agency,,headless,/services/technical-seo/
@@ -65,8 +54,7 @@ add,content.h1,,,"
 remove,content.h1,, Technical SEO ,,headless,/services/technical-seo/
 add,content.h2,,,TECHNICAL SEO ,headless,/services/technical-seo/
 remove,content.h2,,TECHNICAL SEO BENEFITS,,headless,/services/technical-seo/
-change,content.schema,0.dateModified,2020-04-22T08:03:56-04:00,2020-06-16T14:28:05-04:00,headless,/services/technical-seo/
-change,performance.first_contentful_paint,,400.19,1617.66,headless,/services/technical-seo/
-change,performance.time_to_interactive,,442.0,5249.0,headless,/services/technical-seo/
-change,performance.time_to_interactive,,1668.0,6022.0,headless,/technical-seo/website-speed-metrics/
+change,performance.first_contentful_paint,,399.23,1694.59,headless,/services/technical-seo/
+change,performance.time_to_interactive,,439.0,5280.0,headless,/services/technical-seo/
+change,performance.time_to_interactive,,1707.0,6037.0,headless,/technical-seo/website-speed-metrics/
 change,performance.cumulative_layout_shift,,0.46,0.1,headless,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
