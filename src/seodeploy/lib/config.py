@@ -115,7 +115,7 @@ class Config:
 
     def __setattr__(self, name, value):
         """Setter function for config vales."""
-        super().__setattr__(name.lower(), value)
+        super().__setattr__(name.lower(), value.strip(" /"))
 
     def __getattribute__(self, name):
         """getter function for config vales."""

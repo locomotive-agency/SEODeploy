@@ -90,7 +90,7 @@ modules_activated:
 
     prod_host: https://locomotive.agency
     prod_site_id: 5-5671785
-    stage_host: https://stg.locomotive.agency/
+    stage_host: https://stg.locomotive.agency
     stage_site_id: 5-5671782
 
     replace_staging_host: True
