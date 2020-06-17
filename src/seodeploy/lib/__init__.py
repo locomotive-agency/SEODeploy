@@ -72,11 +72,15 @@ class SEOTesting:
 
         for active_module in self.module_config.active_modules:
 
-            module = self.module_config.active_modules[active_module].SEOTestingModule()
+            module_config = Config(module=active_module, cfiles=self.config.cfiles[:1])
+
+            module = self.module_config.active_modules[active_module].SEOTestingModule(
+                config=module_config
+            )
 
             print("Running Module: {}".format(module.modulename))
             _LOG.info("Running Module: {}".format(module.modulename))
-            messages, errors = module.run(self.sample_paths)
+            messages, errors = module.run(sample_paths=self.sample_paths)
 
             print("Number of Messages: {}".format(len(messages)))
             _LOG.info("Number of Messages: {}".format(len(messages)))

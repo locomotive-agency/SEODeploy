@@ -87,7 +87,7 @@ def load_report(report, config, **data):
     def get_report(report, config, data, query_string=None):
         """Requests report from ContenKing API"""
 
-        api_url = urljoin(config.contentking.ENDPOINT, api_reports(report, data))
+        api_url = urljoin(config.contentking.ENDPOINT + "/", api_reports(report, data))
 
         headers = {
             "User-Agent": "Python CI/CD Testing",
@@ -181,7 +181,7 @@ def load_report(report, config, **data):
 def _notify_change(url, config):
     """Pings ContentKing CMS API about URL changes."""
 
-    api_url = urljoin(config.contentking.ENDPOINT, "check_url")
+    api_url = urljoin(config.contentking.ENDPOINT + "/", "check_url")
 
     headers = {
         "User-Agent": "Python CI/CD Testing",

@@ -35,7 +35,6 @@ from seodeploy.lib.exceptions import IncorrectParameters
 from seodeploy.lib.sampling import get_sample_paths
 from seodeploy.lib.config import Config
 
-CONFIG = Config()
 
 _LOG = get_logger(__name__)
 
@@ -73,7 +72,13 @@ def cli():
     default=None,
     help="Filename for the outputted txt file. Overrides filename set in seodeploy_config.yaml.",
 )
-def sample(site_id, sitemap_url, limit=None, samples_filename=None):
+@click.option(
+    "--config_file",
+    type=str,
+    default=None,
+    help="Filename for the config file. Overrides the default: seodeploy_config.yaml. Falls back to default if not found.",
+)
+def sample(site_id, sitemap_url, limit=None, samples_filename=None, config_file=None):
     """Create sample_paths.txt File."""
 
     # Error Cheching
@@ -81,16 +86,18 @@ def sample(site_id, sitemap_url, limit=None, samples_filename=None):
         err = "Either `site_id` or `sitemap_url`are required to run sampling."
         raise IncorrectParameters(err)
 
+    config = Config(cfiles=[config_file]) if config_file else Config()
+
     # Main function
     if site_id:
         samples = get_sample_paths(
-            CONFIG, site_id=site_id, limit=limit, filename=samples_filename
+            config, site_id=site_id, limit=limit, filename=samples_filename
         )
         _LOG.info("Top 5 out of {} sampled Paths for {}".format(len(samples), site_id))
         _LOG.info(json.dumps(samples[:5], indent=4))
     else:
         samples = get_sample_paths(
-            CONFIG, sitemap_url=sitemap_url, limit=limit, filename=samples_filename
+            config, sitemap_url=sitemap_url, limit=limit, filename=samples_filename
         )
         _LOG.info(
             "Top 5 out of {} sampled Paths for {}".format(len(samples), sitemap_url)
@@ -108,11 +115,20 @@ def sample(site_id, sitemap_url, limit=None, samples_filename=None):
     default=None,
     help="Filename for the samples file. Overrides filename set in seodeploy_config.yaml.",
 )
-def execute(samples_filename=None):
+@click.option(
+    "--config_file",
+    type=str,
+    default=None,
+    help="Filename for the config file. Overrides the default: seodeploy_config.yaml. Falls back to default if not found.",
+)
+def execute(samples_filename=None, config_file=None):
     """Difftest Staging and Production URLs."""
 
+    # Maybe set config file.
+    config = Config(cfiles=[config_file]) if config_file else Config()
+
     # Set samples_filename.
-    samples_filename = samples_filename or CONFIG.SAMPLES_FILENAME
+    samples_filename = samples_filename or config.SAMPLES_FILENAME
 
     # Error Cheching
     if not samples_filename:
@@ -121,10 +137,10 @@ def execute(samples_filename=None):
             + "or set `samples_filename` in `seodeploy_config.yaml`."
         )
 
-    sample_paths = get_sample_paths(CONFIG, filename=samples_filename)
+    sample_paths = get_sample_paths(config, filename=samples_filename)
 
     # Main function
-    seotesting = SEOTesting(CONFIG)
+    seotesting = SEOTesting(config=config)
 
     passing = seotesting.execute(sample_paths=sample_paths)
 

@@ -115,8 +115,12 @@ class Config:
 
     def __setattr__(self, name, value):
         """Setter function for config vales."""
-        super().__setattr__(name.lower(), value.strip(" /"))
+        super().__setattr__(name.lower(), self._maybe_clean(value))
 
     def __getattribute__(self, name):
         """getter function for config vales."""
         return super().__getattribute__(name.lower())
+
+    @staticmethod
+    def _maybe_clean(value):
+        return value.strip(" /") if isinstance(value, str) else value

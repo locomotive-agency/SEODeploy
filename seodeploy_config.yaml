@@ -17,7 +17,7 @@ modules_activated:
     pyppeteer_chromium_revision: 769582
     network_preset: Regular3G
     prod_host: https://locomotive.agency
-    stage_host: https://stg.locomotive.agency
+    stage_host: https://staging-locomotiveagency.kinsta.cloud
     stage_auth_user: user
     stage_auth_pass: pass
 
@@ -38,46 +38,46 @@ modules_activated:
           schema: False
 
       performance:
-          nodes: 0.20
-          resources: 0.20
-          layout_duration: 0.20
-          recalc_style_duration: 0.20
-          script_duration: 0.20
-          v8_compile_duration: 0.20
-          task_duration: 0.20
-          task_other_duration: 0.20
-          thread_time: 0.20
-          jd_heap_used_size: 0.20
-          js_heap_total_size: 0.20
-          time_to_first_byte: 0.20
-          first_paint: 0.20
-          first_contentful_paint: 0.20
-          largest_contentful_paint: 0.20
-          time_to_interactive: 0.20
-          dom_content_loaded: 0.20
-          dom_complete: 0.20
-          cumulative_layout_shift: 0.20
+          nodes: True
+          resources: 0.50
+          layout_duration: True
+          recalc_style_duration: True
+          script_duration: True
+          v8_compile_duration: True
+          task_duration: True
+          task_other_duration: True
+          thread_time: True
+          jd_heap_used_size: True
+          js_heap_total_size: True
+          time_to_first_byte: True
+          first_paint: True
+          first_contentful_paint: 0.50
+          largest_contentful_paint: True
+          time_to_interactive: 0.50
+          dom_content_loaded: True
+          dom_complete: True
+          cumulative_layout_shift: 0.50
 
       coverage:
         summary:
-          total_unused: 0.20
-          total_bytes: 0.20
-          unused_pc: 0.20
+          total_unused: True
+          total_bytes: True
+          unused_pc: 0.50
 
         css:
-          total_unused: 0.20
-          total_bytes: 0.20
-          unused_pc: 0.20
+          total_unused: True
+          total_bytes: True
+          unused_pc: 0.50
 
         js:
-          total_unused: 0.20
-          total_bytes: 0.20
-          unused_pc: 0.20
+          total_unused: True
+          total_bytes: True
+          unused_pc: 0.50
 
 
   contentking:
-    cms_api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    report_api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    cms_api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    report_api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
     endpoint: https://api.contentkingapp.com/v1/
 
@@ -89,9 +89,9 @@ modules_activated:
     time_col: unstable_last_checked_at
 
     prod_host: https://locomotive.agency
-    prod_site_id: 5-5671785
-    stage_host: https://stg.locomotive.agency
-    stage_site_id: 5-5671782
+    prod_site_id: 7-453638
+    stage_host: https://staging-locomotiveagency.kinsta.cloud
+    stage_site_id: 4-17924878
 
     replace_staging_host: True
 
@@ -99,7 +99,7 @@ modules_activated:
 
       issues:
           analytics/analytics_missing: False
-          analytics/visual_analytics_missing: False
+          analytics/visual_analytics_missing: True
           h1/duplicate: False
           h1/incorrect_length: False
           h1/missing: False
@@ -111,8 +111,8 @@ modules_activated:
           images/alt_attribute: False
           images/title_attribute: False
           links/broken: False
-          links/redirected: False
-          links/to_canonicalized: False
+          links/redirected: True
+          links/to_canonicalized: True
           meta_description/duplicate: False
           meta_description/incorrect_length: False
           meta_description/missing: False
@@ -135,8 +135,8 @@ modules_activated:
           twitter_cards/title_missing: False
           twitter_cards/type_invalid: False
           twitter_cards/type_missing: False
-          xml_sitemap/incorrectly_missing: False
-          xml_sitemap/incorrectly_present: False
+          xml_sitemap/incorrectly_missing: True
+          xml_sitemap/incorrectly_present: True
 
       content:
           canonical: False

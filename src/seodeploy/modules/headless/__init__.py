@@ -43,7 +43,7 @@ class SEOTestingModule(ModuleBase):
     """SEODeploy Module: Headless Module."""
 
     def __init__(self, config=None, sample_paths=None):
-        """"Initialize SEOTestingModule Class."""
+        """Initialize SEOTestingModule Class."""
 
         super(SEOTestingModule, self).__init__(config, sample_paths)
         self.modulename = "headless"

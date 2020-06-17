@@ -40,7 +40,7 @@ class ModuleBase:
 
     """Base Module Class."""
 
-    def __init__(self, config=None, sample_paths=None, exclusions=None):
+    def __init__(self, config=None, sample_paths=None):
         """Initialize ModuleBase Class.
 
         Parameters
@@ -49,14 +49,12 @@ class ModuleBase:
             Config class for module.
         sample_paths: list
             List of paths.
-        exclusions: dict
-            Dictionary of key value pairs for excluding comparisions.
         """
         self.messages = None
         self.passing = None
         self.modulename = None
+        self.exclusions = None
         self.sample_paths = sample_paths
-        self.exclusions = exclusions
         self.config = config or Config()
 
     def run_diffs(self, page_data):
