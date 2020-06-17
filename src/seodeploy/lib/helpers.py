@@ -78,7 +78,7 @@ def _map(args):
 def mp_list_map(lst, fnc, **kwargs):
     """Applies a function to a list by multiprocessing.
 
-    Uses `max_threads` from `seotesting_config.yaml` to determine whether to apply
+    Uses `max_threads` from `seodeploy_config.yaml` to determine whether to apply
     function by multiprocessing.  if max_threads > 1 , then multiprocessing is used.
 
     Parameters

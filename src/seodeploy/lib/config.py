@@ -52,9 +52,7 @@ class Config:
             else ["./src/seodeploy/modules", "./seodeploy/modules", "./modules"]
         )
         self.cfiles = (
-            cfiles + ["seotesting_config.yaml"]
-            if cfiles
-            else ["seotesting_config.yaml"]
+            cfiles + ["seodeploy_config.yaml"] if cfiles else ["seodeploy_config.yaml"]
         )
         self.modules = None
         self.module = module

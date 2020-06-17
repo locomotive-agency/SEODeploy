@@ -11,18 +11,18 @@
 To use the ContentKing Module, you need to have your production and staging websites active in the ContentKing App.
 
 ### Adding a Site
-1. Go to your [Account page](https://app.contentkingapp.com/account/websites?view=list) and click Add Website.
+1. Go to your [Account page](https://app.contentkingapp.com/account/websites?view=list) and click `Add Website`.
 2. Enter your domain and select the page capacity.
-3. Click Add Website.
-4. Set up Google Analytics and Google Search Console integrations for production, if desired. Click Save.
-5. Set up alerts and reports for production, if desired.  Click Save.
+3. Click `Add Website`.
+4. Set up Google Analytics and Google Search Console integrations for production, if desired. Click `Save`.
+5. Set up alerts and reports for production, if desired.  Click `Save`.
 
 ### Configuring Sites
 1. Go to your [Account page](https://app.contentkingapp.com/account/websites?view=list) and search for website.
-2. If your staging site is behind Authentication, click on `Monitoring` and edit `Authentication` under `Advanced Settings`.
+2. If your staging site is behind authentication, click on `Monitoring` and edit `Authentication` under `Advanced Settings`.
 3. If your staging or production site requires cookies, click on `Monitoring` and edit `Cookies` under `Advanced Settings`.
 4. Set up any path exclusions for your websites by clicking n the `Set up URL Exclusion List`.  It will ask if you want to import from your robots.txt file.
-5. If you want to only check sample pages on staging, add `/` as a URL pattern exclusion.
+5. If you want to only check sample pages on staging, add `/` as a URL pattern exclusion, this will mean they only monitor URLs you send them via API.
 
 Once configured, ContentKing will automatically monitor all added site pages, up to the number specified in page capacity or not excluded in URL exclusions.
 
@@ -31,12 +31,12 @@ You need to be on the Pro plan for ContentKing to activate the Reporting API.  T
 
 1. Go to [Account Settings](https://app.contentkingapp.com/account/settings/integration_tokens).
 2. Copy your `CMS API` and `Reporting API` integration tokens. Create if needed.
-3. Add the `CMS API` token to `modules_activated.contentking.cms_api_key` in `seotesting_config.yaml`.
-4. Add the `Reporting API` token to `modules_activated.contentking.report_api_key` in `seotesting_config.yaml`.
-5. Save your `seotesting_config.yaml` file.
+3. Add the `CMS API` token to `modules_activated.contentking.cms_api_key` in `seodeploy_config.yaml`.
+4. Add the `Reporting API` token to `modules_activated.contentking.report_api_key` in `seodeploy_config.yaml`.
+5. Save your `seodeploy_config.yaml` file.
 
 ### Configuring ContentKing Module
-To activate the ContentKing Module, the following YAML code block should be nested under `modules_activated` in your `seotesting_config.yaml` file.
+To activate the ContentKing Module, the following YAML code block should be nested under `modules_activated` in your `seodeploy_config.yaml` file.
 
 ```
 contentking:

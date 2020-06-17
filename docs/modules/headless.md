@@ -9,7 +9,7 @@ The Headless module uses Google Chrome in Headless mode to render URLs and extra
 To use the module requires a computer running Python v3.7 (tested) and enough space and memory to run Chromium (~150MB space, 8GB memory suggested).
 
 ### Configuring Headless Module
-To activate the Headless Module, the following YAML code block should be nested under `modules_activated` in your `seotesting_config.yaml` file.
+To activate the Headless Module, the following YAML code block should be nested under `modules_activated` in your `seodeploy_config.yaml` file.
 
 ```
 headless:
@@ -90,8 +90,8 @@ These are settings for configuring Chromium and how it crawls your sites.
 * **prod_host**: (str) URL of production host (eg. https://locomotive.agency)
 * **stage_host**: (str) URL of staging host (eg. https://stg.locomotive.agency)
 
-* **stage_auth_user**: (str) Username to bypass Authentication on Staging website.
-* **stage_auth_pass**: (str) Password to bypass Authentication on Staging website.
+* **stage_auth_user**: (str) Username to bypass authentication on staging website.
+* **stage_auth_pass**: (str) Password to bypass authentication on staging website.
 
 * **user_agent**: (str) User Agent to crawl as.  This is helpful to bypass security or compression/caching of CDNs on production website.
 
@@ -103,8 +103,8 @@ These are settings for configuring Chromium and how it crawls your sites.
 These are settings that affect what is compared between your production and staging URLs.
 
 * **content**: Content is extracted content, like H1s, H2s, and SEO Meta data for each URL.  Set `True` or `False`
-* **performance**: Performace data collected for each URL.  Includes timing and select CDP Performance API data.  Set `True`, `False`, or <float>.  <float> values allow you to report on numeric changes greater than the percent supplied.  e.g. a value of `0.20` would only report changes that are greater than 20%.
-* **coverage**: Coverage is JS and CSS coverage data collected via the CDP Coverage API. Set `True`, `False`, or <float>.  <float> values allow you to report on numeric changes greater than the percent supplied.  e.g. a value of `0.20` would only report changes that are greater than 20%.
+* **performance**: Performace data collected for each URL.  Includes timing and select CDP Performance API data.  Set `True`, `False`, or `float`.  `float` values allow you to report on numeric changes greater than the percent supplied.  e.g. a value of `0.20` would only report changes that are greater than 20%.
+* **coverage**: Coverage is JS and CSS coverage data collected via the CDP Coverage API. Set `True`, `False`, or `float`.  `float` values allow you to report on numeric changes greater than the percent supplied.  e.g. a value of `0.20` would only report changes that are greater than 20%.
 
 ### Running
 Once configured, the Headless module will run against all sample paths on Staging and Production, comparing items not excluded in the `Comparison Settings` above.

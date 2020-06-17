@@ -23,10 +23,10 @@ Overview of creating your own module for SEODeploy.
 
 
 ### Module Class Flow
-The flow of creating your own module is outlined below.
+The flow, to understand, for creating your own module is outlined below:
 
 1. The `modulename` should be defined in the SEOTestingModule class. e.g. `self.modulename = "example_module"`
-2. The `modulename` should be the same as the module folder name, and name of configuration section of `seotesting_config.yaml`.
+2. The `modulename` should be the same as the module folder name, and name of configuration section of `seodeploy_config.yaml`.
 3. Sample paths are passed to the `run` method of your module's class in `__init__.py`.
 4. There should be a function in `functions.py` that accepts `sample_paths` and `config` parameters, and returns data formatted with the `seodeploy.lib.process_page_data` function.
 5. `page_data` is passed to the `self.run_diffs` method and diffs are calculated.
@@ -37,13 +37,13 @@ The flow of creating your own module is outlined below.
 
 ### Available Helper Functions
 
-The `seodeploy.lib.helpers` module contains the following functions which help maintain consistency in your module's functions.
+The `seodeploy.lib.helpers` module contains the following functions which are supplies to maintain consistency across all module functions.
 
 #### group_batcher
 
-  Given and iterator, returns batched results based on count.
+  Given an iterator, returns batched results based on count.
 
-    Given and iterator, returns batched results based on count.
+    Given an iterator, returns batched results based on count.
 
     Call: group_batcher(iterator, result, count, fill=0)
 
@@ -56,7 +56,7 @@ The `seodeploy.lib.helpers` module contains the following functions which help m
     count: int
         How many in each Group.
     fill: str, int, float, or None
-        Fill overflow with this value. If None, no fill is performed.
+        Fill overflow with this value. If None, no fill is performed. Returns uneven last value.
 
     Returns
     -------
@@ -64,13 +64,13 @@ The `seodeploy.lib.helpers` module contains the following functions which help m
 
 #### mp_list_map
 
-  Applies a function to a list by multiprocessing, maybe.
+  Applies a function to a list by multiprocessing, if threading is active.
 
     Applies a function to a list by multiprocessing.
 
     Call: mp_list_map(lst, fnc, \*\*kwargs)
 
-    Uses `max_threads` from `seotesting_config.yaml` to determine whether to apply
+    Uses `max_threads` from `seodeploy_config.yaml` to determine whether to apply
     function by multiprocessing.  if max_threads > 1 , then multiprocessing is used.
 
     Parameters
@@ -125,7 +125,7 @@ The `seodeploy.lib.helpers` module contains the following functions which help m
 
 #### Main Config Data
 
-  Here is an example base configuration for your module in `seotesting_config.yaml`. All given parameters below are required.
+  Here is an example base configuration for your module in `seodeploy_config.yaml`. All given parameters below are required.
 
     modules_activated:
 
@@ -144,18 +144,18 @@ The `seodeploy.lib.helpers` module contains the following functions which help m
 
   Example:
 
-    # seotesting_config.yaml
+    # seodeploy_config.yaml
     example_module:
         custom_parameter: 1
 
     # /modules/example_module/functions.py
     config = Config(module='example_module')
-    assert config.example_module.custom_parameter == 1
+    assert config.example_module.custom_parameter == 1  # True
 
 #### Ignore Config Data
 
   The `ignore` section of your module's config information should match the `page_data`
-  dictionary that is sent to `process_page_data` in the `prod_results` and `stage_result` parameters.
+  value (dict) that is sent to `process_page_data` in the `prod_results` and `stage_result` parameters.
 
   Example:
 

@@ -65,13 +65,13 @@ def cli():
     "--limit",
     type=int,
     default=None,
-    help="Limits the output to this many total paths. Overrides limit set in seotesting_config.yaml.",
+    help="Limits the output to this many total paths. Overrides limit set in seodeploy_config.yaml.",
 )
 @click.option(
     "--samples_filename",
     type=str,
     default=None,
-    help="Filename for the outputted txt file. Overrides filename set in seotesting_config.yaml.",
+    help="Filename for the outputted txt file. Overrides filename set in seodeploy_config.yaml.",
 )
 def sample(site_id, sitemap_url, limit=None, samples_filename=None):
     """Create sample_paths.txt File."""
@@ -106,7 +106,7 @@ def sample(site_id, sitemap_url, limit=None, samples_filename=None):
     "--samples_filename",
     type=str,
     default=None,
-    help="Filename for the samples file. Overrides filename set in seotesting_config.yaml.",
+    help="Filename for the samples file. Overrides filename set in seodeploy_config.yaml.",
 )
 def execute(samples_filename=None):
     """Difftest Staging and Production URLs."""
@@ -118,7 +118,7 @@ def execute(samples_filename=None):
     if not samples_filename:
         raise IncorrectParameters(
             "You must provide either `samples_filename` "
-            + "or set `samples_filename` in `seotesting_config.yaml`."
+            + "or set `samples_filename` in `seodeploy_config.yaml`."
         )
 
     sample_paths = get_sample_paths(CONFIG, filename=samples_filename)
