@@ -14,7 +14,7 @@ Works with:
 
 
 
-## Quick-start Guide
+## Overview
 This library attempts to provide a flexible format to allow developers to incorporate SEO checks into development workflows.  It follows the following design constructs:
 
 1. **Modular**: See the modules folder for examples of drop in testing using the `ModuleBase` class.  Modules dropped in here and configured in `seotesting_config.yaml` are automatically tested against sample URLs.
@@ -23,13 +23,14 @@ This library attempts to provide a flexible format to allow developers to incorp
 4. **Flexible**: The library contains code that is meant to be reconfigured and repurposed for individual needs.  We have tried to make classes and functions as flexible as possible, towards this end.
 5. **Logging**: Error, Info, Warning notifications are logged to `seotesting.log` via included functionality.
 
-See the [docs](https://locomotive-agency.github.io/SEODeploy/) folder for more information.
+## Getting Started
+See the [docs](https://locomotive-agency.github.io/SEODeploy/) for all the information you need to get started.
 
 !!! warning
     This library should be considered beta software and not used as a dependable
     solution without thorough testing.  Expect bugs.
 
-## Inspiration for some parts taken from:
+## Inspiration for some parts taken from
 * https://github.com/AlejandroGonzalR/jenkins-vue/tree/master/jenkins/scripts
 * https://github.com/mattfair/SeleniumFactory-for-Python/blob/master/sauce_ondemand_test.py
 * https://github.com/jenkins-docs/simple-python-pyinstaller-app/tree/master/jenkins

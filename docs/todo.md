@@ -13,3 +13,4 @@
 * [x] Change seotesting_config.yaml to seodeploy_config.yaml, for consistency.
 * [ ] Testing (In Process - Currently 46% coverage)
 * [ ] Create PyPI library.
+* [ ] Refactor to add typing.
