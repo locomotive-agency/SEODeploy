@@ -230,6 +230,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#why-python" class="md-nav__link">
+    Why Python?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#made-by" class="md-nav__link">
     Made By
   </a>
@@ -361,6 +368,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#why-python" class="md-nav__link">
+    Why Python?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#made-by" class="md-nav__link">
     Made By
   </a>
@@ -398,16 +412,20 @@
                 
                 
                 <h1 id="seodeploy-about">SEODeploy: About<a class="headerlink" href="#seodeploy-about" title="Permanent link">&para;</a></h1>
-<p>This library attempts to provide a flexible format to allow developers to incorporate SEO checks into development workflows.  It follows the following design constructs:</p>
+<p>SEODeploy is a labor of love which attempts to solve a common issue with deployment processes: SEO Error Checking.  Often small mistakes, such as a changed canonical pattern, can have far-reaching traffic implications when deployed to production.  Further, a lot of time can be lost by having team members manually check pages for issues and some SEO issues are easy to miss.  By bringing SEO teams and development teams together to decide on the <strong>correct</strong> items to validate, and providing an automated way of including those checks, we hope to provide a tool which saves time and creates more consistency in your CI/CD workflows.</p>
+<p>We decided to integrate ContentKing because it really does allow for fuller end-to-end confidence. You can integrate our tool to catch mistakes on staging, but even if a mistake passes to production, ContentKing is there to let you know immediately, so you can quickly roll back changes.</p>
+<h2 id="why-python">Why Python?<a class="headerlink" href="#why-python" title="Permanent link">&para;</a></h2>
+<p>We know that items like Puppeteer run more naturally on Node and Python is in no way the most efficient language. A few of the reasons we still thought Python would be the correct choice:</p>
 <ol>
-<li><strong>Modular</strong>: See the modules folder for examples of drop in testing using the <code>ModuleBase</code> class.  Modules dropped in here and configured in <code>seodeploy_config.yaml</code> are automatically tested against sample URLs.</li>
-<li><strong>Diff Checking</strong>: Developers can specify in the <code>seodeploy_config.yaml</code>file where they expect to see differences by ignoring checks.  Any other differences, depending on the design of the module, are diff checked across your prod and stage hosts and reported as errors.</li>
-<li><strong>Sampled URLs</strong>: The library supplies a sampling mechanism based on ContentKing URLs or a supplied XML sitemap URL that attempts to extract random samples in a statisticaly signifincant way.  But, developers are free to supply their own paths in the <code>path_samples.txt</code> file which are used to diff against production and staging.  One good route would be to supply a path representing each template type.</li>
-<li><strong>Flexible</strong>: The library contains code that is meant to be reconfigured and repurposed for individual needs.  We have tried to make classes and functions as flexible as possible, towards this end.</li>
-<li><strong>Logging</strong>: Error, Info, Warning notifications are logged to <code>seotesting.log</code> via included functionality.</li>
+<li><a href="https://github.com/pyppeteer/pyppeteer">Pyppeteer</a> is available for Headless Chrome support, which tries to mirror the functionality of Puppeteer, as closely as possible.</li>
+<li>Python is a popular, and growing language, so finding developers is easier than others.</li>
+<li>The upside on creating additional modules for link analysis, NLP, extraction, anomaly detection, etc, with popular, and trusted available libraries, was a clear win.</li>
+<li>Python is supported in most cloud function environments, so running at the location of your choice is an option.</li>
+<li>Python can run asynchronously or synchronously.</li>
+<li>The tool doesn't care what language your site is developed in.  Only what is outputted to Staging and Production pages.</li>
 </ol>
 <h2 id="made-by">Made By<a class="headerlink" href="#made-by" title="Permanent link">&para;</a></h2>
-<p>This opensource project is made possible by <a href="https://locomotive.agency/">LOCOMOTIVE</a></p>
+<p>This opensource project is developed by <a href="https://locomotive.agency/">LOCOMOTIVE</a>, a Technical SEO Agency.</p>
 <h2 id="contact">Contact<a class="headerlink" href="#contact" title="Permanent link">&para;</a></h2>
 <p>If you have questions on implementation, email me at <a href="mailto:jr.oakes@locomotive.agency">jr.oakes@locomotive.agency</a>.</p>
 <h2 id="interested-in-contributing">Interested in Contributing?<a class="headerlink" href="#interested-in-contributing" title="Permanent link">&para;</a></h2>
