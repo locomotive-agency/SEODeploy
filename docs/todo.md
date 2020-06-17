@@ -10,6 +10,6 @@
 * [x] Develop Headless Module using Pypeteer.
 * [x] Add timeout to ContentKing checking to keep from running infinitely long.
 * [x] Reduce lists of str, int, float to element if len = 1 in comparision.  Shows change instead of add/remove.
-* [ ] Change seotesting_config.yaml to seodeploy_config.yaml, for consistency.
+* [x] Change seotesting_config.yaml to seodeploy_config.yaml, for consistency.
 * [ ] Testing (In Process - Currently 46% coverage)
 * [ ] Create PyPI library.
