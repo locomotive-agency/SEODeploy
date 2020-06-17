@@ -595,10 +595,10 @@
 <li><strong>exceptions.py</strong>: Should contain any custom exceptions for your module.</li>
 </ul>
 <h3 id="module-class-flow">Module Class Flow</h3>
-<p>The flow of creating your own module is outlined below.</p>
+<p>The flow, to understand, for creating your own module is outlined below:</p>
 <ol>
 <li>The <code>modulename</code> should be defined in the SEOTestingModule class. e.g. <code>self.modulename = "example_module"</code></li>
-<li>The <code>modulename</code> should be the same as the module folder name, and name of configuration section of <code>seotesting_config.yaml</code>.</li>
+<li>The <code>modulename</code> should be the same as the module folder name, and name of configuration section of <code>seodeploy_config.yaml</code>.</li>
 <li>Sample paths are passed to the <code>run</code> method of your module's class in <code>__init__.py</code>.</li>
 <li>There should be a function in <code>functions.py</code> that accepts <code>sample_paths</code> and <code>config</code> parameters, and returns data formatted with the <code>seodeploy.lib.process_page_data</code> function.</li>
 <li><code>page_data</code> is passed to the <code>self.run_diffs</code> method and diffs are calculated.</li>
@@ -607,10 +607,10 @@
 <li>If <code>len(messages) &gt; 0</code> or if <code>len(errors) &gt; 0</code> then the tool fails.</li>
 </ol>
 <h3 id="available-helper-functions">Available Helper Functions</h3>
-<p>The <code>seodeploy.lib.helpers</code> module contains the following functions which help maintain consistency in your module's functions.</p>
+<p>The <code>seodeploy.lib.helpers</code> module contains the following functions which are supplies to maintain consistency across all module functions.</p>
 <h4 id="group_batcher">group_batcher</h4>
-<p>Given and iterator, returns batched results based on count.</p>
-<pre><code>Given and iterator, returns batched results based on count.
+<p>Given an iterator, returns batched results based on count.</p>
+<pre><code>Given an iterator, returns batched results based on count.
 
 Call: group_batcher(iterator, result, count, fill=0)
 
@@ -623,19 +623,19 @@ result: type
 count: int
     How many in each Group.
 fill: str, int, float, or None
-    Fill overflow with this value. If None, no fill is performed.
+    Fill overflow with this value. If None, no fill is performed. Returns uneven last value.
 
 Returns
 -------
 Generator
 </code></pre>
 <h4 id="mp_list_map">mp_list_map</h4>
-<p>Applies a function to a list by multiprocessing, maybe.</p>
+<p>Applies a function to a list by multiprocessing, if threading is active.</p>
 <pre><code>Applies a function to a list by multiprocessing.
 
 Call: mp_list_map(lst, fnc, \*\*kwargs)
 
-Uses `max_threads` from `seotesting_config.yaml` to determine whether to apply
+Uses `max_threads` from `seodeploy_config.yaml` to determine whether to apply
 function by multiprocessing.  if max_threads &gt; 1 , then multiprocessing is used.
 
 Parameters
@@ -685,7 +685,7 @@ dict
 </code></pre>
 <h3 id="configuration">Configuration</h3>
 <h4 id="main-config-data">Main Config Data</h4>
-<p>Here is an example base configuration for your module in <code>seotesting_config.yaml</code>. All given parameters below are required.</p>
+<p>Here is an example base configuration for your module in <code>seodeploy_config.yaml</code>. All given parameters below are required.</p>
 <pre><code>modules_activated:
 
   example_module:
@@ -700,17 +700,17 @@ dict
 </code></pre>
 <p>Any new parameters you add to your module's config are available to the config class.</p>
 <p>Example:</p>
-<pre><code># seotesting_config.yaml
+<pre><code># seodeploy_config.yaml
 example_module:
     custom_parameter: 1
 
 # /modules/example_module/functions.py
 config = Config(module='example_module')
-assert config.example_module.custom_parameter == 1
+assert config.example_module.custom_parameter == 1  # True
 </code></pre>
 <h4 id="ignore-config-data">Ignore Config Data</h4>
 <p>The <code>ignore</code> section of your module's config information should match the <code>page_data</code>
-  dictionary that is sent to <code>process_page_data</code> in the <code>prod_results</code> and <code>stage_result</code> parameters.</p>
+  value (dict) that is sent to <code>process_page_data</code> in the <code>prod_results</code> and <code>stage_result</code> parameters.</p>
 <p>Example:</p>
 <pre><code>page_data = {'content': {'h1': 'main heading',
                          'h2': 'sub-heading'},

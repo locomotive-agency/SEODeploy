@@ -503,19 +503,19 @@
 <p>To use the ContentKing Module, you need to have your production and staging websites active in the ContentKing App.</p>
 <h3 id="adding-a-site">Adding a Site</h3>
 <ol>
-<li>Go to your <a href="https://app.contentkingapp.com/account/websites?view=list">Account page</a> and click Add Website.</li>
+<li>Go to your <a href="https://app.contentkingapp.com/account/websites?view=list">Account page</a> and click <code>Add Website</code>.</li>
 <li>Enter your domain and select the page capacity.</li>
-<li>Click Add Website.</li>
-<li>Set up Google Analytics and Google Search Console integrations for production, if desired. Click Save.</li>
-<li>Set up alerts and reports for production, if desired.  Click Save.</li>
+<li>Click <code>Add Website</code>.</li>
+<li>Set up Google Analytics and Google Search Console integrations for production, if desired. Click <code>Save</code>.</li>
+<li>Set up alerts and reports for production, if desired.  Click <code>Save</code>.</li>
 </ol>
 <h3 id="configuring-sites">Configuring Sites</h3>
 <ol>
 <li>Go to your <a href="https://app.contentkingapp.com/account/websites?view=list">Account page</a> and search for website.</li>
-<li>If your staging site is behind Authentication, click on <code>Monitoring</code> and edit <code>Authentication</code> under <code>Advanced Settings</code>.</li>
+<li>If your staging site is behind authentication, click on <code>Monitoring</code> and edit <code>Authentication</code> under <code>Advanced Settings</code>.</li>
 <li>If your staging or production site requires cookies, click on <code>Monitoring</code> and edit <code>Cookies</code> under <code>Advanced Settings</code>.</li>
 <li>Set up any path exclusions for your websites by clicking n the <code>Set up URL Exclusion List</code>.  It will ask if you want to import from your robots.txt file.</li>
-<li>If you want to only check sample pages on staging, add <code>/</code> as a URL pattern exclusion.</li>
+<li>If you want to only check sample pages on staging, add <code>/</code> as a URL pattern exclusion, this will mean they only monitor URLs you send them via API.</li>
 </ol>
 <p>Once configured, ContentKing will automatically monitor all added site pages, up to the number specified in page capacity or not excluded in URL exclusions.</p>
 <h3 id="getting-your-api-keys">Getting your API Keys</h3>
@@ -523,12 +523,12 @@
 <ol>
 <li>Go to <a href="https://app.contentkingapp.com/account/settings/integration_tokens">Account Settings</a>.</li>
 <li>Copy your <code>CMS API</code> and <code>Reporting API</code> integration tokens. Create if needed.</li>
-<li>Add the <code>CMS API</code> token to <code>modules_activated.contentking.cms_api_key</code> in <code>seotesting_config.yaml</code>.</li>
-<li>Add the <code>Reporting API</code> token to <code>modules_activated.contentking.report_api_key</code> in <code>seotesting_config.yaml</code>.</li>
-<li>Save your <code>seotesting_config.yaml</code> file.</li>
+<li>Add the <code>CMS API</code> token to <code>modules_activated.contentking.cms_api_key</code> in <code>seodeploy_config.yaml</code>.</li>
+<li>Add the <code>Reporting API</code> token to <code>modules_activated.contentking.report_api_key</code> in <code>seodeploy_config.yaml</code>.</li>
+<li>Save your <code>seodeploy_config.yaml</code> file.</li>
 </ol>
 <h3 id="configuring-contentking-module">Configuring ContentKing Module</h3>
-<p>To activate the ContentKing Module, the following YAML code block should be nested under <code>modules_activated</code> in your <code>seotesting_config.yaml</code> file.</p>
+<p>To activate the ContentKing Module, the following YAML code block should be nested under <code>modules_activated</code> in your <code>seodeploy_config.yaml</code> file.</p>
 <pre><code>contentking:
   cms_api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   report_api_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
