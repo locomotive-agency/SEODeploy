@@ -36,9 +36,11 @@ the tool can be installed via standard `pip install seodeploy`
 
 ### Install
 
-    $ (base) conda create --name seodeploy --python=3.7
+    $ conda create --name seodeploy python=3.7 poetry
 
-    $ (seodeploy) git clone https://github.com/jroakes/SEODeploy.git
+    $ conda activate seodeploy
+
+    $ (seodeploy) git clone https://github.com/locomotive-agency/SEODeploy
 
     $ (seodeploy) cd SEODeploy
 
