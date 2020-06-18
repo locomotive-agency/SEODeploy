@@ -40,7 +40,7 @@ the tool can be installed via standard `pip install seodeploy`
 
     $ conda activate seodeploy
 
-    $ (seodeploy) git clone https://github.com/locomotive-agency/SEODeploy
+    $ (seodeploy) git clone https://github.com/locomotive-agency/SEODeploy.git
 
     $ (seodeploy) cd SEODeploy
 
