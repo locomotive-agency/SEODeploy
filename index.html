@@ -560,9 +560,11 @@ solution without thorough testing.  Expect bugs.</p>
 the tool can be installed via standard <code>pip install seodeploy</code></p>
 <p><strong>Modules MUST be configured prior to running.  See Modules Available for configurations.</strong></p>
 <h3 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code>$ (base) conda create --name seodeploy --python=3.7
+<div class="codehilite"><pre><span></span><code>$ conda create --name seodeploy python=3.7 poetry
 
-$ (seodeploy) git clone https://github.com/jroakes/SEODeploy.git
+$ conda activate seodeploy
+
+$ (seodeploy) git clone https://github.com/locomotive-agency/SEODeploy
 
 $ (seodeploy) cd SEODeploy
 
