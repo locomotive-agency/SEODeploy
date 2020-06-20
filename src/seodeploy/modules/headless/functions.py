@@ -53,6 +53,7 @@ def _render_paths(paths, config=None, host=None):
 
     """
 
+    # Initializes and creates browser.
     chrome = HeadlessChrome(config=config)
 
     results = []
@@ -61,6 +62,7 @@ def _render_paths(paths, config=None, host=None):
 
         url = urljoin(host, path)
 
+        # Renders pages in same browser.
         result = chrome.render(url)
 
         if result["error"]:

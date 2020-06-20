@@ -86,7 +86,7 @@ class HeadlessChrome:
                 break
 
             except NetworkError:
-                # _LOG.error('Network Error trying url: ', url)
+                _LOG.error("Network Error trying url: ", url)
                 asyncio.set_event_loop(asyncio.new_event_loop())
 
             except URLMissingException:
@@ -108,9 +108,12 @@ class HeadlessChrome:
         if not url:
             raise URLMissingException("A URL is required to render.")
 
-        await self._build_page(url)
+        response = await self._build_page(url)
 
         dom = {}
+
+        dom["status"] = response.status
+        dom["headers"] = response.headers
 
         for key, expression in EXTRACTIONS.items():
             dom[key] = await self.page.evaluate(expression)
@@ -151,7 +154,7 @@ class HeadlessChrome:
         # Authenticate if Staging and user/pass defined.
         await self._check_auth(url)
 
-        await self.page.goto(url, waitUntil="networkidle2", timeout=60000)
+        response = await self.page.goto(url, waitUntil="networkidle2", timeout=60000)
 
         self.coverage["JSCoverage"] = await self.page.coverage.stopJSCoverage()
         self.coverage["CSSCoverage"] = await self.page.coverage.stopCSSCoverage()
@@ -159,10 +162,14 @@ class HeadlessChrome:
         # Small wait to ensure all is complete.
         await self.page.waitFor(1000)
 
+        return response
+
     async def _close_page(self):
         """Close page and relevant class data after page load"""
 
+        await self.client.detach()
         await self.page.close()
+        self.client = None
         self.page = None
         self.coverage = None
 

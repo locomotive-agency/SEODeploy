@@ -26,6 +26,8 @@ modules_activated:
     replace_staging_host: True
 
     ignore:
+      status: False
+      headers: False
       content:
           canonical: False
           robots: False

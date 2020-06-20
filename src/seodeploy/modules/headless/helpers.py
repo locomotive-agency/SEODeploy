@@ -183,6 +183,8 @@ NETWORK_PRESETS = {
 def format_results(data):
 
     return {
+        "status": dot_get("status", data),
+        "headers": dot_get("headers", data),
         "content": {
             "canonical": dot_get("canonical", data),
             "robots": dot_get("robots", data),

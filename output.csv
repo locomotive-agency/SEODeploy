@@ -23,20 +23,31 @@ remove,content.open_graph_title,,Technical SEO - LOCOMOTIVE Agency,,contentking,
 change,issues.meta_description/missing,,issue found,issue not found,contentking,/technical-seo/website-speed-metrics/
 add,content.open_graph_image,,,https://locomotive.agency/wp-content/uploads/2018/07/first-paint-2-300x147.jpg,contentking,/technical-seo/website-speed-metrics/
 remove,content.open_graph_image,,https://mk0locomotiveagoonti.kinstacdn.com/wp-content/uploads/2018/07/first-paint-2-300x147.jpg,,contentking,/technical-seo/website-speed-metrics/
+change,issues.canonical_link/incorrectly_canonicalized,,issue not found,issue found,contentking,/technical-seo/website-speed-metrics/404/
+add,content.open_graph_image,,,https://locomotive.agency/wp-content/uploads/2018/07/first-paint-2-300x147.jpg,contentking,/technical-seo/website-speed-metrics/404/
+remove,content.open_graph_image,,https://mk0locomotiveagoonti.kinstacdn.com/wp-content/uploads/2018/07/first-paint-2-300x147.jpg,,contentking,/technical-seo/website-speed-metrics/404/
 change,issues.title/incorrect_length,,issue found,issue not found,contentking,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
 add,content.open_graph_image,,,https://locomotive.agency/wp-content/uploads/2017/08/google-cloud-platform-gsc-1024x534.png,contentking,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
 remove,content.open_graph_image,,https://mk0locomotiveagoonti.kinstacdn.com/wp-content/uploads/2017/08/google-cloud-platform-gsc-1024x534.png,,contentking,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
+change,headers,date,"Sat, 20 Jun 2020 00:33:13 GMT","Sat, 20 Jun 2020 00:33:46 GMT",headless,/
+change,headers,x-kinsta-cache,HIT,BYPASS,headless,/
+add,headers,x-robots-tag,,n,headless,/
 add,content.title,,,Home,headless,/
 remove,content.title,,LOCOMOTIVE® - Enterprise Technical SEO Agency,,headless,/
 add,content.h1,,,WE ARE A TEAM OF:  SEO Specialists MOVING YOU FORWARD.,headless,/
 remove,content.h1,,WE ARE A TEAM OF: SEO Specialists MOVING YOU FORWARD.,,headless,/
-change,performance.time_to_interactive,,1870.0,4988.0,headless,/
-change,performance.cumulative_layout_shift,,0.78,0.38,headless,/
+change,performance.time_to_interactive,,1831.0,4999.0,headless,/
+change,headers,date,"Sat, 20 Jun 2020 00:33:27 GMT","Sat, 20 Jun 2020 00:33:53 GMT",headless,/services/
+change,headers,x-kinsta-cache,HIT,BYPASS,headless,/services/
+add,headers,x-robots-tag,,n,headless,/services/
 add,content.h1,,,"
 			Ready for Service			",headless,/services/
 remove,content.h1,, Ready for Service ,,headless,/services/
-change,performance.time_to_interactive,,1318.0,5034.0,headless,/services/
+change,performance.time_to_interactive,,1614.0,4908.0,headless,/services/
 change,performance.cumulative_layout_shift,,0.53,0.18,headless,/services/
+change,headers,date,"Sat, 20 Jun 2020 00:33:32 GMT","Sat, 20 Jun 2020 00:34:00 GMT",headless,/services/local-seo/
+change,headers,x-kinsta-cache,HIT,BYPASS,headless,/services/local-seo/
+add,headers,x-robots-tag,,n,headless,/services/local-seo/
 add,content.robots,,,"index, follow, noarchive",headless,/services/local-seo/
 remove,content.robots,,"index, follow",,headless,/services/local-seo/
 add,content.h1,,,"
@@ -44,9 +55,12 @@ add,content.h1,,,"
 remove,content.h1,, Local SEO ,,headless,/services/local-seo/
 add,content.h2,,,LOCAL SEO,headless,/services/local-seo/
 remove,content.h2,,LOCAL SEO BENEFITS,,headless,/services/local-seo/
-change,performance.first_contentful_paint,,345.09,1656.47,headless,/services/local-seo/
-change,performance.time_to_interactive,,382.0,4661.0,headless,/services/local-seo/
+change,performance.first_contentful_paint,,351.3,1580.71,headless,/services/local-seo/
+change,performance.time_to_interactive,,388.0,4598.0,headless,/services/local-seo/
 change,performance.cumulative_layout_shift,,0.48,0.02,headless,/services/local-seo/
+change,headers,date,"Sat, 20 Jun 2020 00:33:36 GMT","Sat, 20 Jun 2020 00:34:07 GMT",headless,/services/technical-seo/
+change,headers,x-kinsta-cache,HIT,BYPASS,headless,/services/technical-seo/
+add,headers,x-robots-tag,,n,headless,/services/technical-seo/
 add,content.title,,,technical seo - LOCOMOTIVE Agency,headless,/services/technical-seo/
 remove,content.title,,Technical SEO - LOCOMOTIVE Agency,,headless,/services/technical-seo/
 add,content.h1,,,"
@@ -54,7 +68,20 @@ add,content.h1,,,"
 remove,content.h1,, Technical SEO ,,headless,/services/technical-seo/
 add,content.h2,,,TECHNICAL SEO ,headless,/services/technical-seo/
 remove,content.h2,,TECHNICAL SEO BENEFITS,,headless,/services/technical-seo/
-change,performance.first_contentful_paint,,399.23,1694.59,headless,/services/technical-seo/
-change,performance.time_to_interactive,,439.0,5280.0,headless,/services/technical-seo/
-change,performance.time_to_interactive,,1707.0,6037.0,headless,/technical-seo/website-speed-metrics/
-change,performance.cumulative_layout_shift,,0.46,0.1,headless,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
+change,performance.first_contentful_paint,,399.23,1646.97,headless,/services/technical-seo/
+change,performance.time_to_interactive,,438.0,5229.0,headless,/services/technical-seo/
+change,headers,date,"Sat, 20 Jun 2020 00:33:39 GMT","Sat, 20 Jun 2020 00:34:15 GMT",headless,/technical-seo/website-speed-metrics/
+change,headers,x-kinsta-cache,HIT,BYPASS,headless,/technical-seo/website-speed-metrics/
+add,headers,x-robots-tag,,n,headless,/technical-seo/website-speed-metrics/
+change,performance.time_to_interactive,,1659.0,6398.0,headless,/technical-seo/website-speed-metrics/
+change,headers,date,"Sat, 20 Jun 2020 00:34:23 GMT","Sat, 20 Jun 2020 00:34:43 GMT",headless,/technical-seo/website-speed-metrics/404/
+change,headers,x-kinsta-cache,HIT,BYPASS,headless,/technical-seo/website-speed-metrics/404/
+add,headers,x-robots-tag,,n,headless,/technical-seo/website-speed-metrics/404/
+change,performance.time_to_interactive,,2808.0,6175.0,headless,/technical-seo/website-speed-metrics/404/
+change,performance.cumulative_layout_shift,,0.42,0.05,headless,/technical-seo/website-speed-metrics/404/
+change,headers,date,"Sat, 20 Jun 2020 00:34:38 GMT","Sat, 20 Jun 2020 00:34:51 GMT",headless,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
+change,headers,x-kinsta-cache,HIT,BYPASS,headless,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
+add,headers,x-robots-tag,,n,headless,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
+change,performance.first_contentful_paint,,428.96,1675.7,headless,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
+change,performance.time_to_interactive,,554.0,6515.0,headless,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
+change,performance.cumulative_layout_shift,,0.49,0.1,headless,/technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/

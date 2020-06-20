@@ -3,4 +3,5 @@
 /services/local-seo/
 /services/technical-seo/
 /technical-seo/website-speed-metrics/
+/technical-seo/website-speed-metrics/404/
 /technical-seo/a-tool-for-saving-google-search-console-data-to-bigquery/
