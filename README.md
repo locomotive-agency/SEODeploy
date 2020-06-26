@@ -1,7 +1,3 @@
-
-[![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-
-
 # SEODeploy: Flexible and Modular Python Library for Automating SEO Testing in Deployment Pipelines.
 
 ![SEOTesting](/docs/images/overview.png "SEO Testing Overview")
