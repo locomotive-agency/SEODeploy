@@ -23,6 +23,13 @@ This library attempts to provide a flexible format to allow developers to incorp
 4. **Flexible**: The library contains code that is meant to be reconfigured and repurposed for individual needs.  We have tried to make classes and functions as flexible as possible, towards this end.
 5. **Logging**: Error, Info, Warning notifications are logged to `seotesting.log` via included functionality.
 
+
+## Modules Available
+You can run as many modules as you would like.  If modules are configured in `modules_activated` of the `seodeploy_config.yaml` file, they will run.  We have provided the following examples.  ContentKing requires a subscription to [ContentKing](https://www.contentkingapp.com/).  Headless can be run on any machine capable of running Chrome.
+* [ContentKing](https://locomotive-agency.github.io/SEODeploy/modules/contentking/)
+* [Headless](https://locomotive-agency.github.io/SEODeploy/modules/headless/)
+* [Creating Your Own](https://locomotive-agency.github.io/SEODeploy/modules/creating/)
+
 ## Getting Started
 See the [docs](https://locomotive-agency.github.io/SEODeploy/) for all the information you need to get started.
 
