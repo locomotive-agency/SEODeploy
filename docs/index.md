@@ -24,6 +24,7 @@ Get started by downloading the repo at: [https://github.com/locomotive-agency/SE
 
 ## Modules Available
 You can run as many modules as you would like.  If modules are configured in `modules_activated` of the `seodeploy_config.yaml` file, they will run.  We have provided the following examples.  ContentKing requires a subscription to [ContentKing](https://www.contentkingapp.com/).  Headless can be run on any machine capable of running Chrome.
+
 * [ContentKing](modules/contentking.md)
 * [Headless](modules/headless.md)
 * [Creating Your Own](modules/creating.md)
