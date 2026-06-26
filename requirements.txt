@@ -26,6 +26,6 @@ six==1.15.0
 soupsieve==1.9.6
 toml==0.10.1
 tqdm==4.46.0
-urllib3==1.25.9
+urllib3==1.26.5
 websockets==8.1
 xmltodict==0.12.0
