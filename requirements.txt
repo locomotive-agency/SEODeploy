@@ -23,7 +23,7 @@ pytz==2020.1
 pyyaml==5.3.1
 requests==2.23.0
 six==1.15.0
-soupsieve==1.9.6
+soupsieve==2.8.4
 toml==0.10.1
 tqdm==4.46.0
 urllib3==2.7.0
